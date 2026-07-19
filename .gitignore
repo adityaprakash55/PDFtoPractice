@@ -1,0 +1,5 @@
+node_modules/
+.DS_Store
+patch.js
+resize.ps1
+jsdom_error.log

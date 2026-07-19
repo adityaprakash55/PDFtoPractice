@@ -1,0 +1,1 @@
+const fs = require('fs'); const html = fs.readFileSync('index.html', 'utf8'); const matches = [...html.matchAll(/id=['"]([^'"]+)['"]/g)].map(m => m[1]); const duplicates = matches.filter((item, index) => matches.indexOf(item) !== index); console.log('Duplicates:', duplicates);

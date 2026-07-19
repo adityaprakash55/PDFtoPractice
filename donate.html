@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support the Project - PDF to PRACTICE</title>
+    
+    <!-- SEO & Meta Tags -->
+    <meta name="description" content="Support the free PDF to PRACTICE.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            future: { hoverOnlyWhenSupported: true },
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        navy: {
+                            50: '#f0f4f8',
+                            100: '#d9e2ec',
+                            200: '#bcccdc',
+                            300: '#9fb3c8',
+                            400: '#829ab1',
+                            500: '#627d98',
+                            600: '#486581',
+                            700: '#334e68',
+                            800: '#243b53',
+                            900: '#102a43',
+                            950: '#0a192f',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script>
+        // Check for saved theme preference or use system preference
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+    <style>
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-blob {
+            animation: blob 7s infinite;
+        }
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+        .animation-delay-4000 {
+            animation-delay: 4s;
+        }
+        
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .dark .glass-panel {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-[#0B1120] text-gray-900 dark:text-gray-100 font-sans transition-colors duration-200 relative min-h-screen overflow-x-hidden">
+    
+    <!-- Animated Background Mesh -->
+    <div class="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
+        <div class="absolute top-0 -left-4 w-72 h-72 bg-purple-300 dark:bg-purple-900/40 rounded-full mix-blend-multiply dark:mix-blend-lighten filter blur-2xl opacity-70 animate-blob"></div>
+        <div class="absolute top-0 -right-4 w-72 h-72 bg-pink-300 dark:bg-pink-900/40 rounded-full mix-blend-multiply dark:mix-blend-lighten filter blur-2xl opacity-70 animate-blob animation-delay-2000"></div>
+        <div class="absolute -bottom-8 left-20 w-72 h-72 bg-blue-300 dark:bg-blue-900/40 rounded-full mix-blend-multiply dark:mix-blend-lighten filter blur-2xl opacity-70 animate-blob animation-delay-4000"></div>
+    </div>
+
+    <!-- Theme Toggle Button -->
+    <button id="themeToggleBtn" class="fixed top-4 right-4 z-[100] p-3 rounded-full bg-white dark:bg-navy-800 shadow-lg border border-gray-200 dark:border-navy-700 text-yellow-500 dark:text-yellow-400 hover:bg-gray-100 dark:hover:bg-navy-700 transition-colors cursor-pointer">
+        <svg id="themeIconSun" class="w-6 h-6 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+        <svg id="themeIconMoon" class="w-6 h-6 block dark:hidden text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+    </button>
+
+    <header class="glass-panel sticky top-0 z-40 shadow-sm transition-colors border-b-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <a href="index.html" class="flex items-center space-x-3 group">
+                <div class="bg-blue-600 p-2 rounded-lg text-white group-hover:bg-blue-700 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                </div>
+                <h1 class="text-xl font-bold text-gray-900 dark:text-white tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Back to Home</h1>
+            </a>
+        </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="glass-panel rounded-3xl p-8 md:p-12 shadow-xl border border-gray-200/50 dark:border-navy-700/50 text-center relative overflow-hidden">
+            <!-- Decorative blur -->
+            <div class="absolute -top-20 -right-20 w-64 h-64 bg-pink-500/20 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="relative z-10">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-pink-100 dark:bg-pink-900/30 text-pink-500 dark:text-pink-400 mb-6">
+                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>
+                </div>
+                
+                <h2 class="text-3xl md:text-4xl font-extrabold mb-4 tracking-tight">Support the Project</h2>
+                <p class="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-xl mx-auto">
+                    This tool is built to help aspirants save time and prepare efficiently. It is, and always will be, 100% free. If you found it helpful and want to support the server costs and development, you can buy me a coffee!
+                </p>
+
+                <!-- Disclaimer -->
+                <div class="bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-400 p-4 mb-10 text-left rounded-r-lg max-w-xl mx-auto">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-yellow-500 dark:text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-bold text-yellow-800 dark:text-yellow-300">Important Disclaimer for Students</h3>
+                            <div class="mt-2 text-sm text-yellow-700 dark:text-yellow-400/90 font-medium">
+                                <p>If you are a student, please don't donate more than Rs 50. Student lives are tough and I want you guys to utilize your money for something better!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- QR Code Image -->
+                <div class="flex flex-col items-center justify-center">
+                    <div class="bg-white dark:bg-gray-100 rounded-3xl shadow-2xl overflow-hidden p-2 mb-6 transform hover:scale-105 transition-transform duration-300">
+                        <img id="qrImage" src="upi_qr.jpg" alt="UPI QR Code" class="w-64 h-auto object-contain rounded-2xl border border-gray-100" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'w-64 h-64 flex flex-col items-center justify-center text-gray-500 p-4 text-center\\'><svg class=\\'w-12 h-12 mb-3 opacity-50 text-red-400\\' fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'2\\' d=\\'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z\\'></path></svg><span class=\\'text-sm font-bold text-gray-700 dark:text-gray-300\\'>Image not found!</span><span class=\\'text-xs mt-2 text-gray-500\\'>You must download the QR code image and save it into the <b>pdf2test</b> folder as <code class=\\'bg-gray-200 dark:bg-gray-700 px-1 rounded\\'>upi_qr.jpg</code></span></div>';">
+                    </div>
+                    
+                    <!-- UPI ID Box -->
+                    <div class="bg-white dark:bg-navy-800/80 border border-gray-200 dark:border-navy-600 rounded-xl p-4 flex items-center justify-between w-full max-w-sm shadow-sm backdrop-blur-sm group mb-4 transition-colors">
+                        <div class="flex flex-col text-left">
+                            <span class="text-[10px] uppercase font-bold text-gray-400 dark:text-gray-500 tracking-wider mb-1">Direct UPI ID</span>
+                            <span id="upiIdText" class="text-sm font-bold text-gray-800 dark:text-gray-200 font-mono">Undatedarc@axl</span>
+                        </div>
+                        <button onclick="navigator.clipboard.writeText('Undatedarc@axl').then(() => { const b = this; b.innerHTML = '<svg class=\\'w-5 h-5\\' fill=\\'currentColor\\' viewBox=\\'0 0 20 20\\'><path fill-rule=\\'evenodd\\' d=\\'M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z\\' clip-rule=\\'evenodd\\'></path></svg>'; setTimeout(() => b.innerHTML = '<svg class=\\'w-5 h-5\\' fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'2\\' d=\\'M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z\\'></path></svg>', 2000); })" class="p-2 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 rounded-lg transition-colors cursor-pointer" title="Copy UPI ID">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        </button>
+                    </div>
+
+                    <p class="text-sm text-gray-500 dark:text-gray-400 font-medium">Scan QR or copy UPI ID to pay with any UPI App</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="w-full py-8 mt-auto border-t border-gray-200 dark:border-navy-800 text-center relative z-10">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+            <p>&copy; 2026 PDF to PRACTICE. 100% Client-Side.</p>
+            <div class="flex space-x-6 mt-4 md:mt-0 font-medium">
+                <a href="terms.html" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Terms & Conditions</a>
+                <a href="privacy.html" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Privacy Policy</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Dark mode toggle functionality
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+        const themeIconSun = document.getElementById('themeIconSun');
+        const themeIconMoon = document.getElementById('themeIconMoon');
+
+        function updateThemeIcons() {
+            if (document.documentElement.classList.contains('dark')) {
+                themeIconSun.classList.remove('hidden');
+                themeIconSun.classList.add('block');
+                themeIconMoon.classList.remove('block');
+                themeIconMoon.classList.add('hidden');
+            } else {
+                themeIconSun.classList.remove('block');
+                themeIconSun.classList.add('hidden');
+                themeIconMoon.classList.remove('hidden');
+                themeIconMoon.classList.add('block');
+            }
+        }
+        
+        updateThemeIcons();
+
+        themeToggleBtn.addEventListener('click', () => {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+            updateThemeIcons();
+        });
+    </script>
+</body>
+</html>
