@@ -3,3 +3,5 @@ node_modules/
 patch.js
 resize.ps1
 jsdom_error.log
+
+.vercel

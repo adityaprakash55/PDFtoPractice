@@ -7,15 +7,18 @@ const ntaThemeToggleBtn = document.getElementById('ntaThemeToggleBtn');
 function toggleTheme() {
     document.documentElement.classList.toggle('dark');
     const isDark = document.documentElement.classList.contains('dark');
-    if (isDark) {
-        localStorage.setItem('theme', 'dark');
-    } else {
-        localStorage.setItem('theme', 'light');
-    }
+    try {
+        if (isDark) {
+            localStorage.setItem('theme', 'dark');
+        } else {
+            localStorage.setItem('theme', 'light');
+        }
+    } catch(e) {}
 }
 
 if (themeToggleBtn) themeToggleBtn.addEventListener('click', toggleTheme);
 if (ntaThemeToggleBtn) ntaThemeToggleBtn.addEventListener('click', toggleTheme);
+
 
 // =============================================================
 // PDF.js Worker Setup
@@ -942,7 +945,10 @@ async function loadPDF(file) {
         totalPagesText.textContent = `Total pages in document: ${total}`;
 
         uploadContainer.classList.add('hidden');
-        document.getElementById('historyContainer').classList.add('hidden');
+        document.getElementById('historyContainer')?.classList.add('hidden');
+        document.getElementById('bookmarksContainer')?.classList.add('hidden');
+        document.getElementById('notedQsContainer')?.classList.add('hidden');
+        
         configContainer.classList.remove('hidden');
         practiceSetupContainer.classList.add('hidden');
         practiceInterfaceContainer.classList.add('hidden');
