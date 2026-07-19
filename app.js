@@ -1973,11 +1973,11 @@ function renderReviewCards(filter = 'all') {
         count++;
         
         const card = document.createElement('div');
-        card.className = 'bg-[#1C212E] p-6 rounded-2xl border border-gray-800 flex flex-col gap-4 shadow-lg';
+        card.className = 'bg-white dark:bg-[#1C212E] p-6 rounded-2xl border border-gray-200 dark:border-gray-800 flex flex-col gap-4 shadow-lg';
         
         // Header
         const header = document.createElement('div');
-        header.className = 'flex justify-between items-center border-b border-gray-800 pb-4';
+        header.className = 'flex justify-between items-center border-b border-gray-200 dark:border-gray-800 pb-4';
         
         const title = document.createElement('h4');
         title.className = 'text-lg font-bold text-white';
@@ -2217,7 +2217,7 @@ async function renderHistory() {
         
         sessionsToShow.forEach(session => {
             const card = document.createElement('div');
-            card.className = 'bg-[#1C212E] p-5 rounded-2xl flex flex-col md:flex-row items-center justify-between border border-gray-800 shadow-xl relative z-10 hover:z-20';
+            card.className = 'bg-white dark:bg-[#1C212E] p-5 rounded-2xl flex flex-col md:flex-row items-center justify-between border border-gray-200 dark:border-gray-800 shadow-xl relative z-10 hover:z-20';
             
             // Format time spent beautifully (01:07:59 format)
             const hrs = Math.floor(session.totalSeconds / 3600);
@@ -2274,7 +2274,7 @@ async function renderHistory() {
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path></svg>
                         </div>
                         <div class="absolute right-0 top-full pt-2 w-52 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
-                            <div class="bg-[#1C212E] rounded-xl shadow-2xl border border-gray-700 flex flex-col text-sm font-semibold overflow-hidden">
+                            <div class="bg-white dark:bg-[#1C212E] rounded-xl shadow-2xl border border-gray-700 flex flex-col text-sm font-semibold overflow-hidden">
                                 <button class="history-reattempt-btn text-left px-4 py-3 text-red-400 hover:bg-gray-800 transition-colors" data-id="${session.id}" data-type="wrong">Reattempt Wrong</button>
                                 <button class="history-reattempt-btn text-left px-4 py-3 text-gray-300 hover:bg-gray-800 transition-colors" data-id="${session.id}" data-type="unanswered">Reattempt Unanswered</button>
                                 <button class="history-reattempt-btn text-left px-4 py-3 text-[#FBBF24] hover:bg-gray-800 transition-colors" data-id="${session.id}" data-type="marked">Reattempt Marked</button>
@@ -2400,7 +2400,7 @@ function renderBookmarkDetailsQuestions() {
     
     activeBookmarkGroup.questions.forEach(q => {
         const div = document.createElement('div');
-        div.className = 'bg-[#1C212E] border border-gray-800 rounded-xl p-4 flex flex-col sm:flex-row gap-4 items-center relative group';
+        div.className = 'bg-white dark:bg-[#1C212E] border border-gray-200 dark:border-gray-800 rounded-xl p-4 flex flex-col sm:flex-row gap-4 items-center relative group';
         div.innerHTML = `
             <div class="w-full sm:w-32 shrink-0 bg-white rounded-lg p-1 overflow-hidden h-20 flex items-center justify-center">
                 <img src="${q.dataUrl}" class="max-w-full max-h-full object-contain mix-blend-multiply" />
@@ -2521,19 +2521,19 @@ async function renderNotedQuestions() {
         
         if (currentNotedQuestions.length === 0) {
             notedQsList.innerHTML = `
-                <div class="col-span-1 sm:col-span-2 lg:col-span-3 bg-[#1C212E] p-8 rounded-2xl border border-gray-800 border-dashed flex flex-col items-center justify-center text-center opacity-70">
+                <div class="col-span-1 sm:col-span-2 lg:col-span-3 bg-white dark:bg-[#1C212E] p-8 rounded-2xl border border-gray-200 dark:border-gray-800 border-dashed flex flex-col items-center justify-center text-center opacity-70">
                     <div class="bg-yellow-500/10 p-4 rounded-full text-yellow-500 mb-4">
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                     </div>
-                    <h3 class="text-lg font-bold text-gray-400 mb-1">No Notes Yet</h3>
-                    <p class="text-sm text-gray-500 max-w-sm">Write notes using the scratchpad during practice. They will be saved here!</p>
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-gray-400 mb-1">No Notes Yet</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-500 max-w-sm">Write notes using the scratchpad during practice. They will be saved here!</p>
                 </div>
             `;
             return;
         }
         
         const card = document.createElement('div');
-        card.className = 'bg-[#1C212E] p-5 rounded-2xl flex flex-col justify-between border border-gray-800 shadow-xl relative z-10 hover:z-20 transition-all hover:border-yellow-500/50 hover:shadow-[0_0_15px_rgba(234,179,8,0.2)] cursor-pointer group';
+        card.className = 'bg-white dark:bg-[#1C212E] p-5 rounded-2xl flex flex-col justify-between border border-gray-200 dark:border-gray-800 shadow-xl relative z-10 hover:z-20 transition-all hover:border-yellow-500/50 hover:shadow-[0_0_15px_rgba(234,179,8,0.2)] cursor-pointer group';
         card.innerHTML = `
             <div class="flex items-start justify-between mb-4">
                 <div class="flex items-center gap-3">
@@ -2586,12 +2586,12 @@ function renderNotedQsModalList() {
     
     currentNotedQuestions.forEach(q => {
         const div = document.createElement('div');
-        div.className = 'bg-[#1C212E] border border-gray-800 rounded-xl p-4 flex flex-col sm:flex-row gap-4 items-stretch relative group';
+        div.className = 'bg-white dark:bg-[#1C212E] border border-gray-200 dark:border-gray-800 rounded-xl p-4 flex flex-col sm:flex-row gap-4 items-stretch relative group';
         div.innerHTML = `
             <div class="w-full sm:w-1/3 shrink-0 bg-white rounded-lg p-2 overflow-hidden flex items-center justify-center min-h-[100px]">
                 <img src="${q.dataUrl}" class="max-w-full max-h-32 object-contain mix-blend-multiply" />
             </div>
-            <div class="flex-1 flex flex-col border-l border-gray-800 pl-4">
+            <div class="flex-1 flex flex-col border-l border-gray-200 dark:border-gray-800 pl-4">
                 <div class="flex justify-between items-start mb-2">
                     <div>
                         <h4 class="font-bold text-white text-sm">${q.label}</h4>
@@ -2698,12 +2698,12 @@ async function renderBookmarks() {
 
         if (groups.length === 0) {
             bookmarksList.innerHTML = `
-                <div class="col-span-1 sm:col-span-2 lg:col-span-3 bg-[#1C212E] p-8 rounded-2xl border border-gray-800 border-dashed flex flex-col items-center justify-center text-center opacity-70">
-                    <div class="bg-white/5 p-4 rounded-full text-gray-500 mb-4">
+                <div class="col-span-1 sm:col-span-2 lg:col-span-3 bg-white dark:bg-[#1C212E] p-8 rounded-2xl border border-gray-200 dark:border-gray-800 border-dashed flex flex-col items-center justify-center text-center opacity-70">
+                    <div class="bg-gray-100 dark:bg-white/5 p-4 rounded-full text-gray-500 mb-4">
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
                     </div>
-                    <h3 class="text-lg font-bold text-gray-400 mb-1">No Bookmarks Yet</h3>
-                    <p class="text-sm text-gray-500 max-w-sm">When you bookmark questions during a practice session, your custom collections will appear here.</p>
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-gray-400 mb-1">No Bookmarks Yet</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-500 max-w-sm">When you bookmark questions during a practice session, your custom collections will appear here.</p>
                 </div>
             `;
             return;
@@ -2711,7 +2711,7 @@ async function renderBookmarks() {
         
         groups.forEach(g => {
             const card = document.createElement('div');
-            card.className = 'bg-[#1C212E] p-5 rounded-2xl flex flex-col justify-between border border-gray-800 shadow-xl relative z-10 hover:z-20 transition-all hover:border-blue-500/50 hover:shadow-[0_0_15px_rgba(59,130,246,0.2)] cursor-pointer group';
+            card.className = 'bg-white dark:bg-[#1C212E] p-5 rounded-2xl flex flex-col justify-between border border-gray-200 dark:border-gray-800 shadow-xl relative z-10 hover:z-20 transition-all hover:border-blue-500/50 hover:shadow-[0_0_15px_rgba(59,130,246,0.2)] cursor-pointer group';
             
             card.innerHTML = `
                 <div class="flex items-start justify-between mb-4">
