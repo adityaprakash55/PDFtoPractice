@@ -3038,13 +3038,21 @@ function updateNtaPaletteColors() {
                 btn.classList.add('nta-not-answered');
                 break;
             case 'answered':
-                btn.classList.add('nta-answered');
+                if (stat.evaluation === 'incorrect') {
+                    btn.classList.add('nta-wrong');
+                } else {
+                    btn.classList.add('nta-answered');
+                }
                 break;
             case 'marked':
                 btn.classList.add('nta-marked');
                 break;
             case 'answered_marked':
-                btn.classList.add('nta-answered-marked', 'relative');
+                if (stat.evaluation === 'incorrect') {
+                    btn.classList.add('nta-wrong', 'relative');
+                } else {
+                    btn.classList.add('nta-answered-marked', 'relative');
+                }
                 btn.innerHTML += `<span class="w-3 h-3 bg-green-400 rounded-full absolute bottom-0 right-0 border border-white"></span>`;
                 break;
         }
