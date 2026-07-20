@@ -3,25 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Privacy Policy - PDF to PRACTICE</title>
+    <title><%= title %></title>
+    <link rel="canonical" href="<%= canonical %>">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
+    <!-- Local CSS -->
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="preload" href="logo.png" as="image">
+
+    <!-- Safari & Apple Specific Meta -->
+    <link rel="apple-touch-icon" href="/logo.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#0a192f">
+
+    <!-- Universal Social/Search Cards (Brave, Twitter, etc.) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<%= title %>">
+    <meta name="twitter:description" content="<%= description %>">
+    <meta name="twitter:image" content="https://pdftopractice.in/logo.png">
+    <meta property="og:image" content="https://pdftopractice.in/logo.png">
+
 </head>
 <body class="bg-slate-50 dark:bg-[#0B1120] text-gray-900 dark:text-gray-100 font-sans min-h-screen">
     <header class="sticky top-0 z-40 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md shadow-sm">

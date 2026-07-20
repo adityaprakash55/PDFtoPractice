@@ -2269,11 +2269,11 @@ async function renderHistory() {
                         View Analysis
                     </button>
                     
-                    <div class="relative group cursor-pointer">
+                    <div class="relative group cursor-pointer" tabindex="0">
                         <div class="text-gray-400 hover:text-white p-2 rounded-full transition-colors flex items-center justify-center">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path></svg>
                         </div>
-                        <div class="absolute right-0 top-full pt-2 w-52 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                        <div class="absolute right-0 top-full pt-2 w-52 opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all z-50">
                             <div class="bg-white dark:bg-[#1C212E] rounded-xl shadow-2xl border border-gray-700 flex flex-col text-sm font-semibold overflow-hidden">
                                 <button class="history-reattempt-btn text-left px-4 py-3 text-red-400 hover:bg-gray-800 transition-colors" data-id="${session.id}" data-type="wrong">Reattempt Wrong</button>
                                 <button class="history-reattempt-btn text-left px-4 py-3 text-gray-300 hover:bg-gray-800 transition-colors" data-id="${session.id}" data-type="unanswered">Reattempt Unanswered</button>
