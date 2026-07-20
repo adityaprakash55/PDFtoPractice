@@ -44,6 +44,11 @@ app.get('/terms', (req, res) => {
     });
 });
 
+// Redirects for legacy/incorrect paths
+app.get(['/donate.html', '/Donate'], (req, res) => res.redirect(301, '/donate'));
+app.get('/privacy.html', (req, res) => res.redirect(301, '/privacy'));
+app.get('/terms.html', (req, res) => res.redirect(301, '/terms'));
+
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
