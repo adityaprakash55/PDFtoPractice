@@ -2409,7 +2409,7 @@ function renderBookmarkDetailsQuestions() {
                 <h4 class="font-bold text-white text-sm">${q.label || 'Question'}</h4>
                 <p class="text-xs text-gray-400 mt-1">Added ${new Date(activeBookmarkGroup.timestamp).toLocaleDateString()}</p>
             </div>
-            <button class="bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white p-2.5 rounded-lg transition-colors border border-red-500/20 hover:border-red-500 shrink-0" title="Remove Question">
+            <button class="bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white p-2.5 rounded-lg transition-colors border border-red-500/20 hover:border-red-500 shrink-0" title="Remove Question" aria-label="Remove Question">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
             </button>
         `;
@@ -2597,7 +2597,7 @@ function renderNotedQsModalList() {
                         <h4 class="font-bold text-white text-sm">${q.label}</h4>
                         <p class="text-xs text-gray-400">Added ${new Date(q.timestamp).toLocaleDateString()}</p>
                     </div>
-                    <button class="bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white p-2 rounded-lg transition-colors border border-red-500/20 hover:border-red-500 shrink-0" title="Delete Note">
+                    <button class="bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white p-2 rounded-lg transition-colors border border-red-500/20 hover:border-red-500 shrink-0" title="Delete Note" aria-label="Delete Note">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                     </button>
                 </div>
