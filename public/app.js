@@ -517,6 +517,44 @@ function autoContentBounds(data, W, coarseTop, coarseBottom, xMin, xMax) {
 }
 
 // =============================================================
+// QUESTION TYPE CLASSIFICATION HEURISTICS
+// =============================================================
+function classifyQuestionType(qText) {
+    if (!qText || !qText.trim()) return 'Numerical/Subjective';
+
+    // 1. Match the Column
+    if (
+        /match\s+the\s+(column|list|following)/i.test(qText) ||
+        (/column\s*[-_]?\s*i/i.test(qText) && /column\s*[-_]?\s*ii/i.test(qText)) ||
+        (/list\s*[-_]?\s*i/i.test(qText) && /list\s*[-_]?\s*ii/i.test(qText))
+    ) {
+        return 'Match the Column';
+    }
+
+    // 2. MCQ Type
+    const mcqPattern1 = /\([a-d]\)/gi;
+    const mcqPattern2 = /\([1-4]\)/g;
+    const mcqPattern3 = /(?:^|\s)[a-d]\.\s/gi;
+    const mcqPattern4 = /(?:^|\s)[1-4]\.\s/g;
+    const mcqPattern5 = /\([A-D]\)/g;
+    const mcqPattern6 = /(?:^|\s)[A-D]\.\s/g;
+
+    const m1 = (qText.match(mcqPattern1) || []).length;
+    const m2 = (qText.match(mcqPattern2) || []).length;
+    const m3 = (qText.match(mcqPattern3) || []).length;
+    const m4 = (qText.match(mcqPattern4) || []).length;
+    const m5 = (qText.match(mcqPattern5) || []).length;
+    const m6 = (qText.match(mcqPattern6) || []).length;
+
+    if (m1 >= 2 || m2 >= 2 || m3 >= 2 || m4 >= 2 || m5 >= 2 || m6 >= 2) {
+        return 'MCQ';
+    }
+
+    // 3. Numerical & Subjective in the SAME group
+    return 'Numerical/Subjective';
+}
+
+// =============================================================
 // TEXT-LAYER BULLET DETECTION (Primary — Zero OCR Error)
 // =============================================================
 
@@ -560,6 +598,7 @@ async function detectBulletsFromTextLayer(page, viewport, xMin, xMax, coarseTop,
     // ── Group items into lines by viewport-space Y ──
     const lineMap = new Map(); // key = Math.round(canvasY) → {y, items[]}
     const THRESHOLD = 6; // px tolerance for same-line grouping
+    const allTextItems = [];
 
     textContent.items.forEach(item => {
         if (!item.str || !item.str.trim()) return;
@@ -568,6 +607,9 @@ async function detectBulletsFromTextLayer(page, viewport, xMin, xMax, coarseTop,
         const tx = pdfjsLib.Util.transform(viewport.transform, item.transform);
         const canvasX = tx[4];
         const canvasY = tx[5] - (item.height * scale);  // top-left Y
+        const itemWidth = (item.width || 0) * scale;
+
+        allTextItems.push({ str: item.str, x: canvasX, y: canvasY, w: itemWidth });
 
         if (canvasX < xMin || canvasX > xMax) return;   // wrong column
         if (canvasY < coarseTop - 30 || canvasY > coarseBottom + 30) return;
@@ -581,7 +623,6 @@ async function detectBulletsFromTextLayer(page, viewport, xMin, xMax, coarseTop,
             if (Math.abs(key - canvasY) < THRESHOLD) { found = key; break; }
         }
         const bucket = found !== null ? lineMap.get(found) : null;
-        const itemWidth = (item.width || 0) * scale;
         if (bucket) {
             bucket.items.push({ str: item.str, x: canvasX, y: canvasY, w: itemWidth });
         } else {
@@ -710,14 +751,16 @@ async function detectBulletsFromTextLayer(page, viewport, xMin, xMax, coarseTop,
         return {
             bullets: filteredBullets,
             newCoarseBottom: coarseBottom,
-            validColumns: validColumns
+            validColumns: validColumns,
+            textItems: allTextItems
         };
     }
 
     return {
         bullets: Object.values(bullets),
         newCoarseBottom: coarseBottom,
-        validColumns: []
+        validColumns: [],
+        textItems: allTextItems
     };
 }
 
@@ -1464,11 +1507,23 @@ async function processPage(pageNum, startPage, endPage, worker, doc = pdfDoc, co
             
             if (currentExercise) labelStr = `${currentExercise} - ${labelStr}`;
 
+            const qItems = (result.textItems || []).filter(item => 
+                item.x >= cropX - 5 && item.x <= cropX + cropW + 5 &&
+                item.y >= rowTop - 5 && item.y <= rowBottom + 5
+            );
+            qItems.sort((a, b) => {
+                if (Math.abs(a.y - b.y) > 6) return a.y - b.y;
+                return a.x - b.x;
+            });
+            const qText = qItems.map(item => item.str).join(' ');
+            const qType = classifyQuestionType(qText);
+
             extractedImages.push({
                 id:      `q_${pageNum}_${Math.random().toString(36).substr(2,6)}`,
                 dataUrl: cropped.toDataURL('image/png'),
                 page:    pageNum,
-                label:   labelStr
+                label:   `${labelStr} [${qType}]`,
+                type:    qType
             });
         }
         
@@ -1500,11 +1555,11 @@ function getExerciseFromLabel(label) {
 }
 
 function getNumbersFromLabel(label) {
-    let qPart = label;
-    if (label.includes(' - ')) {
-        qPart = label.split(' - ')[1];
+    let qPart = label ? label.replace(/\[.*?\]/g, '') : '';
+    if (label && label.includes(' - ')) {
+        qPart = qPart.split(' - ')[1] || qPart;
     }
-    const clean = qPart.replace(/[a-zA-Z\.\-]/g, ' ').trim();
+    const clean = qPart.replace(/[^0-9,]/g, ' ').trim();
     return clean.split(/\s*,\s*|\s+/).filter(x => x);
 }
 
@@ -1688,7 +1743,8 @@ function renderPracticeQuestion(index) {
     const realIndex = practiceState.activeIndices[index];
     const q = extractedImages[realIndex];
     currentQNum.textContent = index + 1;
-    practiceQLabel.textContent = `Question ${q.label}`;
+    const typeBadge = q.type ? `<span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800 dark:bg-blue-900/70 dark:text-blue-200 border border-blue-200 dark:border-blue-700 shadow-sm">${q.type}</span>` : '';
+    practiceQLabel.innerHTML = `Question ${q.label} ${typeBadge}`;
     
     practiceQImage.src = q.dataUrl;
     practiceQImage.onload = () => {
@@ -3101,7 +3157,8 @@ function renderNtaQuestion(index) {
         }
     });
     
-    ntaQuestionLabel.textContent = `Question ${stat.activeSectionNumber}:`;
+    const typeBadge = q.type ? `<span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-amber-100 text-amber-900 dark:bg-amber-900/80 dark:text-amber-100 border border-amber-300 dark:border-amber-700">${q.type}</span>` : '';
+    ntaQuestionLabel.innerHTML = `Question ${stat.activeSectionNumber}: <span class="text-xs font-normal opacity-80">(${q.label})</span> ${typeBadge}`;
     ntaQImage.src = q.dataUrl;
     ntaQImage.onload = () => {
         const container = document.getElementById('ntaContentContainer');
