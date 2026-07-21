@@ -1409,39 +1409,6 @@ async function processPage(pageNum, startPage, endPage, worker, doc = pdfDoc, co
         const colBullets = result.bullets;
         let newCoarseBottom = result.newCoarseBottom; // usually same as coarseBottom unless answer key truncated it
         
-        let orphanTop = coarseTop;
-        let orphanBottom = newCoarseBottom; // default to entire column
-
-        if (colBullets.length > 0) {
-            colBullets.sort((a, b) => a.y - b.y);
-            orphanBottom = colBullets[0].y - 15;
-        }
-
-        // Prevent headers from being stitched into previous questions
-        // If there's a header in the orphan region, the orphan content should start BELOW it.
-        let lowestHeaderY = null;
-        for (const hdr of pageHeaders) {
-            if (hdr.x >= cropX && hdr.x < cropX + cropW) {
-                if (hdr.y >= coarseTop && hdr.y < orphanBottom) {
-                    lowestHeaderY = hdr.y + 30; // Estimate header height + some padding
-                }
-            }
-        }
-        
-        if (lowestHeaderY !== null) {
-            orphanTop = lowestHeaderY;
-        }
-
-        const orphanH = orphanBottom - orphanTop;
-        if (orphanH > 10 && extractedImages.length > 0 && !isProcessingAnswers) {
-            // There is significant orphan content, and a previous question exists!
-            const orphanCanvas = cropCanvas(canvas, cropX, orphanTop, cropW, orphanH);
-            if (orphanCanvas) {
-                const prev = extractedImages[extractedImages.length - 1];
-                prev.dataUrl = await stitchImages(prev.dataUrl, orphanCanvas);
-            }
-        }
-
         if (colBullets.length === 0) return;
         
         // Group bullets that are very close in Y (e.g. side-by-side or slight misalignment)
@@ -1465,16 +1432,95 @@ async function processPage(pageNum, startPage, endPage, worker, doc = pdfDoc, co
         
         yBands.sort((a, b) => a.y - b.y);
 
+        // Detect Comprehension headers to adjust splits
+        const colLinesMap = new Map();
+        for (const item of (result.textItems || [])) {
+            if (item.x >= cropX - 20 && item.x <= cropX + cropW + 20) {
+                let found = null;
+                for (const [y, line] of colLinesMap) {
+                    if (Math.abs(y - item.y) < 6) { found = y; break; }
+                }
+                if (found) {
+                    colLinesMap.get(found).push(item);
+                } else {
+                    colLinesMap.set(item.y, [item]);
+                }
+            }
+        }
+        
+        const compYStarts = [];
+        for (const [y, items] of colLinesMap) {
+            items.sort((a, b) => a.x - b.x);
+            const text = items.map(it => it.str).join(' ').trim();
+            if (/^(?:comprehension|passage|paragraph|read the following)/i.test(text) || 
+                /(?:comprehension|passage|paragraph)\s*(?:type|for|[-:\d])/i.test(text) ||
+                text.toLowerCase().includes("comprehension type") ||
+                text.toLowerCase().includes("paragraph for")) {
+                compYStarts.push(y);
+            }
+        }
+        compYStarts.sort((a, b) => a - b);
+
+        // Calculate split points for each band
+        const splitPoints = [];
+        for (let i = 0; i < yBands.length; i++) {
+            let defaultSplit = yBands[i].y - 15;
+            let prevY = (i === 0) ? coarseTop : yBands[i-1].y + 15;
+            
+            let bestCompY = null;
+            for (const cy of compYStarts) {
+                if (cy > prevY && cy < yBands[i].y) {
+                    // find the FIRST comprehension header in this gap
+                    if (bestCompY === null || cy < bestCompY) {
+                        bestCompY = cy;
+                    }
+                }
+            }
+            
+            if (bestCompY !== null) {
+                splitPoints.push(Math.max(coarseTop, bestCompY - 15));
+            } else {
+                splitPoints.push(Math.max(coarseTop, defaultSplit));
+            }
+        }
+        splitPoints.push(newCoarseBottom);
+
+        let orphanTop = coarseTop;
+        let orphanBottom = splitPoints[0];
+
+        // Prevent headers from being stitched into previous questions
+        let lowestHeaderY = null;
+        for (const hdr of pageHeaders) {
+            if (hdr.x >= cropX && hdr.x < cropX + cropW) {
+                if (hdr.y >= coarseTop && hdr.y < orphanBottom) {
+                    lowestHeaderY = hdr.y + 30; // Estimate header height + some padding
+                }
+            }
+        }
+        
+        if (lowestHeaderY !== null) {
+            orphanTop = lowestHeaderY;
+        }
+
+        const orphanH = orphanBottom - orphanTop;
+        if (orphanH > 10 && extractedImages.length > 0 && !isProcessingAnswers) {
+            // There is significant orphan content, and a previous question exists!
+            const orphanCanvas = cropCanvas(canvas, cropX, orphanTop, cropW, orphanH);
+            if (orphanCanvas) {
+                const prev = extractedImages[extractedImages.length - 1];
+                prev.dataUrl = await stitchImages(prev.dataUrl, orphanCanvas);
+            }
+        }
+
         // Crop horizontally for each band
         for (let i = 0; i < yBands.length; i++) {
             const band = yBands[i];
             
-            let rowTop = Math.max(coarseTop, band.y - 15);
+            let rowTop = splitPoints[i];
             let rowBottom;
             if (i < yBands.length - 1) {
-                rowBottom = Math.min(newCoarseBottom, yBands[i+1].y - 2);
+                rowBottom = Math.min(newCoarseBottom, splitPoints[i+1] + 13);
             } else {
-                // For the last question on the page/column, crop all the way down to the bottom margin (or Answer Key)
                 rowBottom = newCoarseBottom;
             }
             
