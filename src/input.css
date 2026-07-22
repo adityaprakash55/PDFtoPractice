@@ -18,7 +18,30 @@
 }
 
 
+@source "../views";
 @source "../public";
+@source "../views/index.ejs";
+@source "../public/app.js";
 
-@source "../public/*.js";
-@source "../views/*.ejs";
+/* Explicit Dashboard Sidebar Styles */
+#landingDashboardLayout {
+    display: flex !important;
+    min-height: calc(100vh - 64px);
+    width: 100%;
+    background-color: #0a0c10;
+}
+
+#landingSidebar {
+    display: flex !important;
+    width: 16rem !important;
+    background-color: #0d1117 !important;
+    border-right: 1px solid #21262d !important;
+    flex-direction: column !important;
+    flex-shrink: 0 !important;
+}
+
+@media (max-width: 768px) {
+    #landingSidebar {
+        display: none !important;
+    }
+}
