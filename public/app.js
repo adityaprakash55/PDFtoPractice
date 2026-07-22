@@ -2312,7 +2312,7 @@ async function renderHistory() {
                         ${innerText}
                     </div>
                 </div>
-                <div class="text-[11px] text-gray-400 mt-1">${label}</div>
+                <div class="text-[11px] text-gray-500 dark:text-gray-400 mt-1 font-medium">${label}</div>
             </div>
             `;
         }
@@ -2342,29 +2342,32 @@ async function renderHistory() {
             const score = (session.correctCount * scorePerQ) - penalty;
             const accuracy = attempted > 0 ? Math.round((session.correctCount / attempted) * 100) : 0;
 
+            const isDark = document.documentElement.classList.contains('dark');
+            const gaugeBg = isDark ? '#334155' : '#cbd5e1';
+
             card.innerHTML = `
                 <!-- Left: Score -->
                 <div class="flex items-center justify-center mr-0 md:mr-8 mb-6 md:mb-0">
-                    ${createGauge(score, maxScore, '#F59E0B', '#334155', 120, 10, `<div class="mb-1"><span class="text-2xl font-bold text-[#F59E0B] leading-none">${score}</span><span class="text-xs text-gray-500">/${maxScore}</span></div>`, 'Score')}
+                    ${createGauge(score, maxScore, '#F59E0B', gaugeBg, 120, 10, `<div class="mb-1"><span class="text-2xl font-bold text-[#F59E0B] leading-none">${score}</span><span class="text-xs text-gray-500">/${maxScore}</span></div>`, 'Score')}
                 </div>
                 
                 <!-- Middle: Info & Stats -->
                 <div class="flex-1 flex flex-col items-center md:items-start text-center md:text-left">
                     <div class="flex items-center gap-3 mb-1">
-                        <h4 class="text-lg font-bold text-white">Session #${session.id}</h4>
-                        <span class="px-2 py-0.5 rounded-full bg-blue-900/50 text-blue-400 text-[10px] font-bold flex items-center gap-1 border border-blue-800/50">
+                        <h4 class="text-lg font-bold text-gray-900 dark:text-white">Session #${session.id}</h4>
+                        <span class="px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-400 text-[10px] font-bold flex items-center gap-1 border border-blue-200 dark:border-blue-800/50">
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg> 
                             Subject Test
                         </span>
                     </div>
-                    <p class="text-[11px] text-gray-400 mb-6">${session.date}</p>
+                    <p class="text-[11px] text-gray-500 dark:text-gray-400 mb-6">${session.date}</p>
                     
                     <div class="flex flex-wrap justify-center md:justify-start gap-5">
-                        ${createGauge(session.correctCount, total, '#10B981', '#334155', 70, 6, `<span class="text-sm font-bold text-[#10B981]">${session.correctCount}</span>`, 'Correct')}
-                        ${createGauge(session.incorrectCount, total, '#EF4444', '#334155', 70, 6, `<span class="text-sm font-bold text-[#EF4444]">${session.incorrectCount}</span>`, 'Wrong')}
-                        ${createGauge(attempted, total, '#3B82F6', '#334155', 70, 6, `<span class="text-sm font-bold text-[#3B82F6]">${attempted}/${total}</span>`, 'Attempted')}
-                        ${createGauge(accuracy, 100, '#10B981', '#334155', 70, 6, `<span class="text-sm font-bold text-[#10B981]">${accuracy}%</span>`, 'Accuracy')}
-                        ${createGauge(session.totalSeconds, 10800, '#F59E0B', '#334155', 70, 6, `<span class="text-[11px] font-bold text-[#F59E0B]">${timeStr}</span>`, 'Time')}
+                        ${createGauge(session.correctCount, total, '#10B981', gaugeBg, 70, 6, `<span class="text-sm font-bold text-[#10B981]">${session.correctCount}</span>`, 'Correct')}
+                        ${createGauge(session.incorrectCount, total, '#EF4444', gaugeBg, 70, 6, `<span class="text-sm font-bold text-[#EF4444]">${session.incorrectCount}</span>`, 'Wrong')}
+                        ${createGauge(attempted, total, '#3B82F6', gaugeBg, 70, 6, `<span class="text-sm font-bold text-[#3B82F6]">${attempted}/${total}</span>`, 'Attempted')}
+                        ${createGauge(accuracy, 100, '#10B981', gaugeBg, 70, 6, `<span class="text-sm font-bold text-[#10B981]">${accuracy}%</span>`, 'Accuracy')}
+                        ${createGauge(session.totalSeconds, 10800, '#F59E0B', gaugeBg, 70, 6, `<span class="text-[11px] font-bold text-[#F59E0B]">${timeStr}</span>`, 'Time')}
                     </div>
                 </div>
                 
@@ -2379,17 +2382,17 @@ async function renderHistory() {
                     </button>
                     
                     <div class="relative group cursor-pointer" tabindex="0">
-                        <div class="text-gray-400 hover:text-white p-2 rounded-full transition-colors flex items-center justify-center">
+                        <div class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white p-2 rounded-full transition-colors flex items-center justify-center">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path></svg>
                         </div>
                         <div class="absolute right-0 top-full pt-2 w-52 opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all z-50">
-                            <div class="bg-white dark:bg-[#1C212E] rounded-xl shadow-2xl border border-gray-700 flex flex-col text-sm font-semibold overflow-hidden">
-                                <button class="history-reattempt-btn text-left px-4 py-3 text-red-400 hover:bg-gray-800 transition-colors" data-id="${session.id}" data-type="wrong">Reattempt Wrong</button>
-                                <button class="history-reattempt-btn text-left px-4 py-3 text-gray-300 hover:bg-gray-800 transition-colors" data-id="${session.id}" data-type="unanswered">Reattempt Unanswered</button>
-                                <button class="history-reattempt-btn text-left px-4 py-3 text-[#FBBF24] hover:bg-gray-800 transition-colors" data-id="${session.id}" data-type="marked">Reattempt Marked</button>
-                                <button class="history-reattempt-btn text-left px-4 py-3 text-blue-400 hover:bg-gray-800 transition-colors" data-id="${session.id}" data-type="all">Reattempt All Qs</button>
-                                <div class="border-t border-gray-700"></div>
-                                <button class="delete-session-btn text-left px-4 py-3 text-red-600 hover:bg-red-500/10 transition-colors" data-id="${session.id}">Delete Session</button>
+                            <div class="bg-white dark:bg-[#1C212E] rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col text-sm font-semibold overflow-hidden">
+                                <button class="history-reattempt-btn text-left px-4 py-3 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-gray-800 transition-colors" data-id="${session.id}" data-type="wrong">Reattempt Wrong</button>
+                                <button class="history-reattempt-btn text-left px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" data-id="${session.id}" data-type="unanswered">Reattempt Unanswered</button>
+                                <button class="history-reattempt-btn text-left px-4 py-3 text-amber-600 dark:text-[#FBBF24] hover:bg-amber-50 dark:hover:bg-gray-800 transition-colors" data-id="${session.id}" data-type="marked">Reattempt Marked</button>
+                                <button class="history-reattempt-btn text-left px-4 py-3 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors" data-id="${session.id}" data-type="all">Reattempt All Qs</button>
+                                <div class="border-t border-gray-200 dark:border-gray-700"></div>
+                                <button class="delete-session-btn text-left px-4 py-3 text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors" data-id="${session.id}">Delete Session</button>
                             </div>
                         </div>
                     </div>
