@@ -190,13 +190,13 @@
 }
 
 /* =========================================================== */
-/* Light mode body override for exam-portal feel                 */
+/* Light mode only overrides (dark class is on <html>/<root>)   */
 /* =========================================================== */
-body:not(.dark) {
+:root:not(.dark) body {
     background-color: #EEF2F7;
 }
-body:not(.dark) .glass-panel {
-    background: rgba(255, 255, 255, 0.92);
-    border-bottom: 1px solid rgba(0, 40, 85, 0.1);
-    box-shadow: 0 1px 8px rgba(0, 40, 85, 0.08);
+html:not(.dark) .glass-panel {
+    background: rgba(255, 255, 255, 0.92) !important;
+    border-bottom: 1px solid rgba(0, 40, 85, 0.1) !important;
+    box-shadow: 0 1px 8px rgba(0, 40, 85, 0.08) !important;
 }
