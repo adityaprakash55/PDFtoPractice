@@ -162,12 +162,60 @@
         </div>
     </main>
 
-    <footer class="w-full py-8 mt-auto border-t border-gray-200 dark:border-navy-800 text-center relative z-10">
-        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between text-sm text-gray-500 dark:text-gray-400">
-            <p>&copy; 2026 PDF to PRACTICE. 100% Client-Side.</p>
-            <div class="flex space-x-6 mt-4 md:mt-0 font-medium">
-                <a href="/terms" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Terms & Conditions</a>
-                <a href="/privacy" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Privacy Policy</a>
+    <!-- Premium Modern Footer -->
+    <footer class="w-full bg-[#090d16]/90 border-t border-gray-800/80 backdrop-blur-xl relative z-10 text-gray-400 mt-auto">
+        <div class="max-w-7xl mx-auto px-6 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10 pb-8 border-b border-gray-800/60 text-left">
+                <!-- Column 1: Brand & Tagline -->
+                <div class="md:col-span-2 space-y-4">
+                    <div class="flex items-center space-x-3">
+                        <img src="logo.png" alt="Logo" class="w-9 h-9 rounded-lg">
+                        <span class="text-xl font-extrabold text-white tracking-tight">PDF to PRACTICE</span>
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20">v2.0 CBT</span>
+                    </div>
+                    <p class="text-sm text-gray-400 max-w-sm leading-relaxed">
+                        Transform your coaching DPPs, PYQs, and test PDFs into interactive JEE/NEET CBT Mock Simulators instantly.
+                    </p>
+                    <div class="flex items-center gap-2 text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-full w-max">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                        <span>100% Client-Side & Private</span>
+                    </div>
+                </div>
+
+                <!-- Column 2: Navigation -->
+                <div class="space-y-3">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-gray-300">Quick Links</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="/" class="hover:text-blue-400 transition-colors flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg> Home Dashboard</a></li>
+                        <li><a href="/donate" class="hover:text-blue-400 transition-colors flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg> Support & Donate</a></li>
+                        <li><a href="https://youtu.be/AYSNQ1UcL7I" target="_blank" rel="noopener" class="hover:text-blue-400 transition-colors flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-rose-500" fill="currentColor" viewBox="0 0 24 24"><path d="M21.582,6.186c-0.23-0.86-0.908-1.538-1.768-1.768C18.254,4,12,4,12,4S5.746,4,4.186,4.418c-0.86,0.23-1.538,0.908-1.768,1.768C2,7.746,2,12,2,12s0,4.254,0.418,5.814c0.23,0.86,0.908,1.538,1.768,1.768C5.746,20,12,20,12,20s6.254,0,7.814-0.418c0.86-0.23,1.538-0.908,1.768-1.768C22,16.254,22,12,22,12S22,7.746,21.582,6.186z M10,15.464V8.536L16,12L10,15.464z"></path></svg> Video Tutorial</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 3: Legal & Support -->
+                <div class="space-y-3">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-gray-300">Legal & Support</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="/terms" class="hover:text-blue-400 transition-colors">Terms & Conditions</a></li>
+                        <li><a href="/privacy" class="hover:text-blue-400 transition-colors">Privacy Policy</a></li>
+                        <li>
+                            <a href="mailto:support@pdftopractice.in" class="hover:text-rose-400 transition-colors inline-flex items-center gap-1 text-rose-400/90 font-medium">
+                                <svg class="w-3.5 h-3.5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                Report a Bug
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Bottom Credits -->
+            <div class="flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500 gap-4">
+                <p>&copy; 2026 PDF to PRACTICE. Built for JEE & NEET Aspirants.</p>
+                <p class="flex items-center gap-1 text-gray-400">
+                    <span>Crafted with</span>
+                    <svg class="w-3.5 h-3.5 text-rose-500 inline fill-current" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>
+                    <span>for free education</span>
+                </p>
             </div>
         </div>
     </footer>
