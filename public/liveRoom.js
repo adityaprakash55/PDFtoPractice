@@ -241,8 +241,25 @@ function startLocalLiveTest(timeLimitSeconds) {
         currentIndex: 0,
         answers: {},
         bookmarks: {},
-        theme: 'nta' // Force NTA Mode
+        theme: 'nta', // Force NTA Mode
+        totalSecondsRemaining: timeLimitSeconds,
+        scorePerQ: 4,
+        negativeMarking: true
     };
+    
+    // Initialize stats
+    practiceState.stats = extractedImages.map((q, idx) => {
+        let ex = 'Exercise 1';
+        if (q.label && q.label.includes(' - ')) ex = q.label.split(' - ')[0];
+        return {
+            index: idx,
+            timeSpent: 0,
+            attempted: false,
+            evaluation: null, // 'correct' | 'incorrect'
+            ntaStatus: 'not_visited',
+            exercise: ex
+        };
+    });
     
     document.getElementById('ntaInterfaceContainer').classList.remove('hidden');
     
@@ -259,6 +276,8 @@ function startLocalLiveTest(timeLimitSeconds) {
     document.getElementById('totalTimeInput').value = Math.ceil(timeLimitSeconds / 60);
     const totalRadio = document.querySelector('input[name="timingMode"][value="total"]');
     if(totalRadio) totalRadio.checked = true;
+    
+    if (typeof currentSessionId !== 'undefined') currentSessionId = Date.now();
     
     startTotalTimer();
 }
