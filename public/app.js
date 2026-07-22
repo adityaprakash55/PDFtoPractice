@@ -4266,13 +4266,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         dashNavBtns.forEach(btn => {
             if (btn.dataset.target === targetView) {
-                // Active state - works for both light and dark
-                btn.classList.remove('text-gray-400', 'text-gray-500', 'hover:bg-white/5', 'hover:bg-gray-100', 'hover:text-white', 'hover:text-gray-900');
-                btn.classList.add('text-gray-900', 'dark:text-white', 'bg-cyan-500/10', 'dark:bg-white/10');
+                btn.classList.add('sidebar-active');
             } else {
-                // Inactive state - works for both light and dark
-                btn.classList.remove('text-gray-900', 'dark:text-white', 'bg-cyan-500/10', 'dark:bg-white/10');
-                btn.classList.add('text-gray-500', 'dark:text-gray-400', 'hover:bg-gray-100', 'dark:hover:bg-white/5', 'hover:text-gray-900', 'dark:hover:text-white');
+                btn.classList.remove('sidebar-active');
             }
         });
         
