@@ -164,7 +164,8 @@ let practiceState = {
     globalTimerInterval: null,
     scorePerQ: 4,
     negativeMarking: true,
-    scratchpadNotes: {} // Store notes by question realIndex
+    scratchpadNotes: {}, // Store notes by question realIndex
+    answers: {} // Store selected options (A,B,C,D) by realIndex
 };
 
 let currentSessionId = null;
@@ -3214,6 +3215,22 @@ function renderNtaQuestion(index) {
         }
     };
     
+    // Setup Radio buttons
+    const options = document.querySelectorAll('input[name="ntaOption"]');
+    options.forEach(opt => {
+        opt.checked = false; // uncheck all by default
+        if (practiceState.answers[realIndex] === opt.value) {
+            opt.checked = true;
+        }
+        
+        opt.onchange = (e) => {
+            if (e.target.checked) {
+                practiceState.answers[realIndex] = e.target.value;
+            }
+        };
+    });
+
+    
     practiceState.qSecondsSpent = stat.timeSpent;
     practiceState.isAnswerRevealed = stat.attempted;
     
@@ -3278,20 +3295,31 @@ ntaIncorrectBtn.addEventListener('click', () => {
 });
 
 ntaSaveNextBtn.addEventListener('click', () => {
-    if (practiceState.currentIndex < practiceState.activeIndices.length - 1) {
-        renderNtaQuestion(practiceState.currentIndex + 1);
-    }
-});
-
-ntaSaveReviewBtn.addEventListener('click', () => {
     const realIndex = practiceState.activeIndices[practiceState.currentIndex];
     const s = practiceState.stats[realIndex];
-    s.ntaStatus = s.attempted ? 'answered_marked' : 'marked';
+    if (practiceState.answers[realIndex]) {
+        s.ntaStatus = 'answered';
+        s.attempted = true;
+    } else {
+        s.ntaStatus = 'not_answered';
+    }
     updateNtaPaletteColors();
     if (practiceState.currentIndex < practiceState.activeIndices.length - 1) {
         renderNtaQuestion(practiceState.currentIndex + 1);
     }
 });
+
+if (document.getElementById('ntaSaveReviewBtn')) {
+    document.getElementById('ntaSaveReviewBtn').addEventListener('click', () => {
+        const realIndex = practiceState.activeIndices[practiceState.currentIndex];
+        const s = practiceState.stats[realIndex];
+        s.ntaStatus = s.attempted ? 'answered_marked' : 'marked';
+        updateNtaPaletteColors();
+        if (practiceState.currentIndex < practiceState.activeIndices.length - 1) {
+            renderNtaQuestion(practiceState.currentIndex + 1);
+        }
+    });
+}
 
 ntaClearBtn.addEventListener('click', () => {
     const realIndex = practiceState.activeIndices[practiceState.currentIndex];
@@ -3299,15 +3327,21 @@ ntaClearBtn.addEventListener('click', () => {
     s.ntaStatus = 'not_answered';
     s.attempted = false;
     s.evaluation = null;
+    delete practiceState.answers[realIndex];
     practiceState.isAnswerRevealed = false;
     updateNtaPaletteColors();
-    renderNtaQuestion(practiceState.currentIndex); // Re-render to hide answer
+    renderNtaQuestion(practiceState.currentIndex); // Re-render to clear radio buttons
 });
 
 ntaMarkReviewBtn.addEventListener('click', () => {
     const realIndex = practiceState.activeIndices[practiceState.currentIndex];
     const s = practiceState.stats[realIndex];
-    s.ntaStatus = s.attempted ? 'answered_marked' : 'marked';
+    if (practiceState.answers[realIndex]) {
+        s.ntaStatus = 'answered_marked';
+        s.attempted = true;
+    } else {
+        s.ntaStatus = 'marked';
+    }
     updateNtaPaletteColors();
     if (practiceState.currentIndex < practiceState.activeIndices.length - 1) {
         renderNtaQuestion(practiceState.currentIndex + 1);
