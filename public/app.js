@@ -4247,46 +4247,153 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('click', () => switchDashView(btn.dataset.target));
     });
     
-    function renderScoreAnalysis() {
-        let sessions = JSON.parse(localStorage.getItem('sessions')) || [];
-        if (sessions.length === 0) return;
-        
+    async function renderScoreAnalysis() {
         const saTotalTests = document.getElementById('saTotalTests');
         const saAvgAccuracy = document.getElementById('saAvgAccuracy');
+        const saAvgScorePct = document.getElementById('saAvgScorePct');
         const saTotalQs = document.getElementById('saTotalQs');
         const saAccuracyChart = document.getElementById('saAccuracyChart');
+        const saTestReportTbody = document.getElementById('saTestReportTbody');
         
-        if(saTotalTests) saTotalTests.textContent = sessions.length;
-        
+        let sessions = [];
+        try {
+            sessions = await getAllSessionsFromDB();
+        } catch (e) {
+            console.error('Error fetching sessions for analysis:', e);
+        }
+
+        if (!sessions || sessions.length === 0) {
+            if (saTotalTests) saTotalTests.textContent = '0';
+            if (saAvgAccuracy) saAvgAccuracy.textContent = '0%';
+            if (saAvgScorePct) saAvgScorePct.textContent = '0%';
+            if (saTotalQs) saTotalQs.textContent = '0';
+            if (saAccuracyChart) {
+                saAccuracyChart.innerHTML = '<p class="text-gray-500 text-sm text-center w-full my-auto">No practice tests completed yet. Start a test to see your performance graph!</p>';
+            }
+            if (saTestReportTbody) {
+                saTestReportTbody.innerHTML = '<tr><td colspan="6" class="py-8 text-center text-gray-500">No test data recorded yet. Take your first practice test!</td></tr>';
+            }
+            return;
+        }
+
+        // Metrics calculations
+        if (saTotalTests) saTotalTests.textContent = sessions.length;
+
         let totalAttempted = 0;
         let totalCorrect = 0;
+        let totalScoreSum = 0;
+        let totalMaxScoreSum = 0;
+
         sessions.forEach(s => {
-            if (s.results) {
-                totalAttempted += (s.results.correct + s.results.wrong);
-                totalCorrect += s.results.correct;
-            }
+            const attempted = (s.correctCount || 0) + (s.incorrectCount || 0);
+            const total = attempted + (s.unansweredCount || 0);
+            const scorePerQ = s.practiceState?.scorePerQ || 4;
+            const hasNeg = s.practiceState?.negativeMarking !== false;
+            const penalty = hasNeg ? (s.incorrectCount || 0) : 0;
+            const score = ((s.correctCount || 0) * scorePerQ) - penalty;
+            const maxScore = total * scorePerQ;
+
+            totalAttempted += attempted;
+            totalCorrect += (s.correctCount || 0);
+            totalScoreSum += score;
+            totalMaxScoreSum += maxScore;
         });
-        
-        if(saTotalQs) saTotalQs.textContent = totalAttempted;
+
+        if (saTotalQs) saTotalQs.textContent = totalAttempted;
         const avgAcc = totalAttempted > 0 ? Math.round((totalCorrect / totalAttempted) * 100) : 0;
-        if(saAvgAccuracy) saAvgAccuracy.textContent = avgAcc + '%';
-        
+        if (saAvgAccuracy) saAvgAccuracy.textContent = avgAcc + '%';
+
+        const avgScorePct = totalMaxScoreSum > 0 ? Math.round((totalScoreSum / totalMaxScoreSum) * 100) : 0;
+        if (saAvgScorePct) saAvgScorePct.textContent = avgScorePct + '%';
+
+        // 1. Percentage-wise Performance Trend Graph (Accuracy & Score %)
         if (saAccuracyChart) {
-            const recentSessions = sessions.slice(-15);
+            const recentSessions = sessions.slice(-12);
             saAccuracyChart.innerHTML = '';
-            recentSessions.forEach(s => {
-                if (s.results) {
-                    const total = s.results.correct + s.results.wrong;
-                    const acc = total > 0 ? (s.results.correct / total) * 100 : 0;
-                    const bar = document.createElement('div');
-                    bar.className = 'w-full bg-blue-500/20 rounded-t-sm relative group hover:bg-blue-500/40 transition-colors';
-                    bar.style.height = Math.max(acc, 5) + '%';
-                    const tooltip = document.createElement('div');
-                    tooltip.className = 'absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 border border-gray-700';
-                    tooltip.textContent = Math.round(acc) + '%';
-                    bar.appendChild(tooltip);
-                    saAccuracyChart.appendChild(bar);
-                }
+
+            recentSessions.forEach((s) => {
+                const attempted = (s.correctCount || 0) + (s.incorrectCount || 0);
+                const total = attempted + (s.unansweredCount || 0);
+                const scorePerQ = s.practiceState?.scorePerQ || 4;
+                const hasNeg = s.practiceState?.negativeMarking !== false;
+                const penalty = hasNeg ? (s.incorrectCount || 0) : 0;
+                const score = ((s.correctCount || 0) * scorePerQ) - penalty;
+                const maxScore = total * scorePerQ;
+
+                const acc = attempted > 0 ? Math.round(((s.correctCount || 0) / attempted) * 100) : 0;
+                const scorePct = maxScore > 0 ? Math.round((score / maxScore) * 100) : 0;
+
+                const group = document.createElement('div');
+                group.className = 'flex-1 flex items-end justify-center gap-1.5 h-full relative group cursor-pointer';
+
+                // Bar 1: Accuracy % (emerald)
+                const accBar = document.createElement('div');
+                accBar.className = 'w-1/2 bg-emerald-500/30 hover:bg-emerald-500/70 border-t-2 border-emerald-400 rounded-t-md transition-all';
+                accBar.style.height = Math.max(acc, 6) + '%';
+
+                // Bar 2: Score % (blue)
+                const scoreBar = document.createElement('div');
+                scoreBar.className = 'w-1/2 bg-blue-500/30 hover:bg-blue-500/70 border-t-2 border-blue-400 rounded-t-md transition-all';
+                scoreBar.style.height = Math.max(scorePct, 6) + '%';
+
+                // Tooltip
+                const tooltip = document.createElement('div');
+                tooltip.className = 'absolute -top-16 left-1/2 -translate-x-1/2 bg-gray-950 text-white text-[11px] py-1.5 px-3 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-30 border border-gray-700 shadow-2xl pointer-events-none text-left';
+                tooltip.innerHTML = `
+                    <div class="font-bold text-gray-200 mb-0.5">Test #${s.id}</div>
+                    <div class="text-emerald-400">Accuracy: ${acc}%</div>
+                    <div class="text-blue-400">Score: ${scorePct}% (${score}/${maxScore})</div>
+                `;
+
+                group.appendChild(accBar);
+                group.appendChild(scoreBar);
+                group.appendChild(tooltip);
+                saAccuracyChart.appendChild(group);
+            });
+        }
+
+        // 2. Detailed Test-by-Test Report Table
+        if (saTestReportTbody) {
+            saTestReportTbody.innerHTML = '';
+            const reversed = [...sessions].reverse();
+
+            reversed.forEach(s => {
+                const attempted = (s.correctCount || 0) + (s.incorrectCount || 0);
+                const total = attempted + (s.unansweredCount || 0);
+                const scorePerQ = s.practiceState?.scorePerQ || 4;
+                const hasNeg = s.practiceState?.negativeMarking !== false;
+                const penalty = hasNeg ? (s.incorrectCount || 0) : 0;
+                const score = ((s.correctCount || 0) * scorePerQ) - penalty;
+                const maxScore = total * scorePerQ;
+
+                const acc = attempted > 0 ? Math.round(((s.correctCount || 0) / attempted) * 100) : 0;
+                const scorePct = maxScore > 0 ? Math.round((score / maxScore) * 100) : 0;
+
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-white/5 transition-colors';
+                tr.innerHTML = `
+                    <td class="py-3.5 px-2">
+                        <div class="font-bold text-white">Test #${s.id}</div>
+                        <div class="text-xs text-gray-500">${s.date || 'Saved Session'}</div>
+                    </td>
+                    <td class="text-center font-semibold">${total} Qs</td>
+                    <td class="text-center">
+                        <span class="text-emerald-400 font-bold">${s.correctCount || 0}</span> / 
+                        <span class="text-red-400 font-bold">${s.incorrectCount || 0}</span>
+                    </td>
+                    <td class="text-center font-bold text-white">${score} <span class="text-xs text-gray-500">/${maxScore}</span></td>
+                    <td class="text-center">
+                        <span class="px-2.5 py-1 rounded-full text-xs font-bold ${scorePct >= 60 ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 'bg-gray-800 text-gray-400'}">
+                            ${scorePct}%
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        <span class="px-2.5 py-1 rounded-full text-xs font-bold ${acc >= 70 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}">
+                            ${acc}%
+                        </span>
+                    </td>
+                `;
+                saTestReportTbody.appendChild(tr);
             });
         }
     }

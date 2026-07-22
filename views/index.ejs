@@ -582,57 +582,81 @@
 
 <!-- Live Room Join Container (Participant) -->
         
-<!-- Score Analysis Container (NEW) -->
-<div id="analysisContainer" class="dash-view hidden pt-8">
-    <h2 class="text-3xl font-bold text-white mb-8">Aggregate Score Analysis</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="bg-gray-800/40 border border-blue-500/20 rounded-xl p-6 text-center">
-            <div class="text-sm text-blue-400 font-bold uppercase tracking-widest mb-2">Total Tests Taken</div>
-            <div id="saTotalTests" class="text-5xl font-bold text-white">0</div>
-        </div>
-        <div class="bg-gray-800/40 border border-green-500/20 rounded-xl p-6 text-center">
-            <div class="text-sm text-green-400 font-bold uppercase tracking-widest mb-2">Avg Accuracy</div>
-            <div id="saAvgAccuracy" class="text-5xl font-bold text-white">0%</div>
-        </div>
-        <div class="bg-gray-800/40 border border-purple-500/20 rounded-xl p-6 text-center">
-            <div class="text-sm text-purple-400 font-bold uppercase tracking-widest mb-2">Questions Attempted</div>
-            <div id="saTotalQs" class="text-5xl font-bold text-white">0</div>
+<!-- Score Analysis Container -->
+<div id="analysisContainer" class="dash-view analysisView hidden pt-4">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div>
+            <h2 class="text-3xl font-bold text-white tracking-tight">Score & Performance Analysis</h2>
+            <p class="text-sm text-gray-400 mt-1">Track your progress and accuracy percentage across all completed tests</p>
         </div>
     </div>
-    
-    <div class="bg-gray-800/40 border border-gray-700/50 rounded-xl p-6 mb-4">
-        <div class="font-semibold text-white mb-4 text-lg">Accuracy History</div>
-        <div class="h-64 flex items-end justify-between gap-2 px-2" id="saAccuracyChart">
-            <!-- Bars will go here -->
-            <p class="text-gray-500 text-sm text-center w-full">Complete more tests to see your trend</p>
-        </div>
-    </div>
-</div>
 
-
-<!-- Score Analysis Container (NEW) -->
-<div id="analysisContainer" class="dash-view hidden pt-8">
-    <h2 class="text-3xl font-bold text-white mb-8">Aggregate Score Analysis</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="bg-gray-800/40 border border-blue-500/20 rounded-xl p-6 text-center">
-            <div class="text-sm text-blue-400 font-bold uppercase tracking-widest mb-2">Total Tests Taken</div>
-            <div id="saTotalTests" class="text-5xl font-bold text-white">0</div>
+    <!-- KPI Summary Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div class="bg-gray-900/60 border border-blue-500/20 rounded-2xl p-5 shadow-lg backdrop-blur-sm">
+            <div class="text-xs text-blue-400 font-bold uppercase tracking-wider mb-1">Total Tests</div>
+            <div id="saTotalTests" class="text-3xl font-extrabold text-white">0</div>
+            <div class="text-[11px] text-gray-500 mt-1">Sessions recorded</div>
         </div>
-        <div class="bg-gray-800/40 border border-green-500/20 rounded-xl p-6 text-center">
-            <div class="text-sm text-green-400 font-bold uppercase tracking-widest mb-2">Avg Accuracy</div>
-            <div id="saAvgAccuracy" class="text-5xl font-bold text-white">0%</div>
+        <div class="bg-gray-900/60 border border-emerald-500/20 rounded-2xl p-5 shadow-lg backdrop-blur-sm">
+            <div class="text-xs text-emerald-400 font-bold uppercase tracking-wider mb-1">Avg Accuracy</div>
+            <div id="saAvgAccuracy" class="text-3xl font-extrabold text-emerald-400">0%</div>
+            <div class="text-[11px] text-gray-500 mt-1">Correct / Attempted</div>
         </div>
-        <div class="bg-gray-800/40 border border-purple-500/20 rounded-xl p-6 text-center">
-            <div class="text-sm text-purple-400 font-bold uppercase tracking-widest mb-2">Questions Attempted</div>
-            <div id="saTotalQs" class="text-5xl font-bold text-white">0</div>
+        <div class="bg-gray-900/60 border border-purple-500/20 rounded-2xl p-5 shadow-lg backdrop-blur-sm">
+            <div class="text-xs text-purple-400 font-bold uppercase tracking-wider mb-1">Avg Score %</div>
+            <div id="saAvgScorePct" class="text-3xl font-extrabold text-purple-400">0%</div>
+            <div class="text-[11px] text-gray-500 mt-1">Overall percentage</div>
+        </div>
+        <div class="bg-gray-900/60 border border-amber-500/20 rounded-2xl p-5 shadow-lg backdrop-blur-sm">
+            <div class="text-xs text-amber-400 font-bold uppercase tracking-wider mb-1">Questions Attempted</div>
+            <div id="saTotalQs" class="text-3xl font-extrabold text-white">0</div>
+            <div class="text-[11px] text-gray-500 mt-1">Total solved</div>
         </div>
     </div>
-    
-    <div class="bg-gray-800/40 border border-gray-700/50 rounded-xl p-6 mb-4">
-        <div class="font-semibold text-white mb-4 text-lg">Accuracy History</div>
-        <div class="h-64 flex items-end justify-between gap-2 px-2" id="saAccuracyChart">
-            <!-- Bars will go here -->
-            <p class="text-gray-500 text-sm text-center w-full">Complete more tests to see your trend</p>
+
+    <!-- Accuracy & Score % Trend Graph Card -->
+    <div class="bg-gray-900/70 border border-gray-800 rounded-2xl p-6 mb-8 shadow-2xl">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <div>
+                <h3 class="text-lg font-bold text-white">Percentage-wise Test Performance</h3>
+                <p class="text-xs text-gray-400">Accuracy & Score percentage history per session</p>
+            </div>
+            <div class="flex items-center gap-4 text-xs font-semibold">
+                <span class="flex items-center gap-1.5 text-emerald-400"><span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span> Accuracy %</span>
+                <span class="flex items-center gap-1.5 text-blue-400"><span class="w-3 h-3 rounded-full bg-blue-500 inline-block"></span> Score %</span>
+            </div>
+        </div>
+        <div class="h-64 flex items-end justify-between gap-3 px-2 pt-6 border-b border-gray-800" id="saAccuracyChart">
+            <p class="text-gray-500 text-sm text-center w-full my-auto">Complete practice tests to generate performance trends</p>
+        </div>
+        <div class="flex justify-between text-xs text-gray-500 mt-3 px-1" id="saChartXAxis">
+            <span>Older Sessions</span>
+            <span>Recent Sessions</span>
+        </div>
+    </div>
+
+    <!-- Test-by-Test Report Table / List -->
+    <div class="bg-gray-900/70 border border-gray-800 rounded-2xl p-6 shadow-2xl">
+        <h3 class="text-lg font-bold text-white mb-4">Detailed Test Performance History</h3>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+                <thead>
+                    <tr class="text-xs text-gray-400 uppercase border-b border-gray-800">
+                        <th class="pb-3 font-semibold">Session ID & Date</th>
+                        <th class="pb-3 font-semibold text-center">Questions</th>
+                        <th class="pb-3 font-semibold text-center">Correct / Wrong</th>
+                        <th class="pb-3 font-semibold text-center">Score</th>
+                        <th class="pb-3 font-semibold text-center">Score %</th>
+                        <th class="pb-3 font-semibold text-center">Accuracy %</th>
+                    </tr>
+                </thead>
+                <tbody id="saTestReportTbody" class="divide-y divide-gray-800/60 text-gray-300">
+                    <tr>
+                        <td colspan="6" class="py-8 text-center text-gray-500">No test data available yet. Start a new practice test!</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
