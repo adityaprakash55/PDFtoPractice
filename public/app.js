@@ -4220,10 +4220,45 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-// ---- DASHBOARD NAVIGATION LOGIC ----
+// ---- DASHBOARD NAVIGATION & RESPONSIVE SIDEBAR LOGIC ----
 document.addEventListener('DOMContentLoaded', () => {
     const dashNavBtns = document.querySelectorAll('.dash-nav-btn');
     const dashViews = document.querySelectorAll('.dash-view');
+    const landingSidebar = document.getElementById('landingSidebar');
+    const sidebarCollapseBtn = document.getElementById('sidebarCollapseBtn');
+    const mobileSidebarToggleBtn = document.getElementById('mobileSidebarToggleBtn');
+    const mobileSidebarCloseBtn = document.getElementById('mobileSidebarCloseBtn');
+    const mobileSidebarBackdrop = document.getElementById('mobileSidebarBackdrop');
+
+    // Desktop Collapse Toggle with LocalStorage persistence
+    if (localStorage.getItem('sidebarCollapsed') === 'true' && landingSidebar) {
+        landingSidebar.classList.add('collapsed');
+    }
+
+    if (sidebarCollapseBtn && landingSidebar) {
+        sidebarCollapseBtn.addEventListener('click', () => {
+            landingSidebar.classList.toggle('collapsed');
+            const isCollapsed = landingSidebar.classList.contains('collapsed');
+            localStorage.setItem('sidebarCollapsed', isCollapsed ? 'true' : 'false');
+        });
+    }
+
+    // Mobile Sidebar Drawer Controls
+    function openMobileSidebar() {
+        if (!landingSidebar) return;
+        landingSidebar.classList.add('mobile-open');
+        if (mobileSidebarBackdrop) mobileSidebarBackdrop.classList.remove('hidden');
+    }
+
+    function closeMobileSidebar() {
+        if (!landingSidebar) return;
+        landingSidebar.classList.remove('mobile-open');
+        if (mobileSidebarBackdrop) mobileSidebarBackdrop.classList.add('hidden');
+    }
+
+    if (mobileSidebarToggleBtn) mobileSidebarToggleBtn.addEventListener('click', openMobileSidebar);
+    if (mobileSidebarCloseBtn) mobileSidebarCloseBtn.addEventListener('click', closeMobileSidebar);
+    if (mobileSidebarBackdrop) mobileSidebarBackdrop.addEventListener('click', closeMobileSidebar);
     
     window.switchDashView = function(targetView) {
         dashViews.forEach(v => v.classList.add('hidden'));
@@ -4240,6 +4275,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         
+        closeMobileSidebar();
         if (targetView === 'analysisView') renderScoreAnalysis();
     };
     

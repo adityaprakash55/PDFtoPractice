@@ -29,19 +29,52 @@
     min-height: calc(100vh - 64px);
     width: 100%;
     background-color: #0a0c10;
+    position: relative;
 }
 
 #landingSidebar {
     display: flex !important;
-    width: 16rem !important;
+    width: 16rem;
     background-color: #0d1117 !important;
     border-right: 1px solid #21262d !important;
     flex-direction: column !important;
     flex-shrink: 0 !important;
+    transition: width 0.3s ease, transform 0.3s ease !important;
 }
 
-@media (max-width: 768px) {
+/* Collapsed Sidebar State (Desktop) */
+#landingSidebar.collapsed {
+    width: 4.5rem !important;
+}
+
+#landingSidebar.collapsed .dash-sidebar-brand,
+#landingSidebar.collapsed .dash-nav-text {
+    display: none !important;
+}
+
+#landingSidebar.collapsed .dash-nav-btn {
+    justify-content: center !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+#landingSidebar.collapsed #collapseIcon {
+    transform: rotate(180deg);
+}
+
+/* Mobile Sidebar Drawer (< 768px) */
+@media (max-width: 767px) {
     #landingSidebar {
-        display: none !important;
+        position: fixed !important;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 50 !important;
+        width: 16rem !important;
+        transform: translateX(-100%);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+    #landingSidebar.mobile-open {
+        transform: translateX(0) !important;
     }
 }

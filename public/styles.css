@@ -71,8 +71,6 @@
     --color-blue-700: oklch(48.8% 0.243 264.376);
     --color-blue-800: oklch(42.4% 0.199 265.638);
     --color-blue-900: oklch(37.9% 0.146 265.522);
-    --color-indigo-400: oklch(67.3% 0.182 276.935);
-    --color-indigo-500: oklch(58.5% 0.233 277.117);
     --color-indigo-600: oklch(51.1% 0.262 276.966);
     --color-indigo-900: oklch(35.9% 0.144 278.697);
     --color-purple-300: oklch(82.7% 0.119 306.383);
@@ -89,7 +87,6 @@
     --color-pink-900: oklch(40.8% 0.153 2.432);
     --color-rose-400: oklch(71.2% 0.194 13.428);
     --color-rose-500: oklch(64.5% 0.246 16.439);
-    --color-rose-600: oklch(58.6% 0.253 17.585);
     --color-slate-50: oklch(98.4% 0.003 247.858);
     --color-slate-900: oklch(20.8% 0.042 265.755);
     --color-gray-50: oklch(98.5% 0.002 247.839);
@@ -3566,6 +3563,9 @@
     .sm\:block {
       display: block;
     }
+    .sm\:inline {
+      display: inline;
+    }
     .sm\:w-1\/3 {
       width: calc(1 / 3 * 100%);
     }
@@ -4192,18 +4192,44 @@
   min-height: calc(100vh - 64px);
   width: 100%;
   background-color: #0a0c10;
+  position: relative;
 }
 #landingSidebar {
   display: flex !important;
-  width: 16rem !important;
+  width: 16rem;
   background-color: #0d1117 !important;
   border-right: 1px solid #21262d !important;
   flex-direction: column !important;
   flex-shrink: 0 !important;
+  transition: width 0.3s ease, transform 0.3s ease !important;
 }
-@media (max-width: 768px) {
+#landingSidebar.collapsed {
+  width: 4.5rem !important;
+}
+#landingSidebar.collapsed .dash-sidebar-brand, #landingSidebar.collapsed .dash-nav-text {
+  display: none !important;
+}
+#landingSidebar.collapsed .dash-nav-btn {
+  justify-content: center !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+#landingSidebar.collapsed #collapseIcon {
+  transform: rotate(180deg);
+}
+@media (max-width: 767px) {
   #landingSidebar {
-    display: none !important;
+    position: fixed !important;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 50 !important;
+    width: 16rem !important;
+    transform: translateX(-100%);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  }
+  #landingSidebar.mobile-open {
+    transform: translateX(0) !important;
   }
 }
 @property --tw-translate-x {
