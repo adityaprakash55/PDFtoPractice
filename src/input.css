@@ -17,3 +17,8 @@
   --color-navy-950: #0a192f;
 }
 
+
+@source "../public";
+
+@source "../public/*.js";
+@source "../views/*.ejs";
