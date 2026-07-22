@@ -178,9 +178,9 @@ function updateLobbyUI() {
     if (participants.length > 0 && !allReady) {
         startLiveTestBtn.textContent = "Waiting for participants to receive data...";
     } else if (allReady) {
-        startLiveTestBtn.textContent = "Start Test for Everyone";
+        startLiveTestBtn.textContent = "Start Practice for Everyone";
     } else {
-        startLiveTestBtn.textContent = "Start Test for Everyone";
+        startLiveTestBtn.textContent = "Start Practice for Everyone";
     }
 }
 
@@ -188,7 +188,7 @@ if (startLiveTestBtn) {
     startLiveTestBtn.addEventListener('click', () => {
         if (participants.length === 0 || !participants.every(p => p.ready)) return;
         
-        const hostName = prompt("Do you want to participate in the test too?\nEnter your name to join, or click Cancel/leave blank to only spectate as Host.");
+        const hostName = prompt("Do you want to participate in the practice too?\nEnter your name to join, or click Cancel/leave blank to only spectate as Host.");
         
         const totalMins = parseInt(document.getElementById('totalTimeInput').value) || 60;
         
@@ -203,12 +203,12 @@ if (startLiveTestBtn) {
             hostParticipating = true;
             participants.push({ id: 'host', name: hostName.trim(), score: null, accuracy: null, ready: true });
             
-            // Start the test for Host locally
-            startLocalLiveTest(totalMins * 60);
+            // Start the practice for Host locally (show instructions first)
+            showLiveInstructions(totalMins * 60);
         } else {
             // Spectator mode
             liveLobbyContainer.innerHTML = `
-                <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white mb-4">Test in Progress...</h2>
+                <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white mb-4">Practice in Progress...</h2>
                 <div class="animate-pulse flex flex-col items-center mt-10">
                     <div class="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mb-4"></div>
                     <p class="text-gray-500">Waiting for participants to submit their scores.</p>
@@ -223,13 +223,41 @@ function handleParticipantData(data) {
         extractedImages = data.extractedImages;
         extractedAnswerPages = data.extractedAnswerPages;
         
-        waitingForHostContainer.querySelector('p').textContent = "Data received! Waiting for host to start the test...";
+        waitingForHostContainer.querySelector('p').textContent = "Data received! Waiting for host to start the practice...";
         liveConn.send({ type: 'READY' });
     } else if (data.type === 'START_TEST') {
         waitingForHostContainer.classList.add('hidden');
-        startLocalLiveTest(data.timeLimit);
+        showLiveInstructions(data.timeLimit);
     } else if (data.type === 'LEADERBOARD') {
         renderLeaderboard(data.leaderboard);
+    }
+}
+
+function showLiveInstructions(timeLimitSeconds) {
+    if (document.getElementById('liveLobbyContainer')) document.getElementById('liveLobbyContainer').classList.add('hidden');
+    if (document.getElementById('waitingForHostContainer')) document.getElementById('waitingForHostContainer').classList.add('hidden');
+    
+    const instructionsContainer = document.getElementById('liveInstructionsContainer');
+    if (instructionsContainer) {
+        instructionsContainer.classList.remove('hidden');
+        
+        document.getElementById('instructionsTime').textContent = Math.ceil(timeLimitSeconds / 60);
+        document.getElementById('instructionsQuestions').textContent = extractedImages.length;
+        
+        const checkbox = document.getElementById('instructionsCheckbox');
+        const beginBtn = document.getElementById('instructionsBeginBtn');
+        
+        checkbox.addEventListener('change', (e) => {
+            beginBtn.disabled = !e.target.checked;
+        });
+        
+        beginBtn.addEventListener('click', () => {
+            instructionsContainer.classList.add('hidden');
+            startLocalLiveTest(timeLimitSeconds);
+        });
+    } else {
+        // Fallback just in case
+        startLocalLiveTest(timeLimitSeconds);
     }
 }
 
