@@ -2636,7 +2636,7 @@ async function renderNotedQuestions() {
     
     try {
         currentNotedQuestions = await getAllGlobalNotes();
-        notedQsContainer.classList.remove('hidden');
+        // notedQsContainer.classList.remove('hidden'); // Removed to fix dashboard layout
         notedQsList.innerHTML = '';
         
         if (currentNotedQuestions.length === 0) {
@@ -2813,7 +2813,7 @@ async function renderBookmarks() {
     try {
         const groups = await getAllBookmarkGroups();
         // removed early return
-        bookmarksContainer.classList.remove('hidden');
+        // bookmarksContainer.classList.remove('hidden'); // Removed to fix dashboard layout
         bookmarksList.innerHTML = '';
 
         if (groups.length === 0) {

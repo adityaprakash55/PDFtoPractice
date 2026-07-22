@@ -619,7 +619,11 @@ window.startLiveRoomFromSession = function(session) {
     // Simulate clicking Host Live Test
     document.getElementById('historyContainer').classList.add('hidden');
     document.getElementById('uploadContainer').classList.add('hidden');
-        // Setup lobby
+      document.querySelectorAll('.dash-view').forEach(v => v.classList.add('hidden'));
+      const sb = document.getElementById('landingSidebar');
+      if(sb) { sb.classList.remove('md:flex'); sb.classList.add('hidden', '!hidden'); }
+      
+      // Setup lobby
       isLiveMode = true;
       isHost = true;
       document.getElementById('practiceSetupContainer').classList.add('hidden');
