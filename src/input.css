@@ -23,23 +23,45 @@
 @source "../views/index.ejs";
 @source "../public/app.js";
 
-/* Explicit Dashboard Sidebar Styles */
+/* =========================================================== */
+/* Dashboard Layout & Sidebar — Light / Dark Theme Support       */
+/* =========================================================== */
+
+/* Root CSS Variables (Light Mode defaults) */
+:root {
+    --sidebar-bg: #f8fafc;
+    --sidebar-border: #e2e8f0;
+    --layout-bg: #f1f5f9;
+    --sidebar-brand-text: #0f172a;
+    --sidebar-sub-text: #0891b2;
+}
+
+/* Dark Mode overrides */
+.dark {
+    --sidebar-bg: #0d1117;
+    --sidebar-border: #21262d;
+    --layout-bg: #0a0c10;
+    --sidebar-brand-text: #ffffff;
+    --sidebar-sub-text: #22d3ee;
+}
+
 #landingDashboardLayout {
     display: flex !important;
     min-height: calc(100vh - 64px);
     width: 100%;
-    background-color: #0a0c10;
+    background-color: var(--layout-bg);
     position: relative;
+    transition: background-color 0.2s ease;
 }
 
 #landingSidebar {
     display: flex !important;
     width: 16rem;
-    background-color: #0d1117 !important;
-    border-right: 1px solid #21262d !important;
+    background-color: var(--sidebar-bg) !important;
+    border-right: 1px solid var(--sidebar-border) !important;
     flex-direction: column !important;
     flex-shrink: 0 !important;
-    transition: width 0.3s ease, transform 0.3s ease !important;
+    transition: width 0.3s ease, transform 0.3s ease, background-color 0.2s ease !important;
 }
 
 /* Collapsed Sidebar State (Desktop) */
@@ -78,3 +100,27 @@
         transform: translateX(0) !important;
     }
 }
+
+/* Sidebar nav buttons — light theme text */
+#landingSidebar .dash-nav-btn {
+    color: #374151;
+}
+.dark #landingSidebar .dash-nav-btn {
+    color: #9ca3af;
+}
+
+/* Active nav button */
+#landingSidebar .dash-nav-btn.text-white {
+    color: #0f172a !important;
+    background-color: rgba(6, 182, 212, 0.12) !important;
+}
+.dark #landingSidebar .dash-nav-btn.text-white {
+    color: #ffffff !important;
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Main dash content area */
+#landingDashboardLayout > main {
+    background-color: transparent;
+}
+

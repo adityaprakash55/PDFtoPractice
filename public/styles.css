@@ -2660,6 +2660,9 @@
   .text-amber-400 {
     color: var(--color-amber-400);
   }
+  .text-amber-500 {
+    color: var(--color-amber-500);
+  }
   .text-amber-900 {
     color: var(--color-amber-900);
   }
@@ -2702,6 +2705,12 @@
   .text-cyan-400 {
     color: var(--color-cyan-400);
   }
+  .text-cyan-500 {
+    color: var(--color-cyan-500);
+  }
+  .text-cyan-600 {
+    color: var(--color-cyan-600);
+  }
   .text-emerald-400 {
     color: var(--color-emerald-400);
   }
@@ -2710,6 +2719,9 @@
     @supports (color: color-mix(in lab, red, red)) {
       color: color-mix(in oklab, var(--color-emerald-400) 90%, transparent);
     }
+  }
+  .text-emerald-500 {
+    color: var(--color-emerald-500);
   }
   .text-gray-100 {
     color: var(--color-gray-100);
@@ -3479,6 +3491,9 @@
     .hover\:text-gray-800:hover {
       color: var(--color-gray-800);
     }
+    .hover\:text-gray-900:hover {
+      color: var(--color-gray-900);
+    }
     .hover\:text-pink-600:hover {
       color: var(--color-pink-600);
     }
@@ -4096,6 +4111,12 @@
       background-color: color-mix(in oklab, var(--color-white) 5%, transparent);
     }
   }
+  .dark\:bg-white\/10:where(.dark, .dark *) {
+    background-color: color-mix(in srgb, #fff 10%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-white) 10%, transparent);
+    }
+  }
   .dark\:bg-yellow-900\/20:where(.dark, .dark *) {
     background-color: color-mix(in srgb, oklch(42.1% 0.095 57.708) 20%, transparent);
     @supports (color: color-mix(in lab, red, red)) {
@@ -4164,6 +4185,9 @@
   .dark\:text-amber-100:where(.dark, .dark *) {
     color: var(--color-amber-100);
   }
+  .dark\:text-amber-400:where(.dark, .dark *) {
+    color: var(--color-amber-400);
+  }
   .dark\:text-blue-100:where(.dark, .dark *) {
     color: var(--color-blue-100);
   }
@@ -4175,6 +4199,12 @@
   }
   .dark\:text-blue-400:where(.dark, .dark *) {
     color: var(--color-blue-400);
+  }
+  .dark\:text-cyan-400:where(.dark, .dark *) {
+    color: var(--color-cyan-400);
+  }
+  .dark\:text-emerald-400:where(.dark, .dark *) {
+    color: var(--color-emerald-400);
   }
   .dark\:text-gray-100:where(.dark, .dark *) {
     color: var(--color-gray-100);
@@ -4271,6 +4301,22 @@
     .dark\:hover\:bg-navy-800:where(.dark, .dark *):hover {
       background-color: var(--color-navy-800);
     }
+    .dark\:hover\:bg-white\/5:where(.dark, .dark *):hover {
+      background-color: color-mix(in srgb, #fff 5%, transparent);
+    }
+    @supports (color: color-mix(in lab, red, red)) {
+      .dark\:hover\:bg-white\/5:where(.dark, .dark *):hover {
+        background-color: color-mix(in oklab, var(--color-white) 5%, transparent);
+      }
+    }
+    .dark\:hover\:bg-white\/10:where(.dark, .dark *):hover {
+      background-color: color-mix(in srgb, #fff 10%, transparent);
+    }
+    @supports (color: color-mix(in lab, red, red)) {
+      .dark\:hover\:bg-white\/10:where(.dark, .dark *):hover {
+        background-color: color-mix(in oklab, var(--color-white) 10%, transparent);
+      }
+    }
     .dark\:hover\:text-blue-400:where(.dark, .dark *):hover {
       color: var(--color-blue-400);
     }
@@ -4288,21 +4334,36 @@
     --tw-ring-color: var(--color-blue-600);
   }
 }
+:root {
+  --sidebar-bg: #f8fafc;
+  --sidebar-border: #e2e8f0;
+  --layout-bg: #f1f5f9;
+  --sidebar-brand-text: #0f172a;
+  --sidebar-sub-text: #0891b2;
+}
+.dark {
+  --sidebar-bg: #0d1117;
+  --sidebar-border: #21262d;
+  --layout-bg: #0a0c10;
+  --sidebar-brand-text: #ffffff;
+  --sidebar-sub-text: #22d3ee;
+}
 #landingDashboardLayout {
   display: flex !important;
   min-height: calc(100vh - 64px);
   width: 100%;
-  background-color: #0a0c10;
+  background-color: var(--layout-bg);
   position: relative;
+  transition: background-color 0.2s ease;
 }
 #landingSidebar {
   display: flex !important;
   width: 16rem;
-  background-color: #0d1117 !important;
-  border-right: 1px solid #21262d !important;
+  background-color: var(--sidebar-bg) !important;
+  border-right: 1px solid var(--sidebar-border) !important;
   flex-direction: column !important;
   flex-shrink: 0 !important;
-  transition: width 0.3s ease, transform 0.3s ease !important;
+  transition: width 0.3s ease, transform 0.3s ease, background-color 0.2s ease !important;
 }
 #landingSidebar.collapsed {
   width: 4.5rem !important;
@@ -4332,6 +4393,23 @@
   #landingSidebar.mobile-open {
     transform: translateX(0) !important;
   }
+}
+#landingSidebar .dash-nav-btn {
+  color: #374151;
+}
+.dark #landingSidebar .dash-nav-btn {
+  color: #9ca3af;
+}
+#landingSidebar .dash-nav-btn.text-white {
+  color: #0f172a !important;
+  background-color: rgba(6, 182, 212, 0.12) !important;
+}
+.dark #landingSidebar .dash-nav-btn.text-white {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+#landingDashboardLayout > main {
+  background-color: transparent;
 }
 @property --tw-translate-x {
   syntax: "*";
