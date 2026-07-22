@@ -290,6 +290,12 @@ function startLocalLiveTest(timeLimitSeconds) {
     });
     
     document.getElementById('ntaInterfaceContainer').classList.remove('hidden');
+      
+      const profileNameEl = document.getElementById('ntaProfileName');
+      if (profileNameEl && typeof participantName !== 'undefined') {
+          profileNameEl.textContent = participantName;
+      }
+
     
     const uniqueExercises = [...new Set(practiceState.activeIndices.map(idx => {
         const q = extractedImages[idx];
