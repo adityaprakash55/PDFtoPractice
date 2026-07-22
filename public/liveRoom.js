@@ -166,12 +166,33 @@ function updateLobbyUI() {
         noParticipantsText.classList.remove('hidden');
     }
     
-    participantsList.innerHTML = participants.map(p => `
-        <div class="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 px-3 py-1.5 rounded-full text-sm font-bold border border-purple-200 dark:border-purple-800 flex items-center gap-2">
-            ${p.name}
-            ${p.ready ? '<span class="text-green-600 dark:text-green-400">✓</span>' : '<span class="text-yellow-600 dark:text-yellow-400">⟳</span>'}
-        </div>
-    `).join('');
+    const hostHtml = `
+          <div class="bg-[#18181b] border border-blue-900/40 rounded-xl p-4 flex flex-col items-center justify-center gap-3 shadow-md">
+              <div class="w-14 h-14 rounded-full bg-gradient-to-tr from-blue-900 to-black border-2 border-blue-800/50 flex items-center justify-center relative shadow-inner">
+                  <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-[#18181b]"></div>
+              </div>
+              <div class="text-center w-full">
+                  <h4 class="text-white font-bold text-sm truncate w-full" title="Host">Host</h4>
+                  <div class="mt-1.5 px-2 py-0.5 bg-blue-900/60 border border-blue-700/60 rounded text-[9px] font-black tracking-widest text-blue-300 uppercase inline-block">
+                      HOST
+                  </div>
+              </div>
+          </div>
+      `;
+      
+      participantsList.innerHTML = hostHtml + participants.map(p => `
+          <div class="bg-[#18181b] border border-[#27272a] rounded-xl p-4 flex flex-col items-center justify-center gap-3 shadow-md">
+              <div class="w-14 h-14 rounded-full bg-gradient-to-tr from-blue-900 to-black border-2 border-blue-800/50 flex items-center justify-center relative shadow-inner">
+                  ${p.ready ? '<div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-[#18181b]"></div>' : '<div class="absolute -bottom-1 -right-1 w-4 h-4 bg-yellow-500 rounded-full border-2 border-[#18181b] animate-pulse"></div>'}
+              </div>
+              <div class="text-center w-full">
+                  <h4 class="text-white font-bold text-sm truncate w-full" title="${p.name}">${p.name}</h4>
+                  <div class="mt-1.5 px-2 py-0.5 bg-gray-800 border border-gray-700 rounded text-[9px] font-black tracking-widest text-gray-400 uppercase inline-block">
+                      MEMBER
+                  </div>
+              </div>
+          </div>
+      `).join('');
     
     const allReady = participants.length > 0 && participants.every(p => p.ready);
     startLiveTestBtn.disabled = !allReady;
@@ -413,3 +434,71 @@ function renderLeaderboard(leaderboardData) {
 });
 
 window.addEventListener('DOMContentLoaded', initPeerJS);
+
+
+// ==========================================
+// CHAT LOGIC
+// ==========================================
+const liveChatForm = document.getElementById('liveChatForm');
+const liveChatInput = document.getElementById('liveChatInput');
+const liveChatMessages = document.getElementById('liveChatMessages');
+const emptyChatPlaceholder = document.getElementById('emptyChatPlaceholder');
+
+function addChatMessage(sender, message, isSelf = false) {
+    if (emptyChatPlaceholder) emptyChatPlaceholder.style.display = 'none';
+    if (!liveChatMessages) return;
+    
+    const msgDiv = document.createElement('div');
+    msgDiv.className = `flex flex-col max-w-[85%] ${isSelf ? 'self-end' : 'self-start'}`;
+    
+    const bubbleColor = isSelf ? 'bg-blue-600 text-white' : 'bg-[#27272a] text-gray-200';
+    const borderRadius = isSelf ? 'rounded-2xl rounded-tr-sm' : 'rounded-2xl rounded-tl-sm';
+    
+    msgDiv.innerHTML = `
+        <span class="text-xs text-gray-500 mb-1 px-1 ${isSelf ? 'text-right' : 'text-left'}">${sender}</span>
+        <div class="px-3 py-2 text-sm shadow-sm ${bubbleColor} ${borderRadius}">
+            ${message}
+        </div>
+    `;
+    
+    liveChatMessages.appendChild(msgDiv);
+    liveChatMessages.scrollTop = liveChatMessages.scrollHeight;
+}
+
+if (liveChatForm) {
+    liveChatForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const msg = liveChatInput.value.trim();
+        if (!msg) return;
+        
+        // Add locally
+        addChatMessage('You', msg, true);
+        liveChatInput.value = '';
+        
+        // Broadcast to peers
+        const chatData = { type: 'chat', sender: isHost ? 'Host' : participantName, message: msg };
+        if (isHost) {
+            broadcastToPeers(chatData);
+        } else if (hostConnection) {
+            hostConnection.send(chatData);
+        }
+    });
+}
+
+// Modify existing data handlers to process chat messages
+const originalHandleData = window.handlePeerData;
+window.handlePeerData = function(conn, data) {
+    if (data && data.type === 'chat') {
+        addChatMessage(data.sender, data.message, false);
+        // If host, forward to other peers
+        if (isHost) {
+            participants.forEach(p => {
+                if (p.conn !== conn) p.conn.send(data);
+            });
+        }
+        return; // Don't process further if it's just chat
+    }
+    
+    // Process original logic
+    if (originalHandleData) originalHandleData(conn, data);
+};
