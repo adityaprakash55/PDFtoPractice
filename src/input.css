@@ -151,7 +151,8 @@
     width: 4.5rem !important;
 }
 #landingSidebar.collapsed .dash-sidebar-brand,
-#landingSidebar.collapsed .dash-nav-text {
+#landingSidebar.collapsed .dash-nav-text,
+#landingSidebar.collapsed .dash-nav-section-label {
     display: none !important;
 }
 #landingSidebar.collapsed .dash-nav-btn {
