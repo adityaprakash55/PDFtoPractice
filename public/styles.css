@@ -2663,9 +2663,6 @@
   .text-amber-400 {
     color: var(--color-amber-400);
   }
-  .text-amber-500 {
-    color: var(--color-amber-500);
-  }
   .text-amber-600 {
     color: var(--color-amber-600);
   }
@@ -2711,12 +2708,6 @@
   .text-cyan-400 {
     color: var(--color-cyan-400);
   }
-  .text-cyan-500 {
-    color: var(--color-cyan-500);
-  }
-  .text-cyan-600 {
-    color: var(--color-cyan-600);
-  }
   .text-emerald-400 {
     color: var(--color-emerald-400);
   }
@@ -2725,9 +2716,6 @@
     @supports (color: color-mix(in lab, red, red)) {
       color: color-mix(in oklab, var(--color-emerald-400) 90%, transparent);
     }
-  }
-  .text-emerald-500 {
-    color: var(--color-emerald-500);
   }
   .text-gray-100 {
     color: var(--color-gray-100);
@@ -4200,9 +4188,6 @@
   .dark\:text-amber-100:where(.dark, .dark *) {
     color: var(--color-amber-100);
   }
-  .dark\:text-amber-400:where(.dark, .dark *) {
-    color: var(--color-amber-400);
-  }
   .dark\:text-blue-100:where(.dark, .dark *) {
     color: var(--color-blue-100);
   }
@@ -4214,12 +4199,6 @@
   }
   .dark\:text-blue-400:where(.dark, .dark *) {
     color: var(--color-blue-400);
-  }
-  .dark\:text-cyan-400:where(.dark, .dark *) {
-    color: var(--color-cyan-400);
-  }
-  .dark\:text-emerald-400:where(.dark, .dark *) {
-    color: var(--color-emerald-400);
   }
   .dark\:text-gray-100:where(.dark, .dark *) {
     color: var(--color-gray-100);
@@ -4325,22 +4304,6 @@
     @supports (color: color-mix(in lab, red, red)) {
       .dark\:hover\:bg-red-500\/10:where(.dark, .dark *):hover {
         background-color: color-mix(in oklab, var(--color-red-500) 10%, transparent);
-      }
-    }
-    .dark\:hover\:bg-white\/5:where(.dark, .dark *):hover {
-      background-color: color-mix(in srgb, #fff 5%, transparent);
-    }
-    @supports (color: color-mix(in lab, red, red)) {
-      .dark\:hover\:bg-white\/5:where(.dark, .dark *):hover {
-        background-color: color-mix(in oklab, var(--color-white) 5%, transparent);
-      }
-    }
-    .dark\:hover\:bg-white\/10:where(.dark, .dark *):hover {
-      background-color: color-mix(in srgb, #fff 10%, transparent);
-    }
-    @supports (color: color-mix(in lab, red, red)) {
-      .dark\:hover\:bg-white\/10:where(.dark, .dark *):hover {
-        background-color: color-mix(in oklab, var(--color-white) 10%, transparent);
       }
     }
     .dark\:hover\:text-blue-400:where(.dark, .dark *):hover {
