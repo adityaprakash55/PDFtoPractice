@@ -1,3 +1,4 @@
+let hostParticipatingName = localStorage.getItem('hostName') || 'Host';
 // =============================================================
 // Live Room P2P Logic (PeerJS)
 // =============================================================
@@ -44,8 +45,14 @@ function initPeerJS() {
         document.getElementById('configContainer').classList.add('hidden');
         document.getElementById('practiceSetupContainer').classList.add('hidden');
         document.getElementById('historyContainer').classList.add('hidden');
+          document.getElementById('bookmarksContainer').classList.add('hidden');
+          if(document.getElementById('notedQsContainer')) document.getElementById('notedQsContainer').classList.add('hidden');
+          if(document.getElementById('notebookContainer')) document.getElementById('notebookContainer').classList.add('hidden');
         
         liveJoinContainer.classList.remove('hidden');
+            const sb1 = document.getElementById('landingSidebar');
+            if(sb1) { sb1.classList.remove('md:flex'); sb1.classList.add('hidden', '!hidden'); }
+            document.querySelectorAll('.dash-view').forEach(v => v.classList.add('hidden'));
         
         joinRoomBtn.addEventListener('click', () => {
             const name = participantNameInput.value.trim();
@@ -59,13 +66,21 @@ function initPeerJS() {
                 liveConn = livePeer.connect(roomParam);
                 
                 liveConn.on('open', () => {
-                    joinStatusText.textContent = "Connected! Receiving test data (this might take a few seconds)...";
-                    liveJoinContainer.classList.add('hidden');
-                    waitingForHostContainer.classList.remove('hidden');
-                    waitingForHostContainer.querySelector('p').textContent = "Downloading test data from host...";
-                    
-                    liveConn.send({ type: 'JOIN', name });
-                });
+                      joinStatusText.textContent = "Connected! Receiving test data (this might take a few seconds)...";
+                      liveJoinContainer.classList.add('hidden');
+                      
+                      // Show Lobby instead of waiting container
+                      liveLobbyContainer.classList.remove('hidden');
+            const sb2 = document.getElementById('landingSidebar');
+            if(sb2) { sb2.classList.remove('md:flex'); sb2.classList.add('hidden', '!hidden'); }
+            document.querySelectorAll('.dash-view').forEach(v => v.classList.add('hidden'));
+                      const hostControls = document.getElementById('hostControls');
+                      if (hostControls) hostControls.style.display = 'none';
+                      const hostWarningBanner = document.getElementById('hostWarningBanner');
+                      if (hostWarningBanner) hostWarningBanner.style.display = 'none';
+                      
+                      liveConn.send({ type: 'JOIN', name });
+                  });
                 
                 liveConn.on('data', handleParticipantData);
                 
@@ -85,46 +100,95 @@ function initPeerJS() {
 
 const homeCreateLiveRoomBtn = document.getElementById('homeCreateLiveRoomBtn');
 
-if (homeCreateLiveRoomBtn) {
-    homeCreateLiveRoomBtn.addEventListener('click', () => {
-        isLiveMode = true;
-        isHost = true;
-        const fileInput = document.getElementById('fileInput');
-        if (fileInput) fileInput.click();
-    });
-}
+
+  const handleCreateRoom = (callback) => {
+        let cachedName = localStorage.getItem('hostName') || '';
+        const participantNameInput = document.getElementById('participantNameInput');
+        if (participantNameInput) participantNameInput.value = cachedName;
+        
+        const containers = ['uploadContainer', 'configContainer', 'practiceSetupContainer', 'historyContainer', 'bookmarksContainer', 'notedQsContainer', 'notebookContainer'];
+        containers.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.classList.add('hidden');
+        });
+        
+        const liveJoinContainer = document.getElementById('liveJoinContainer');
+        if (liveJoinContainer) {
+            liveJoinContainer.classList.remove('hidden');
+            const sb1 = document.getElementById('landingSidebar');
+            if(sb1) { sb1.classList.remove('md:flex'); sb1.classList.add('hidden', '!hidden'); }
+            document.querySelectorAll('.dash-view').forEach(v => v.classList.add('hidden'));
+            const h2 = liveJoinContainer.querySelector('h2');
+            const p = liveJoinContainer.querySelector('p');
+            if (h2) h2.textContent = "Host Live Practice";
+            if (p) p.textContent = "Enter your name as the Host.";
+            
+            const joinRoomBtn = document.getElementById('joinRoomBtn');
+            const newBtn = joinRoomBtn.cloneNode(true);
+            newBtn.textContent = "Proceed to Room";
+            joinRoomBtn.parentNode.replaceChild(newBtn, joinRoomBtn);
+            
+            newBtn.addEventListener('click', () => {
+                const inputName = document.getElementById('participantNameInput').value.trim();
+                if (!inputName) return alert("Please enter your name");
+                
+                hostParticipatingName = inputName || 'Host';
+                localStorage.setItem('hostName', hostParticipatingName);
+                liveJoinContainer.classList.add('hidden');
+                
+                callback();
+            });
+        }
+    };
+
+  if (homeCreateLiveRoomBtn) {
+      homeCreateLiveRoomBtn.addEventListener('click', () => {
+          handleCreateRoom(() => {
+              isLiveMode = true;
+              isHost = true;
+              const fileInput = document.getElementById('fileInput');
+              if (fileInput) fileInput.click();
+          });
+      });
+  }
 
 if (createLiveRoomBtn) {
     createLiveRoomBtn.addEventListener('click', () => {
-        isLiveMode = true;
-        isHost = true;
-        
-        document.getElementById('practiceSetupContainer').classList.add('hidden');
-        liveLobbyContainer.classList.remove('hidden');
-        
-        const randomId = 'pdftopractice-' + Math.random().toString(36).substr(2, 9);
-        livePeer = new Peer(randomId);
-        
-        livePeer.on('open', (id) => {
-            const link = `${window.location.origin}/?room=${id}`;
-            liveRoomLinkText.textContent = link;
+        handleCreateRoom(() => {
+            isLiveMode = true;
+            isHost = true;
             
-            copyLiveLinkBtn.addEventListener('click', () => {
-                navigator.clipboard.writeText(link);
-                copyLiveLinkBtn.innerHTML = '<span class="text-sm font-bold">Copied!</span>';
-                setTimeout(() => {
-                    copyLiveLinkBtn.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>';
-                }, 2000);
+            document.getElementById('practiceSetupContainer').classList.add('hidden');
+            liveLobbyContainer.classList.remove('hidden');
+            const sb2 = document.getElementById('landingSidebar');
+            if(sb2) { sb2.classList.remove('md:flex'); sb2.classList.add('hidden', '!hidden'); }
+            document.querySelectorAll('.dash-view').forEach(v => v.classList.add('hidden'));
+            
+            const randomId = 'pdftopractice-' + Math.random().toString(36).substr(2, 9);
+            livePeer = new Peer(randomId);
+            
+            livePeer.on('open', (id) => {
+        window.myLivePeerId = id;
+                const link = `${window.location.origin}/?room=${id}`;
+                liveRoomLinkText.textContent = link;
+                
+                copyLiveLinkBtn.addEventListener('click', () => {
+                    navigator.clipboard.writeText(link);
+                    copyLiveLinkBtn.innerHTML = '<span class="text-sm font-bold">Copied!</span>';
+                    setTimeout(() => {
+                        copyLiveLinkBtn.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>';
+                    }, 2000);
+                });
             });
-        });
-        
-        livePeer.on('connection', (conn) => {
-            conn.on('data', (data) => handleHostData(conn, data));
             
-            conn.on('close', () => {
-                participants = participants.filter(p => p.id !== conn.peer);
-                liveConnections = liveConnections.filter(c => c.peer !== conn.peer);
-                updateLobbyUI();
+            livePeer.on('connection', (conn) => {
+                conn.on('data', (data) => handleHostData(conn, data));
+                
+                conn.on('close', () => {
+                    participants = participants.filter(p => p.id !== conn.peer);
+                    liveConnections = liveConnections.filter(c => c.peer !== conn.peer);
+                    updateLobbyUI();
+                });
             });
         });
     });
@@ -154,6 +218,14 @@ function handleHostData(conn, data) {
             p.score = data.score;
             p.accuracy = data.accuracy;
             checkAllScoresSubmitted();
+        }
+    } else if (data.type === 'chat') {
+        addChatMessage(data.sender, data.message);
+        // broadcast to other peers
+        if (typeof liveConnections !== 'undefined') {
+            liveConnections.forEach(c => {
+                if (c.peer !== conn.peer) c.send(data);
+            });
         }
     }
 }
@@ -203,13 +275,18 @@ function updateLobbyUI() {
     } else {
         startLiveTestBtn.textContent = "Start Practice for Everyone";
     }
+    
+    if (typeof isHost !== 'undefined' && isHost && typeof liveConnections !== 'undefined') {
+        const updateData = { type: 'LOBBY_UPDATE', participants: participants, hostName: typeof hostParticipatingName !== 'undefined' ? hostParticipatingName : 'Host' };
+        liveConnections.forEach(c => c.send(updateData));
+    }
 }
 
 if (startLiveTestBtn) {
     startLiveTestBtn.addEventListener('click', () => {
         if (participants.length === 0 || !participants.every(p => p.ready)) return;
         
-        const hostName = prompt("Do you want to participate in the practice too?\nEnter your name to join, or click Cancel/leave blank to only spectate as Host.");
+        const hostName = hostParticipatingName;
         
         const totalMins = parseInt(document.getElementById('totalTimeInput').value) || 60;
         
@@ -244,15 +321,23 @@ function handleParticipantData(data) {
         extractedImages = data.extractedImages;
         extractedAnswerPages = data.extractedAnswerPages;
         
-        waitingForHostContainer.querySelector('p').textContent = "Data received! Waiting for host to start the practice...";
+        
         liveConn.send({ type: 'READY' });
-    } else if (data.type === 'START_TEST') {
-        waitingForHostContainer.classList.add('hidden');
-        showLiveInstructions(data.timeLimit);
-    } else if (data.type === 'LEADERBOARD') {
+      } else if (data.type === 'START_TEST') {
+          if (waitingForHostContainer) waitingForHostContainer.classList.add('hidden');
+          showLiveInstructions(data.timeLimit);
+      } else if (data.type === 'LEADERBOARD') {
         renderLeaderboard(data.leaderboard);
-    }
-}
+        window.liveRoomParticipants = data.leaderboard;
+        if (typeof window._lrdUpdateLeaderboard === "function") window._lrdUpdateLeaderboard(data.leaderboard);
+      } else if (data.type === 'LOBBY_UPDATE') {
+          participants = data.participants;
+          hostParticipatingName = data.hostName;
+          updateLobbyUI();
+      } else if (data.type === 'chat') {
+          addChatMessage(data.sender, data.message);
+      }
+  }
 
 function showLiveInstructions(timeLimitSeconds) {
     if (document.getElementById('liveLobbyContainer')) document.getElementById('liveLobbyContainer').classList.add('hidden');
@@ -337,41 +422,27 @@ function startLocalLiveTest(timeLimitSeconds) {
     startTotalTimer();
 }
 
-// Intercept NTA Submit
-const originalShowSummary = window.showSummary;
-window.showSummary = function() {
-    originalShowSummary();
-    
-    if (isLiveMode) {
-        const scoreStr = document.getElementById('summaryScore').textContent;
-        const accuracyStr = document.getElementById('summaryAccuracy').textContent;
-        
-        if (!isHost) {
-            liveConn.send({
-                type: 'SUBMIT_SCORE',
-                score: parseFloat(scoreStr) || 0,
-                accuracy: parseFloat(accuracyStr) || 0
-            });
-        } else if (hostParticipating) {
-            const hostP = participants.find(x => x.id === 'host');
-            if (hostP) {
-                hostP.score = parseFloat(scoreStr) || 0;
-                hostP.accuracy = parseFloat(accuracyStr) || 0;
-                checkAllScoresSubmitted();
-            }
+// Live Room Score Submission API
+// Called by app.js showResultsDashboard() after test submit
+window.liveRoomSubmit = function(score, accuracy) {
+    if (!isLiveMode) return;
+    window.liveRoomParticipants = participants; // sync
+
+    if (!isHost) {
+        if (liveConn) {
+            liveConn.send({ type: 'SUBMIT_SCORE', score: score, accuracy: accuracy });
         }
-        
-        document.getElementById('summaryContainer').innerHTML = `
-            <div class="text-center p-12">
-                <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-4">Score Submitted!</h2>
-                <div class="animate-pulse flex flex-col items-center mt-6">
-                    <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-                    <p class="text-gray-500">Waiting for other participants to finish...</p>
-                </div>
-            </div>
-        `;
+    } else if (hostParticipating) {
+        const hostP = participants.find(x => x.id === 'host');
+        if (hostP) {
+            hostP.score = score;
+            hostP.accuracy = accuracy;
+            window.liveRoomParticipants = participants;
+            checkAllScoresSubmitted();
+        }
     }
 };
+
 
 function checkAllScoresSubmitted() {
     const allSubmitted = participants.every(p => p.score !== null);
@@ -398,6 +469,11 @@ function checkAllScoresSubmitted() {
         liveConnections.forEach(conn => conn.send(payload));
         
         renderLeaderboard(participants);
+        // Update results dashboard leaderboard if open
+        window.liveRoomParticipants = participants;
+        if (typeof window._lrdUpdateLeaderboard === 'function') {
+            window._lrdUpdateLeaderboard(participants);
+        }
     }
 }
 
@@ -408,23 +484,50 @@ function renderLeaderboard(leaderboardData) {
         document.getElementById('liveLobbyContainer').classList.add('hidden');
     }
     
-    leaderboardModal.classList.remove('hidden');
-    leaderboardTbody.innerHTML = leaderboardData.map((p, i) => `
-        <tr class="hover:bg-gray-100 dark:hover:bg-navy-800 transition-colors">
-            <td class="py-4 px-4 font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                ${p.rank === 1 ? '🥇' : p.rank === 2 ? '🥈' : p.rank === 3 ? '🥉' : '#' + p.rank}
-            </td>
-            <td class="py-4 px-4 font-semibold text-gray-800 dark:text-gray-200">
-                ${p.name} ${p.id === 'host' ? '(Host)' : ''}
-            </td>
-            <td class="py-4 px-4 font-mono font-bold text-blue-600 dark:text-blue-400 text-right">
-                ${p.score}
-            </td>
-            <td class="py-4 px-4 text-gray-500 dark:text-gray-400 text-right">
-                ${p.accuracy}%
-            </td>
-        </tr>
-    `).join('');
+    // Show the new Performance Overview dashboard instead of the old modal
+    if (typeof showResultsDashboard === 'function') {
+        showResultsDashboard();
+        
+        // If it's the Host and they weren't answering questions, force them to the Leaderboard panel
+        if (typeof isHost !== 'undefined' && isHost && !hostParticipating) {
+            document.querySelectorAll('.lrd-panel').forEach(p => p.classList.add('hidden'));
+            const lbPanel = document.getElementById('lrdLeaderboard');
+            if (lbPanel) lbPanel.classList.remove('hidden');
+            
+            document.querySelectorAll('.lrd-nav').forEach(b => {
+                b.classList.remove('bg-white/10', 'text-white');
+                b.classList.add('text-gray-400');
+            });
+            const lbNav = document.querySelector('.lrd-nav[data-panel="Leaderboard"]');
+            if (lbNav) {
+                lbNav.classList.add('bg-white/10', 'text-white');
+                lbNav.classList.remove('text-gray-400');
+            }
+            const reviewNav = document.querySelector('.lrd-nav[data-panel="ReviewExam"]');
+            if (reviewNav) {
+                reviewNav.style.display = 'none';
+            }
+        }
+    } else {
+        // Fallback to old modal if missing
+        leaderboardModal.classList.remove('hidden');
+        leaderboardTbody.innerHTML = leaderboardData.map((p, i) => `
+            <tr class="hover:bg-gray-100 dark:hover:bg-navy-800 transition-colors">
+                <td class="py-4 px-4 font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                    ${p.rank === 1 ? '🥇' : p.rank === 2 ? '🥈' : p.rank === 3 ? '🥉' : '#' + p.rank}
+                </td>
+                <td class="py-4 px-4 font-semibold text-gray-800 dark:text-gray-200">
+                    ${p.name} ${p.id === 'host' ? '(Host)' : ''}
+                </td>
+                <td class="py-4 px-4 font-mono font-bold text-blue-600 dark:text-blue-400 text-right">
+                    ${p.score}
+                </td>
+                <td class="py-4 px-4 text-gray-500 dark:text-gray-400 text-right">
+                    ${p.accuracy}%
+                </td>
+            </tr>
+        `).join('');
+    }
 }
 
 [closeLeaderboardBtn, exitLiveTestBtn].forEach(btn => {
@@ -476,12 +579,12 @@ if (liveChatForm) {
         liveChatInput.value = '';
         
         // Broadcast to peers
-        const chatData = { type: 'chat', sender: isHost ? 'Host' : participantName, message: msg };
-        if (isHost) {
-            broadcastToPeers(chatData);
-        } else if (hostConnection) {
-            hostConnection.send(chatData);
-        }
+        const chatData = { type: 'chat', sender: isHost ? (typeof hostParticipatingName !== 'undefined' ? hostParticipatingName : 'Host') : (typeof participantNameInput !== 'undefined' ? participantNameInput.value.trim() : 'Participant'), message: msg };
+          if (isHost) {
+              if (typeof liveConnections !== 'undefined') liveConnections.forEach(conn => conn.send(chatData));
+          } else if (typeof liveConn !== 'undefined' && liveConn) {
+              liveConn.send(chatData);
+          }
     });
 }
 
@@ -502,3 +605,54 @@ window.handlePeerData = function(conn, data) {
     // Process original logic
     if (originalHandleData) originalHandleData(conn, data);
 };
+// Feature: Start Live Room from History Session
+window.startLiveRoomFromSession = function(session) {
+    if (!session || !session.extractedImages || session.extractedImages.length === 0) {
+        alert('Invalid session data. Cannot start live room.');
+        return;
+    }
+    
+    // Set global states required for hosting
+    extractedImages = session.extractedImages;
+    totalQuestions = extractedImages.length;
+    
+    // Simulate clicking Host Live Test
+    document.getElementById('historyContainer').classList.add('hidden');
+    document.getElementById('uploadContainer').classList.add('hidden');
+        // Setup lobby
+      isLiveMode = true;
+      isHost = true;
+      document.getElementById('practiceSetupContainer').classList.add('hidden');
+      const lobby = document.getElementById('liveLobbyContainer');
+      if (lobby) lobby.classList.remove('hidden');
+
+      const randomId = 'pdftopractice-' + Math.random().toString(36).substr(2, 9);
+      livePeer = new Peer(randomId);
+
+      livePeer.on('open', (id) => {
+          window.myLivePeerId = id;
+          const link = window.location.origin + '/?room=' + id;
+          document.getElementById('lobbyRoomCode').textContent = id;
+          const copyLiveLinkBtn = document.getElementById('lobbyCopyLinkBtn');
+          if (copyLiveLinkBtn) {
+              // Note: you may want to re-clone the button to clear old event listeners, but this is fine for now
+              copyLiveLinkBtn.addEventListener('click', () => {
+                  navigator.clipboard.writeText(link);
+                  copyLiveLinkBtn.innerHTML = '<span class="text-sm font-bold">Copied!</span>';
+                  setTimeout(() => {
+                      copyLiveLinkBtn.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>';
+                  }, 2000);
+              });
+          }
+      });
+
+      livePeer.on('connection', (conn) => {
+          // Note: handleHostData is already defined in liveRoom.js
+          conn.on('data', (data) => handleHostData(conn, data));
+          conn.on('close', () => {
+              participants = participants.filter(p => p.id !== conn.peer);
+              liveConnections = liveConnections.filter(c => c.peer !== conn.peer);
+              updateLobbyUI();
+          });
+      });
+  };

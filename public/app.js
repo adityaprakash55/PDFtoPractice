@@ -1885,11 +1885,7 @@ nextQBtn.addEventListener('click', () => {
     }
 });
 
-endPracticeBtn.addEventListener('click', () => {
-    if (confirm("Are you sure you want to end your practice session?")) {
-        showSummary();
-    }
-});
+// Removed old endPracticeBtn listener
 
 function showSummary() {
     if (practiceState.totalTimerInterval) clearInterval(practiceState.totalTimerInterval);
@@ -2374,6 +2370,9 @@ async function renderHistory() {
                 
                 <!-- Right: Actions -->
                 <div class="flex items-center gap-2 mt-6 md:mt-0">
+                    <button class="share-session-btn bg-[#286090] hover:bg-[#1e4b72] text-white text-sm font-bold py-2 px-3 rounded-lg flex items-center justify-center transition-colors" data-id="${session.id}" title="Share this test">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+                    </button>
                     <button class="view-session-btn bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors" data-id="${session.id}">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg> 
                         View Analysis
@@ -2433,6 +2432,18 @@ async function renderHistory() {
             });
         });
         
+        document.querySelectorAll('.share-session-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const id = parseInt(btn.getAttribute('data-id'));
+                const session = await getSessionFromDB(id);
+                if (session && typeof startLiveRoomFromSession === 'function') {
+                    startLiveRoomFromSession(session);
+                } else {
+                    alert('Unable to share this session.');
+                }
+            });
+        });
+        
         document.querySelectorAll('.history-reattempt-btn').forEach(btn => {
             btn.addEventListener('click', async (e) => {
                 e.stopPropagation();
@@ -2469,9 +2480,8 @@ function loadSessionAndShowSummary(session) {
     
     // The showSummary function expects these to exist if we try to navigate back/restart, 
     // but we can just let showSummary run directly with the restored practiceState
-    // Wait, showSummary recalculates stats. Let's just render the loaded stats directly
-    // by triggering showSummary() which recalculates from practiceState!
-    showSummary();
+    // trigger showResultsDashboard which recalculates from practiceState!
+    showResultsDashboard();
 }
 
 // Initial render
@@ -3361,25 +3371,74 @@ ntaBackBtn.addEventListener('click', () => {
     }
 });
 
-ntaNextBtn.addEventListener('click', () => {
+if (ntaNextBtn) ntaNextBtn.addEventListener('click', () => {
     if (practiceState.currentIndex < practiceState.activeIndices.length - 1) {
         renderNtaQuestion(practiceState.currentIndex + 1);
     }
 });
 
-ntaSubmitBtn.addEventListener('click', () => {
-    if (confirm("Are you sure you want to submit your paper?")) {
-        // Fire Confetti!
-        if (typeof confetti === 'function') {
-            confetti({
-                particleCount: 150,
-                spread: 70,
-                origin: { y: 0.6 },
-                colors: ['#26ccff', '#a25afd', '#ff5e7e', '#88ff5a', '#fcff42', '#ffa62d', '#ff36ff']
-            });
-        }
-        showSummary();
+function triggerExamSummary() {
+    const counts = { not_visited: 0, not_answered: 0, answered: 0, marked: 0, answered_marked: 0 };
+    const sectionCounts = {};
+    practiceState.activeIndices.forEach(realIndex => {
+        const stat = practiceState.stats[realIndex];
+        counts[stat.ntaStatus]++;
+        const ex = stat.exercise || 'Exercise 1';
+        if (!sectionCounts[ex]) sectionCounts[ex] = { answered: 0, not_answered: 0, not_visited: 0, marked: 0, answered_marked: 0 };
+        sectionCounts[ex][stat.ntaStatus]++;
+    });
+    
+    document.getElementById('esTotalQ').textContent = practiceState.activeIndices.length;
+    document.getElementById('esAnswered').textContent = counts.answered;
+    document.getElementById('esNotAnswered').textContent = counts.not_answered;
+    document.getElementById('esNotVisited').textContent = counts.not_visited;
+    document.getElementById('esMarked').textContent = counts.marked;
+    document.getElementById('esAnsMarked').textContent = counts.answered_marked;
+    
+    const tbody = document.getElementById('esSectionBreakdown');
+    if (tbody) {
+        tbody.innerHTML = Object.entries(sectionCounts).map(([name, c]) => `
+            <tr class="hover:bg-gray-50 dark:hover:bg-[#1a1f2e]/50">
+                <td class="px-4 py-2.5 font-semibold text-gray-800 dark:text-gray-200">${name}</td>
+                <td class="px-3 py-2.5 text-center text-[#5cb85c] font-bold">${c.answered}</td>
+                <td class="px-3 py-2.5 text-center text-[#d9534f] font-bold">${c.not_answered}</td>
+                <td class="px-3 py-2.5 text-center text-gray-600 dark:text-gray-300 font-bold">${c.not_visited}</td>
+                <td class="px-3 py-2.5 text-center text-[#5bc0de] font-bold">${c.marked}</td>
+                <td class="px-3 py-2.5 text-center text-purple-500 font-bold">${c.answered_marked}</td>
+            </tr>
+        `).join('');
     }
+    
+    document.getElementById('examSummaryModal').classList.remove('hidden');
+}
+
+ntaSubmitBtn.addEventListener('click', triggerExamSummary);
+endPracticeBtn.addEventListener('click', triggerExamSummary);
+
+// Modal button wiring
+document.addEventListener('DOMContentLoaded', () => {
+    const examSummaryModal = document.getElementById('examSummaryModal');
+    const areYouSureModal = document.getElementById('areYouSureModal');
+
+    document.getElementById('examSummaryCloseBtn').addEventListener('click', () => examSummaryModal.classList.add('hidden'));
+    document.getElementById('examSummaryReturnBtn').addEventListener('click', () => examSummaryModal.classList.add('hidden'));
+    document.getElementById('examSummaryFinalBtn').addEventListener('click', () => {
+        examSummaryModal.classList.add('hidden');
+        areYouSureModal.classList.remove('hidden');
+    });
+    
+    document.getElementById('areYouSureCancelBtn').addEventListener('click', () => {
+        areYouSureModal.classList.add('hidden');
+        examSummaryModal.classList.remove('hidden');
+    });
+    
+    document.getElementById('areYouSureConfirmBtn').addEventListener('click', () => {
+        areYouSureModal.classList.add('hidden');
+        if (typeof confetti === 'function') {
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#26ccff', '#a25afd', '#ff5e7e', '#88ff5a', '#fcff42', '#ffa62d', '#ff36ff'] });
+        }
+        showResultsDashboard();
+    });
 });
 
 // Mobile Palette Drawer Logic
@@ -3638,3 +3697,597 @@ document.getElementById('closeFullAnswerKeyBtn')?.addEventListener('click', () =
     document.getElementById('fullAnswerKeyModal').classList.add('hidden');
 });
 
+
+// RESULTS DASHBOARD - Full post-test analysis view
+// ================================================================
+let _lrdNavWired = false;
+let _lrdChartTime = null, _lrdChartScoreQ = null, _lrdChartScoreT = null;
+
+function showResultsDashboard() {
+    // Stop all timers
+    if (practiceState.totalTimerInterval) clearInterval(practiceState.totalTimerInterval);
+    if (practiceState.qTimerInterval) clearInterval(practiceState.qTimerInterval);
+    if (practiceState.countdownInterval) clearInterval(practiceState.countdownInterval);
+
+    // Hide all other views
+    const ntaEl = document.getElementById('ntaInterfaceContainer');
+    if (ntaEl) ntaEl.classList.add('hidden');
+    if (summaryContainer) summaryContainer.classList.add('hidden');
+
+    const dash = document.getElementById('liveResultsDashboard');
+    if (!dash) { showSummary(); return; }
+    dash.classList.remove('hidden');
+
+    // Gather stats from practiceState
+    const scorePerQ = practiceState.scorePerQ || 4;
+    const hasNeg = practiceState.negativeMarking !== false;
+    const indices = practiceState.activeIndices || [];
+    const totalQ = indices.length;
+    let totalSeconds = 0, correctCount = 0, incorrectCount = 0, attemptedCount = 0;
+
+    indices.forEach(ri => {
+        const s = practiceState.stats[ri];
+        if (!s) return;
+        totalSeconds += (s.timeSpent || 0);
+        if (s.attempted) attemptedCount++;
+        if (s.evaluation === 'correct') correctCount++;
+        if (s.evaluation === 'incorrect') incorrectCount++;
+    });
+
+    const skippedCount = totalQ - attemptedCount;
+    const markedCount = indices.filter(ri => practiceState.stats[ri]?.ntaStatus === 'marked' || practiceState.stats[ri]?.ntaStatus === 'answered_marked').length;
+    const lrdMarkedText = document.getElementById('lrdMarkedText');
+    if (lrdMarkedText) lrdMarkedText.textContent = `Marked for Review (${markedCount})`;
+    const maxScore = totalQ * scorePerQ;
+    const score = (correctCount * scorePerQ) - (hasNeg ? incorrectCount : 0);
+    const scorePercent = maxScore > 0 ? Math.max(score, 0) / maxScore * 100 : 0;
+    const accuracy = attemptedCount > 0 ? correctCount / attemptedCount * 100 : 0;
+    const avgTimePerQ = totalQ > 0 ? Math.round(totalSeconds / totalQ) : 0;
+
+    const stats = { scorePerQ, hasNeg, totalQ, totalSeconds, correctCount, incorrectCount, attemptedCount, skippedCount, maxScore, score, scorePercent, accuracy, avgTimePerQ };
+
+    // Role badge
+    const roleBadge = document.getElementById('lrdRoleBadge');
+    if (roleBadge) {
+        const inLive = typeof isLiveMode !== 'undefined' && isLiveMode;
+        if (inLive) {
+            const amHost = typeof isHost !== 'undefined' && isHost;
+            roleBadge.textContent = amHost ? '👑 Host' : '👤 Participant';
+        } else {
+            roleBadge.textContent = '📝 Solo Practice';
+        }
+    }
+
+    // Wire nav once
+    if (!_lrdNavWired) {
+        _lrdNavWired = true;
+        document.querySelectorAll('.lrd-nav').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.lrd-nav').forEach(b => {
+                    b.classList.remove('bg-white/10', 'text-white');
+                    b.classList.add('text-gray-400');
+                });
+                btn.classList.add('bg-white/10', 'text-white');
+                btn.classList.remove('text-gray-400');
+                document.querySelectorAll('.lrd-panel').forEach(p => p.classList.add('hidden'));
+                const panel = document.getElementById('lrd' + btn.dataset.panel);
+                if (panel) panel.classList.remove('hidden');
+            });
+        });
+        const overviewBtn = document.querySelector('.lrd-nav[data-panel="Overview"]');
+        if (overviewBtn) { overviewBtn.classList.add('bg-white/10', 'text-white'); overviewBtn.classList.remove('text-gray-400'); }
+
+        const exitBtn = document.getElementById('lrdExitBtn');
+        if (exitBtn) exitBtn.addEventListener('click', () => { window.location.reload(); });
+    }
+
+    // Populate all panels
+    _lrdFillOverview(stats);
+    _lrdFillTimeAnalysis(stats);
+    _lrdFillInsights(stats);
+    _lrdFillScoreProgress(stats);
+    _lrdFillLeaderboard();
+
+    // Submit live score if applicable
+    if (typeof window.liveRoomSubmit === 'function') {
+        window.liveRoomSubmit(score, accuracy);
+    }
+
+    // Save session (solo mode)
+    if (typeof saveCurrentSession === 'function') {
+        try { saveCurrentSession(totalSeconds, correctCount, incorrectCount, skippedCount); } catch(e) {}
+    }
+    if (typeof clearSession === 'function') {
+        try { clearSession(); } catch(e) {}
+    }
+}
+
+// Make available globally for liveRoom.js to call
+window.showResultsDashboard = showResultsDashboard;
+
+function _lrdFillOverview(s) {
+    const { correctCount, incorrectCount, skippedCount, totalQ, score, maxScore, scorePercent, accuracy, totalSeconds, avgTimePerQ, scorePerQ, hasNeg } = s;
+    const el = id => document.getElementById(id);
+    const mins = Math.floor(totalSeconds / 60), secs = totalSeconds % 60;
+
+    if (el('lrdOverviewMeta')) el('lrdOverviewMeta').textContent = totalQ + ' QS · ' + mins + 'M ' + secs + 'S TIME';
+
+    // Score ring
+    const ring = el('lrdScoreRing');
+    if (ring) {
+        const circ = 2 * Math.PI * 15.9;
+        const pct = Math.min(scorePercent, 100);
+        setTimeout(() => {
+            ring.setAttribute('stroke-dasharray', (pct / 100 * circ) + ' ' + circ);
+            ring.setAttribute('stroke', score < 0 ? '#ef4444' : score === 0 ? '#6b7280' : '#22c55e');
+        }, 150);
+        if (el('lrdScorePct')) el('lrdScorePct').textContent = Math.round(pct) + '%';
+    }
+    if (el('lrdScoreVal')) el('lrdScoreVal').textContent = score % 1 === 0 ? score : score.toFixed(2);
+    if (el('lrdScoreMax')) el('lrdScoreMax').textContent = '/' + maxScore;
+    if (el('lrdAccuracy')) el('lrdAccuracy').textContent = accuracy.toFixed(1) + '%';
+
+    if (el('lrdCorrect')) el('lrdCorrect').textContent = correctCount;
+    if (el('lrdCorrectMark')) el('lrdCorrectMark').textContent = '+' + (correctCount * scorePerQ) + ' marks';
+    if (el('lrdIncorrect')) el('lrdIncorrect').textContent = incorrectCount;
+    if (el('lrdIncorrectMark')) el('lrdIncorrectMark').textContent = '-' + (hasNeg ? incorrectCount : 0) + ' marks';
+    if (el('lrdSkipped')) el('lrdSkipped').textContent = skippedCount;
+    if (el('lrdSkippedPct')) el('lrdSkippedPct').textContent = (totalQ > 0 ? Math.round(skippedCount / totalQ * 100) : 0) + '% of paper';
+    if (el('lrdTimePerQ')) el('lrdTimePerQ').textContent = avgTimePerQ + 's';
+    if (el('lrdTotalTime')) el('lrdTotalTime').textContent = mins + 'm ' + secs + 's total';
+
+    // Distribution bar
+    const cP = totalQ > 0 ? correctCount / totalQ * 100 : 0;
+    const iP = totalQ > 0 ? incorrectCount / totalQ * 100 : 0;
+    const sP = totalQ > 0 ? skippedCount / totalQ * 100 : 100;
+    setTimeout(() => {
+        if (el('lrdDistC')) el('lrdDistC').style.width = cP + '%';
+        if (el('lrdDistI')) el('lrdDistI').style.width = iP + '%';
+        if (el('lrdDistS')) el('lrdDistS').style.width = sP + '%';
+    }, 150);
+    if (el('lrdDistCP')) el('lrdDistCP').textContent = Math.round(cP) + '%';
+    if (el('lrdDistIP')) el('lrdDistIP').textContent = Math.round(iP) + '%';
+    if (el('lrdDistSP')) el('lrdDistSP').textContent = Math.round(sP) + '%';
+
+    // Percentile (only in live mode with rankings)
+    const pCard = el('lrdPercentileCard');
+    if (pCard && window.liveRoomParticipants && window.liveRoomParticipants.length > 0) {
+        const myId = (typeof isHost !== 'undefined' && isHost) ? 'host' : (window.myLivePeerId || '');
+        const me = window.liveRoomParticipants.find(p => p.id === myId);
+        if (me && me.rank) {
+            const total = window.liveRoomParticipants.length;
+            const pct = total > 1 ? Math.round((total - me.rank) / (total - 1) * 100) : 100;
+            if (el('lrdPercentile')) el('lrdPercentile').textContent = pct + '%ile';
+            if (el('lrdRankText')) el('lrdRankText').textContent = 'Rank #' + me.rank;
+            pCard.classList.remove('hidden');
+        }
+    }
+
+    // Question map
+    const qMap = el('lrdQMap');
+    if (qMap) {
+        qMap.innerHTML = '';
+        (practiceState.activeIndices || []).forEach((ri, i) => {
+            const stat = practiceState.stats[ri];
+            if (!stat) return;
+            let bg = 'bg-gray-800 border border-gray-700';
+            if (stat.evaluation === 'correct') bg = 'bg-green-600';
+            else if (stat.evaluation === 'incorrect') bg = 'bg-red-600';
+            else if (stat.attempted || stat.ntaStatus === 'answered' || stat.ntaStatus === 'answered_marked') bg = 'bg-gray-500';
+            const d = document.createElement('div');
+            d.className = 'w-6 h-6 rounded text-[9px] flex items-center justify-center font-bold text-white ' + bg;
+            d.textContent = i + 1;
+            d.title = 'Q' + (i+1) + ': ' + (stat.evaluation || stat.ntaStatus);
+            qMap.appendChild(d);
+        });
+    }
+}
+
+function _lrdFillTimeAnalysis(s) {
+    const { totalSeconds, totalQ, avgTimePerQ } = s;
+    const el = id => document.getElementById(id);
+    const mins = Math.floor(totalSeconds / 60), secs = totalSeconds % 60;
+
+    if (el('lrdTimeMeta')) el('lrdTimeMeta').textContent = 'AVG PACE: ' + avgTimePerQ + 'S/Q · TOTAL: ' + mins + 'M ' + secs + 'S';
+    if (el('lrdAvgLabel')) el('lrdAvgLabel').textContent = '- - - - Avg: ' + avgTimePerQ + 's/Q';
+
+    let fastCorrect = 0, fastIncorrect = 0, slowCorrect = 0, slowIncorrect = 0;
+    const timeData = [], colorData = [];
+
+    (practiceState.activeIndices || []).forEach(ri => {
+        const stat = practiceState.stats[ri];
+        if (!stat) return;
+        const t = stat.timeSpent || 0;
+        timeData.push(t);
+        const isFast = t <= avgTimePerQ;
+        if (stat.evaluation === 'correct') {
+            if (isFast) fastCorrect++; else slowCorrect++;
+            colorData.push('rgba(34,197,94,0.8)');
+        } else if (stat.evaluation === 'incorrect') {
+            if (isFast) fastIncorrect++; else slowIncorrect++;
+            colorData.push('rgba(239,68,68,0.8)');
+        } else {
+            colorData.push('rgba(107,114,128,0.4)');
+        }
+    });
+
+    if (el('lrdFastCorrect')) el('lrdFastCorrect').textContent = fastCorrect;
+    if (el('lrdFastIncorrect')) el('lrdFastIncorrect').textContent = fastIncorrect;
+    if (el('lrdSlowCorrect')) el('lrdSlowCorrect').textContent = slowCorrect;
+    if (el('lrdSlowIncorrect')) el('lrdSlowIncorrect').textContent = slowIncorrect;
+
+    const ctx = el('lrdTimeChart');
+    if (ctx && typeof Chart !== 'undefined') {
+        if (_lrdChartTime) { _lrdChartTime.destroy(); _lrdChartTime = null; }
+        _lrdChartTime = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: (practiceState.activeIndices || []).map((_, i) => i + 1),
+                datasets: [{ data: timeData, backgroundColor: colorData, borderWidth: 0, borderRadius: 2 }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.raw + 's' } } },
+                scales: {
+                    x: { ticks: { color: '#6b7280', maxTicksLimit: 15, font: { size: 9 } }, grid: { color: '#1f2937' } },
+                    y: { ticks: { color: '#6b7280', callback: v => v + 's', font: { size: 9 } }, grid: { color: '#1f2937' } }
+                }
+            }
+        });
+    }
+}
+
+function _lrdFillInsights(s) {
+    const { correctCount, incorrectCount, totalQ, maxScore, hasNeg, scorePerQ } = s;
+    const el = id => document.getElementById(id);
+    const neg = hasNeg ? incorrectCount : 0;
+
+    if (el('lrdNegMarks')) el('lrdNegMarks').textContent = neg > 0 ? '-' + neg : '0';
+    const earned = correctCount * scorePerQ;
+    const negPct = earned > 0 ? Math.min(Math.round(neg / earned * 100), 100) : 0;
+    setTimeout(() => { if (el('lrdNegBar')) el('lrdNegBar').style.width = negPct + '%'; }, 150);
+    if (el('lrdNegPct')) el('lrdNegPct').textContent = negPct + '% earned marks negated';
+
+    // Streaks and blind guesses
+    let bestStreak = 0, curStreak = 0, worstRun = 0, curWrong = 0, blindGuesses = 0;
+    (practiceState.activeIndices || []).forEach(ri => {
+        const stat = practiceState.stats[ri];
+        if (!stat) return;
+        if (stat.evaluation === 'correct') {
+            curStreak++; curWrong = 0;
+            if (curStreak > bestStreak) bestStreak = curStreak;
+        } else if (stat.evaluation === 'incorrect') {
+            curWrong++; curStreak = 0;
+            if (curWrong > worstRun) worstRun = curWrong;
+            if ((stat.timeSpent || 0) < 15) blindGuesses++;
+        } else { curStreak = 0; curWrong = 0; }
+    });
+
+    if (el('lrdBestStreak')) el('lrdBestStreak').innerHTML = bestStreak + ' <span class="text-base text-gray-400">Q</span>';
+    if (el('lrdWrongRun')) el('lrdWrongRun').innerHTML = worstRun + ' <span class="text-base text-gray-400">Q</span>';
+    if (el('lrdBlindGuesses')) el('lrdBlindGuesses').textContent = blindGuesses;
+    if (el('lrdBlindNote')) {
+        el('lrdBlindNote').textContent = blindGuesses === 0 ? 'None. Well considered.' : blindGuesses + ' answered in under 15 seconds';
+        el('lrdBlindNote').className = 'text-xs mt-2 ' + (blindGuesses === 0 ? 'text-green-400' : 'text-yellow-400');
+    }
+
+    // Accuracy per part (4 quarters)
+    const accParts = el('lrdAccParts');
+    if (accParts) {
+        accParts.innerHTML = '';
+        const partSize = Math.ceil(totalQ / 4);
+        for (let p = 0; p < 4; p++) {
+            let pC = 0, pA = 0;
+            for (let i = p * partSize; i < Math.min((p+1)*partSize, totalQ); i++) {
+                const ri = (practiceState.activeIndices || [])[i];
+                if (ri === undefined) continue;
+                const stat = practiceState.stats[ri];
+                if (!stat) continue;
+                if (stat.evaluation === 'correct') { pC++; pA++; }
+                else if (stat.evaluation === 'incorrect') pA++;
+            }
+            const pAcc = pA > 0 ? Math.round(pC / pA * 100) : 0;
+            const bar = document.createElement('div');
+            bar.className = 'flex-1 flex flex-col items-center gap-1';
+            const barH = Math.max(pAcc * 0.7, 4);
+            const barColor = pAcc > 60 ? '#8b5cf6' : pAcc > 30 ? '#6366f1' : '#4f46e5';
+            bar.innerHTML = '<span class="text-[10px] text-gray-400">' + pAcc + '%</span><div style="width:100%; height:' + barH + 'px; background:' + barColor + '; border-radius:3px 3px 0 0;"></div>';
+            accParts.appendChild(bar);
+        }
+    }
+
+    // Marks per minute per subject
+    const mpmEl = el('lrdMarksPerMin');
+    if (mpmEl) {
+        const subjectData = {};
+        (practiceState.activeIndices || []).forEach(ri => {
+            const stat = practiceState.stats[ri];
+            if (!stat) return;
+            const ex = stat.exercise || 'Overall';
+            if (!subjectData[ex]) subjectData[ex] = { marks: 0, seconds: 0 };
+            subjectData[ex].seconds += stat.timeSpent || 0;
+            if (stat.evaluation === 'correct') subjectData[ex].marks += scorePerQ;
+            else if (stat.evaluation === 'incorrect' && hasNeg) subjectData[ex].marks -= 1;
+        });
+        mpmEl.innerHTML = '';
+        let rank = 1;
+        const entries = Object.entries(subjectData);
+        if (entries.length === 0) {
+            mpmEl.innerHTML = '<div class="text-gray-500 text-xs">No data available</div>';
+        } else {
+            entries.forEach(([name, d]) => {
+                const mpm = d.seconds > 0 ? (d.marks / (d.seconds / 60)).toFixed(2) : '0.00';
+                const isPos = parseFloat(mpm) >= 0;
+                const row = document.createElement('div');
+                row.className = 'flex items-center gap-3';
+                row.innerHTML = '<span class="text-gray-500 text-xs w-4">' + (rank++) + '</span>' +
+                    '<span class="text-white text-xs font-semibold flex-1 truncate">' + name + '</span>' +
+                    '<div class="w-24 h-1.5 bg-gray-700 rounded-full overflow-hidden"><div class="h-full rounded-full ' + (isPos ? 'bg-orange-400' : 'bg-red-500') + '" style="width:' + Math.min(Math.abs(parseFloat(mpm)) * 15, 100) + '%"></div></div>' +
+                    '<span class="text-xs ' + (isPos ? 'text-orange-400' : 'text-red-400') + ' w-20 text-right">' + mpm + ' m/min</span>';
+                mpmEl.appendChild(row);
+            });
+        }
+    }
+}
+
+function _lrdFillScoreProgress(s) {
+    const { scorePerQ, hasNeg, maxScore } = s;
+    const el = id => document.getElementById(id);
+
+    // Build cumulative score arrays
+    const scoreByQ = [0];
+    const scoreByTime = [{ x: 0, y: 0 }];
+    let cumScore = 0, cumTime = 0;
+
+    (practiceState.activeIndices || []).forEach(ri => {
+        const stat = practiceState.stats[ri];
+        if (!stat) { scoreByQ.push(cumScore); return; }
+        const t = stat.timeSpent || 0;
+        if (stat.evaluation === 'correct') cumScore += scorePerQ;
+        else if (stat.evaluation === 'incorrect' && hasNeg) cumScore -= 1;
+        cumTime += t;
+        scoreByQ.push(cumScore);
+        scoreByTime.push({ x: Math.round(cumTime), y: cumScore });
+    });
+
+    if (typeof Chart === 'undefined') return;
+
+    const chartDefaults = {
+        type: 'line',
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { ticks: { color: '#6b7280', maxTicksLimit: 10, font: { size: 9 } }, grid: { color: '#1f2937' } },
+                y: { ticks: { color: '#6b7280', font: { size: 9 } }, grid: { color: '#1f2937' }, suggestedMin: Math.min(...scoreByQ) - 5, suggestedMax: maxScore + 10 }
+            }
+        }
+    };
+
+    const ctxQ = el('lrdScoreCurveQ');
+    if (ctxQ) {
+        if (_lrdChartScoreQ) { _lrdChartScoreQ.destroy(); _lrdChartScoreQ = null; }
+        _lrdChartScoreQ = new Chart(ctxQ, {
+            ...chartDefaults,
+            data: {
+                labels: scoreByQ.map((_, i) => i === 0 ? 'Start' : i),
+                datasets: [{ data: scoreByQ, borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.05)', borderWidth: 2, pointRadius: 0, fill: true, tension: 0.3 }]
+            }
+        });
+    }
+
+    const ctxT = el('lrdScoreCurveT');
+    if (ctxT) {
+        if (_lrdChartScoreT) { _lrdChartScoreT.destroy(); _lrdChartScoreT = null; }
+        _lrdChartScoreT = new Chart(ctxT, {
+            ...chartDefaults,
+            data: {
+                labels: scoreByTime.map(d => d.x === 0 ? 'Start' : Math.floor(d.x/60) + 'm'),
+                datasets: [{ data: scoreByTime.map(d => d.y), borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.05)', borderWidth: 2, pointRadius: 0, fill: true, tension: 0.3 }]
+            }
+        });
+    }
+}
+
+function _lrdFillLeaderboard() {
+    const el = id => document.getElementById(id);
+    const inLive = typeof isLiveMode !== 'undefined' && isLiveMode;
+
+    if (!inLive) {
+        if (el('lrdLbWaiting')) el('lrdLbWaiting').classList.add('hidden');
+        if (el('lrdLbSolo')) el('lrdLbSolo').classList.remove('hidden');
+        if (el('lrdLbRankings')) el('lrdLbRankings').classList.add('hidden');
+        return;
+    }
+    // In live mode — show waiting, will update when all submit
+    if (el('lrdLbWaiting')) el('lrdLbWaiting').classList.remove('hidden');
+    if (el('lrdLbSolo')) el('lrdLbSolo').classList.add('hidden');
+    if (el('lrdLbRankings')) el('lrdLbRankings').classList.add('hidden');
+    _lrdUpdateLeaderboard();
+}
+
+// Called by liveRoom.js when all scores are in
+function _lrdUpdateLeaderboard(participants) {
+    if (participants) window.liveRoomParticipants = participants;
+    const data = window.liveRoomParticipants || [];
+    const el = id => document.getElementById(id);
+
+    if (data.length === 0) return;
+
+    const submitted = data.filter(p => p.score !== null && p.score !== undefined).length;
+    if (submitted < data.length) {
+        if (el('lrdLbWaitMsg')) el('lrdLbWaitMsg').textContent = submitted + ' / ' + data.length + ' have submitted';
+        return;
+    }
+
+    // All submitted — show rankings
+    if (el('lrdLbWaiting')) el('lrdLbWaiting').classList.add('hidden');
+    if (el('lrdLbSolo')) el('lrdLbSolo').classList.add('hidden');
+    if (el('lrdLbRankings')) el('lrdLbRankings').classList.remove('hidden');
+    if (el('lrdLbTotal')) el('lrdLbTotal').textContent = data.length + ' total';
+
+    const myId = (typeof isHost !== 'undefined' && isHost) ? 'host' : (window.myLivePeerId || '');
+
+    // Podium (top 3)
+    const podium = el('lrdLbPodium');
+    if (podium) {
+        podium.innerHTML = '';
+        const top3 = data.slice(0, 3);
+        const podiumOrder = top3.length >= 3 ? [top3[1], top3[0], top3[2]] : top3.length === 2 ? [top3[1], top3[0]] : top3;
+        const podiumHeights = [96, 128, 64];
+        const podiumColors = ['bg-gray-500', 'bg-yellow-500', 'bg-amber-700'];
+        const medals = ['🥇', '🥈', '🥉'];
+        const idx = top3.length >= 3 ? [1, 0, 2] : top3.length === 2 ? [1, 0] : [0];
+        podiumOrder.forEach((p, i) => {
+            if (!p) return;
+            const realRank = p.rank || (i + 1);
+            const h = realRank === 1 ? 128 : realRank === 2 ? 96 : 64;
+            const col = realRank === 1 ? '#eab308' : realRank === 2 ? '#6b7280' : '#92400e';
+            const d = document.createElement('div');
+            d.className = 'flex flex-col items-center';
+            d.innerHTML = '<div class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg mb-1" style="background:' + col + '">' + p.name.charAt(0).toUpperCase() + '</div>' +
+                '<div class="text-xs text-white font-semibold mb-0.5 max-w-[80px] truncate text-center">' + p.name + '</div>' +
+                '<div class="text-sm font-bold mb-1" style="color:' + col + '">' + (p.score !== null ? p.score : '—') + '</div>' +
+                '<div class="w-16 rounded-t flex items-start justify-center pt-1 text-white font-black text-base" style="height:' + h + 'px; background:' + col + '">' + medals[realRank - 1] + '</div>';
+            podium.appendChild(d);
+        });
+    }
+
+    // My rank card
+    const me = data.find(p => p.id === myId);
+    const myRankEl = el('lrdLbMyRank');
+    if (myRankEl && me) {
+        const total = data.length;
+        const pct = total > 1 ? Math.round((total - me.rank) / (total - 1) * 100) : 100;
+        myRankEl.innerHTML = '<div class="bg-blue-900/30 border border-blue-700/50 rounded-xl p-4 flex items-center gap-4 mb-4">' +
+            '<div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold shrink-0">#' + me.rank + '</div>' +
+            '<div class="flex-1"><div class="text-white font-semibold text-sm">Your Test Percentile</div>' +
+            '<div class="text-blue-400 font-bold">' + pct + '%ile <span class="text-gray-400 font-normal">— better than ' + pct + '% of participants</span></div></div>' +
+            '<div class="text-right border border-gray-700 rounded-lg px-3 py-2"><div class="text-xl font-black text-white">' + (me.score !== null ? me.score : '—') + '</div>' +
+            '<div class="text-[10px] text-gray-400">points</div></div></div>';
+
+        // Also update overview percentile card
+        const pCard = document.getElementById('lrdPercentileCard');
+        if (pCard) {
+            const pctEl = document.getElementById('lrdPercentile');
+            const rankEl = document.getElementById('lrdRankText');
+            if (pctEl) pctEl.textContent = pct + '%ile';
+            if (rankEl) rankEl.textContent = 'Rank #' + me.rank;
+            pCard.classList.remove('hidden');
+        }
+    }
+
+    // Full list
+    const list = el('lrdLbList');
+    if (list) {
+        list.innerHTML = data.map((p) => {
+            const isMe = p.id === myId;
+            const medal = p.rank === 1 ? '🥇' : p.rank === 2 ? '🥈' : p.rank === 3 ? '🥉' : '#' + p.rank;
+            return '<div class="flex items-center gap-3 px-4 py-3 ' + (isMe ? 'bg-blue-900/20 border-l-2 border-blue-500' : 'hover:bg-white/5') + '">' +
+                '<span class="text-sm w-8 text-center font-bold ' + (p.rank <= 3 ? '' : 'text-gray-400') + '">' + medal + '</span>' +
+                '<div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-white text-xs font-bold shrink-0">' + p.name.charAt(0).toUpperCase() + '</div>' +
+                '<div class="flex-1 min-w-0"><div class="text-sm font-semibold text-white truncate">' + p.name + (isMe ? ' <span class="text-xs text-blue-400 font-normal">(You)</span>' : '') + (p.id === 'host' ? ' <span class="text-xs text-yellow-400 font-normal">(Host)</span>' : '') + '</div></div>' +
+                '<div class="text-xs text-gray-500">' + (p.accuracy !== null && p.accuracy !== undefined ? (typeof p.accuracy === 'number' ? p.accuracy.toFixed(1) : p.accuracy) + '%' : '—') + '</div>' +
+                '<div class="text-sm font-bold text-white ml-2">' + (p.score !== null && p.score !== undefined ? p.score : '—') + '</div></div>';
+        }).join('');
+    }
+}
+window._lrdUpdateLeaderboard = _lrdUpdateLeaderboard;
+// Dashboard Review Exam Panel Wiring
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.lrd-reattempt-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const type = btn.getAttribute('data-type');
+            document.getElementById('liveResultsDashboard').classList.add('hidden');
+            reattemptPractice(type);
+        });
+    });
+    const btnAll = document.getElementById('lrdViewAllQsBtn');
+    if (btnAll) btnAll.addEventListener('click', () => {
+        document.getElementById('liveResultsDashboard').classList.add('hidden');
+        reattemptPractice('all');
+    });
+    const btnMarked = document.getElementById('lrdMarkedQsBtn');
+    if (btnMarked) btnMarked.addEventListener('click', () => {
+        document.getElementById('liveResultsDashboard').classList.add('hidden');
+        reattemptPractice('marked');
+    });
+    const btnHome = document.getElementById('lrdReturnHome');
+    if (btnHome) btnHome.addEventListener('click', () => {
+        document.getElementById('liveResultsDashboard').classList.add('hidden');
+        location.reload();
+    });
+});
+
+
+// ---- DASHBOARD NAVIGATION LOGIC ----
+document.addEventListener('DOMContentLoaded', () => {
+    const dashNavBtns = document.querySelectorAll('.dash-nav-btn');
+    const dashViews = document.querySelectorAll('.dash-view');
+    
+    window.switchDashView = function(targetView) {
+        dashViews.forEach(v => v.classList.add('hidden'));
+        document.querySelectorAll('.' + targetView).forEach(v => v.classList.remove('hidden'));
+        
+        dashNavBtns.forEach(btn => {
+            if (btn.dataset.target === targetView) {
+                btn.classList.remove('text-gray-400');
+                btn.classList.add('text-white', 'bg-white/10');
+                btn.classList.remove('hover:bg-white/5');
+            } else {
+                btn.classList.add('text-gray-400', 'hover:bg-white/5');
+                btn.classList.remove('text-white', 'bg-white/10');
+            }
+        });
+        
+        if (targetView === 'analysisView') renderScoreAnalysis();
+    };
+    
+    dashNavBtns.forEach(btn => {
+        btn.addEventListener('click', () => switchDashView(btn.dataset.target));
+    });
+    
+    function renderScoreAnalysis() {
+        let sessions = JSON.parse(localStorage.getItem('sessions')) || [];
+        if (sessions.length === 0) return;
+        
+        const saTotalTests = document.getElementById('saTotalTests');
+        const saAvgAccuracy = document.getElementById('saAvgAccuracy');
+        const saTotalQs = document.getElementById('saTotalQs');
+        const saAccuracyChart = document.getElementById('saAccuracyChart');
+        
+        if(saTotalTests) saTotalTests.textContent = sessions.length;
+        
+        let totalAttempted = 0;
+        let totalCorrect = 0;
+        sessions.forEach(s => {
+            if (s.results) {
+                totalAttempted += (s.results.correct + s.results.wrong);
+                totalCorrect += s.results.correct;
+            }
+        });
+        
+        if(saTotalQs) saTotalQs.textContent = totalAttempted;
+        const avgAcc = totalAttempted > 0 ? Math.round((totalCorrect / totalAttempted) * 100) : 0;
+        if(saAvgAccuracy) saAvgAccuracy.textContent = avgAcc + '%';
+        
+        if (saAccuracyChart) {
+            const recentSessions = sessions.slice(-15);
+            saAccuracyChart.innerHTML = '';
+            recentSessions.forEach(s => {
+                if (s.results) {
+                    const total = s.results.correct + s.results.wrong;
+                    const acc = total > 0 ? (s.results.correct / total) * 100 : 0;
+                    const bar = document.createElement('div');
+                    bar.className = 'w-full bg-blue-500/20 rounded-t-sm relative group hover:bg-blue-500/40 transition-colors';
+                    bar.style.height = Math.max(acc, 5) + '%';
+                    const tooltip = document.createElement('div');
+                    tooltip.className = 'absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 border border-gray-700';
+                    tooltip.textContent = Math.round(acc) + '%';
+                    bar.appendChild(tooltip);
+                    saAccuracyChart.appendChild(bar);
+                }
+            });
+        }
+    }
+});
