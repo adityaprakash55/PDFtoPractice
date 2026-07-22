@@ -45,11 +45,12 @@
             }
         }
     </script>
-    <!-- PDF.js -->
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     
     <!-- PeerJS -->
     <script defer src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+
+    <!-- PDF.js -->
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
     <!-- JSZip & FileSaver -->
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -211,8 +212,12 @@
             </div>
             
             <!-- How to Use Button -->
-            <div class="mt-6 flex justify-center">
-                <a href="https://youtu.be/AYSNQ1UcL7I" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-6 rounded-xl shadow-lg transition-transform transform hover:-translate-y-1">
+            <div class="mt-8 flex flex-col sm:flex-row justify-center gap-4">
+                <button id="homeCreateLiveRoomBtn" class="inline-flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition-transform transform hover:-translate-y-1">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    Host a Live Test Room
+                </button>
+                <a href="https://youtu.be/AYSNQ1UcL7I" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-transform transform hover:-translate-y-1">
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M21.582,6.186c-0.23-0.86-0.908-1.538-1.768-1.768C18.254,4,12,4,12,4S5.746,4,4.186,4.418c-0.86,0.23-1.538,0.908-1.768,1.768C2,7.746,2,12,2,12s0,4.254,0.418,5.814c0.23,0.86,0.908,1.538,1.768,1.768C5.746,20,12,20,12,20s6.254,0,7.814-0.418c0.86-0.23,1.538-0.908,1.768-1.768C22,16.254,22,12,22,12S22,7.746,21.582,6.186z M10,15.464V8.536L16,12L10,15.464z"></path></svg>
                     How to Use
                 </a>
@@ -383,69 +388,82 @@
                     </span>
                 </label>
             </div>
-            <div class="flex flex-col sm:flex-row gap-4">
-                <button id="startPracticeBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl shadow-md transition-transform transform hover:-translate-y-1">
-                    Start Solo Session
-                </button>
-                <button id="createLiveRoomBtn" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-xl shadow-md transition-transform transform hover:-translate-y-1 flex items-center justify-center gap-2">
+            <div class="flex gap-4">
+                <button id="createLiveRoomBtn" class="w-1/2 bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-xl shadow-md transition-transform transform hover:-translate-y-1 flex items-center justify-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                     Create Live Room
                 </button>
-            </div>
-        </div>
-
-        <!-- Live Room Lobby (Host View) -->
-        <div id="liveLobbyContainer" class="hidden max-w-2xl mx-auto mt-16 bg-white dark:bg-navy-900 p-8 rounded-2xl shadow-lg border border-purple-200 dark:border-purple-900/50 text-center">
-            <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white mb-4">Live Test Room</h2>
-            <p class="text-gray-500 dark:text-gray-400 mb-8">Share this link with your friends to let them join!</p>
-            
-            <div class="bg-gray-50 dark:bg-navy-950 p-4 rounded-xl border border-gray-200 dark:border-navy-700 flex items-center justify-between mb-8">
-                <code id="liveRoomLinkText" class="text-lg font-mono text-blue-600 dark:text-blue-400 break-all text-left">Generating...</code>
-                <button id="copyLiveLinkBtn" class="ml-4 p-2 bg-purple-100 hover:bg-purple-200 dark:bg-purple-900/40 dark:hover:bg-purple-800/60 text-purple-700 dark:text-purple-300 rounded-lg transition-colors flex shrink-0">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                <button id="startPracticeBtn" class="w-1/2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl shadow-md transition-transform transform hover:-translate-y-1">
+                    Start Solo Practice
                 </button>
             </div>
+        </div>
 
-            <div class="mb-8">
-                <h3 class="text-lg font-bold text-gray-700 dark:text-gray-300 mb-4 flex items-center justify-center gap-2">
-                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                    Joined Participants (<span id="participantCount">0</span>)
-                </h3>
-                <div id="participantsList" class="flex flex-wrap gap-3 justify-center min-h-[60px] p-4 bg-gray-50 dark:bg-navy-950 rounded-xl border border-gray-100 dark:border-navy-800">
-                    <p class="text-sm text-gray-400 italic" id="noParticipantsText">Waiting for others to join...</p>
+        <!-- Live Room Lobby Container (Host) -->
+        <div id="liveLobbyContainer" class="hidden max-w-2xl mx-auto mt-12 bg-white dark:bg-navy-900 rounded-3xl shadow-xl overflow-hidden border border-gray-100 dark:border-navy-800">
+            <div class="bg-gradient-to-r from-purple-600 to-indigo-600 p-8 text-center text-white">
+                <h2 class="text-3xl font-extrabold mb-2">Live Test Room</h2>
+                <p class="text-purple-100">Share the link below with your friends to join.</p>
+            </div>
+            
+            <div class="p-8">
+                <div class="mb-8">
+                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Room Link</label>
+                    <div class="flex items-center gap-3">
+                        <div class="bg-gray-100 dark:bg-navy-950 px-4 py-3 rounded-xl border border-gray-300 dark:border-navy-700 flex-1 font-mono text-sm text-gray-800 dark:text-gray-300 overflow-x-auto whitespace-nowrap" id="liveRoomLinkText">
+                            Generating link...
+                        </div>
+                        <button id="copyLiveLinkBtn" class="bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 hover:bg-purple-200 dark:hover:bg-purple-900/60 p-3 rounded-xl transition-colors font-semibold shadow-sm" aria-label="Copy Link">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        </button>
+                    </div>
                 </div>
-            </div>
 
-            <button id="startLiveTestBtn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-xl shadow-lg transition-transform transform hover:-translate-y-1 text-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                Start Test for Everyone
-            </button>
+                <div class="mb-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-gray-800 dark:text-white">Participants</h3>
+                        <span class="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 px-3 py-1 rounded-full text-sm font-bold"><span id="participantCount">0</span> Joined</span>
+                    </div>
+                    <div id="participantsList" class="bg-gray-50 dark:bg-navy-950/50 rounded-xl p-4 border border-gray-200 dark:border-navy-800 min-h-[100px] flex flex-wrap gap-2 items-start">
+                        <p id="noParticipantsText" class="text-gray-400 dark:text-gray-500 text-sm italic w-full text-center mt-3">Waiting for friends to join...</p>
+                    </div>
+                </div>
+
+                <button id="startLiveTestBtn" disabled class="w-full bg-indigo-600 disabled:bg-gray-400 dark:disabled:bg-navy-700 hover:bg-indigo-700 disabled:hover:bg-gray-400 text-white font-bold py-4 px-6 rounded-xl shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                    Start Test for Everyone
+                </button>
+            </div>
         </div>
 
-        <!-- Live Room Join UI (Participant View) -->
-        <div id="liveJoinContainer" class="hidden max-w-lg mx-auto mt-20 bg-white dark:bg-navy-900 p-8 rounded-2xl shadow-xl border border-gray-200 dark:border-navy-800 text-center">
-            <div class="w-16 h-16 mx-auto bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mb-6">
-                <svg class="w-8 h-8 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-            </div>
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Join Live Test</h2>
-            <p class="text-gray-500 dark:text-gray-400 mb-8">Enter your name to join the host's room.</p>
-            
-            <div class="mb-6 text-left">
-                <label for="participantNameInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Your Name</label>
-                <input type="text" id="participantNameInput" placeholder="E.g. Rahul" class="w-full px-4 py-3 text-lg bg-gray-50 dark:bg-navy-950 border border-gray-300 dark:border-navy-600 text-gray-900 dark:text-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" />
+        <!-- Live Room Join Container (Participant) -->
+        <div id="liveJoinContainer" class="hidden max-w-md mx-auto mt-20 bg-white dark:bg-navy-900 rounded-3xl shadow-2xl overflow-hidden border border-gray-100 dark:border-navy-800">
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-8 text-center text-white">
+                <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4 backdrop-blur-sm">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                </div>
+                <h2 class="text-3xl font-extrabold mb-2">Join Live Test</h2>
+                <p class="text-blue-100">Enter your name to join the room.</p>
             </div>
             
-            <button id="joinRoomBtn" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-xl shadow-md transition-transform transform hover:-translate-y-1">
-                Join Room
-            </button>
-            <div id="joinStatusText" class="mt-4 text-sm font-medium text-gray-500 hidden">Connecting to host...</div>
+            <div class="p-8">
+                <div class="mb-6">
+                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Your Name</label>
+                    <input type="text" id="participantNameInput" class="w-full bg-gray-50 dark:bg-navy-950 border border-gray-300 dark:border-navy-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white" placeholder="e.g. Aditya" />
+                </div>
+                
+                <button id="joinRoomBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-xl shadow-lg transition-all">
+                    Join Room
+                </button>
+                <p id="joinStatusText" class="hidden text-center text-sm font-medium mt-4 text-blue-600 dark:text-blue-400"></p>
+            </div>
         </div>
 
-        <!-- Waiting for Host Screen -->
-        <div id="waitingForHostContainer" class="hidden max-w-lg mx-auto mt-20 text-center">
-            <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-600 mx-auto mb-6"></div>
-            <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">Waiting for Host...</h2>
-            <p class="text-gray-500 dark:text-gray-400">The test will begin automatically when the host starts it.</p>
+        <div id="waitingForHostContainer" class="hidden max-w-md mx-auto mt-32 text-center">
+            <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white mb-4">You're in! 🎉</h2>
+            <p class="text-gray-600 dark:text-gray-400 mb-8">Waiting for the host to start the test...</p>
+            <div class="animate-pulse flex flex-col items-center">
+                <div class="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            </div>
         </div>
 
         <!-- 5. Practice Interface -->
@@ -1096,208 +1114,11 @@
             <div class="p-6 bg-white dark:bg-navy-900 border-t border-gray-200 dark:border-navy-800 flex justify-center">
                 <button id="exitLiveTestBtn" class="bg-gray-200 dark:bg-navy-800 hover:bg-gray-300 dark:hover:bg-navy-700 text-gray-800 dark:text-gray-200 font-bold py-2.5 px-8 rounded-xl transition-colors">
                     Exit to Home
-            <div class="flex gap-4">
-                <button id="discardSessionBtn" class="flex-1 py-2 px-4 bg-gray-100 hover:bg-gray-200 dark:bg-navy-800 dark:hover:bg-navy-700 text-gray-800 dark:text-gray-200 rounded-xl font-semibold transition-colors">Discard</button>
-                <button id="resumeSessionBtn" class="flex-1 py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-md transition-transform transform hover:scale-105">Resume Now</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- View Full Answer Key Modal -->
-    <div id="fullAnswerKeyModal" class="hidden fixed inset-0 z-[300] bg-black/80 flex flex-col items-center justify-center backdrop-blur-sm p-4">
-        <div class="w-full max-w-5xl bg-white dark:bg-navy-900 rounded-2xl shadow-2xl flex flex-col max-h-[90vh] border border-gray-200 dark:border-navy-700">
-            <div class="p-4 border-b border-gray-200 dark:border-navy-700 flex justify-between items-center bg-gray-50 dark:bg-navy-800 rounded-t-2xl">
-                <h3 class="text-xl font-bold text-gray-800 dark:text-gray-200">Full Answer Key</h3>
-                <button id="closeFullAnswerKeyBtn" class="text-gray-500 hover:text-red-500 transition-colors bg-gray-200 dark:bg-navy-700 rounded-full p-2" aria-label="Close Answer Key">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-            <div id="fullAnswerKeyContent" class="p-4 overflow-y-auto flex-1 flex flex-col gap-6 bg-gray-100 dark:bg-navy-950 custom-scrollbar">
-                <!-- Answer key pages injected here -->
-            </div>
-        </div>
-    </div>
-
-    <!-- External Libraries -->
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Noted Questions Modal -->
-    <div id="notedQsOverlay" class="fixed inset-0 bg-black/80 z-[80] hidden flex items-center justify-center p-4 transition-opacity duration-300 opacity-0">
-        <div id="notedQsModal" class="bg-[#1C212E] w-full max-w-3xl rounded-2xl shadow-2xl flex flex-col max-h-[85vh] border border-gray-800 transform scale-95 transition-transform duration-300">
-            <!-- Header -->
-            <div class="p-5 border-b border-white/10 flex items-center justify-between shrink-0 bg-[#0B1120] rounded-t-2xl">
-                <div>
-                    <h2 class="text-2xl font-bold text-white leading-tight">Questions with Notes</h2>
-                    <p id="notedQsCount" class="text-sm text-gray-400 mt-1">0 questions</p>
-                </div>
-                <button id="closeNotedQsBtn" class="text-gray-400 hover:text-white p-2 transition-colors" aria-label="Close Notes">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-            
-            <!-- Question List -->
-            <div id="notedQsListModal" class="p-5 overflow-y-auto flex-1 hide-scrollbar flex flex-col gap-4 bg-[#121620]">
-                <!-- Injected via JS -->
-            </div>
-            
-            <!-- Footer -->
-            <div class="p-5 border-t border-white/10 shrink-0 bg-[#0B1120] rounded-b-2xl">
-                <button id="practiceNotedQsBtn" class="w-full bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-3 rounded-xl text-lg transition-colors flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(234,179,8,0.3)]">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    Practice Noted Questions
                 </button>
             </div>
         </div>
     </div>
-
-    <!-- Bookmark Details Modal -->
-    <div id="bookmarkDetailsOverlay" class="fixed inset-0 bg-black/80 z-[80] hidden flex items-center justify-center p-4 transition-opacity duration-300 opacity-0">
-        <div id="bookmarkDetailsModal" class="bg-[#1C212E] w-full max-w-3xl rounded-2xl shadow-2xl flex flex-col max-h-[85vh] border border-gray-800 transform scale-95 transition-transform duration-300">
-            <!-- Header -->
-            <div class="p-5 border-b border-white/10 flex items-center justify-between shrink-0 bg-[#0B1120] rounded-t-2xl">
-                <div>
-                    <h2 id="bmdGroupName" class="text-2xl font-bold text-white leading-tight">Group Name</h2>
-                    <p id="bmdGroupCount" class="text-sm text-gray-400 mt-1">0 questions</p>
-                </div>
-                <div class="flex items-center gap-2">
-                    <button id="bmdDeleteGroupBtn" class="bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white px-3 py-1.5 rounded-lg text-sm font-bold transition-colors flex items-center gap-1.5 border border-red-500/20 hover:border-red-500">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        Delete Group
-                    </button>
-                    <button id="closeBookmarkDetailsBtn" class="text-gray-400 hover:text-white p-2 ml-2 transition-colors" aria-label="Close Bookmark Details">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Question List -->
-            <div id="bmdQuestionList" class="p-5 overflow-y-auto flex-1 hide-scrollbar flex flex-col gap-4 bg-[#121620]">
-                <!-- Injected via JS -->
-            </div>
-            
-            <!-- Footer -->
-            <div class="p-5 border-t border-white/10 shrink-0 bg-[#0B1120] rounded-b-2xl">
-                <button id="bmdPracticeNowBtn" class="w-full bg-blue-500 hover:bg-blue-400 text-white font-bold py-3 rounded-xl text-lg transition-colors flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(59,130,246,0.3)]">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    Practice Now
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Bookmark Sidebar Overlay -->
-    <div id="bookmarkSidebarOverlay" class="fixed inset-0 bg-black/60 z-[60] hidden transition-opacity duration-300 opacity-0"></div>
-
-    <!-- Bookmark Sidebar -->
-    <div id="bookmarkSidebar" class="fixed inset-y-0 right-0 w-full sm:w-96 bg-[#0B1120] text-gray-200 z-[70] transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col shadow-2xl border-l border-white/10">
-        <!-- Header -->
-        <div class="flex items-center justify-between p-4 border-b border-white/10 shrink-0">
-            <div class="flex items-center gap-3">
-                <div class="bg-blue-500 w-10 h-10 rounded-lg flex items-center justify-center text-white shrink-0">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
-                </div>
-                <div>
-                    <h3 class="font-bold text-lg text-white leading-tight">Add to Bookmark</h3>
-                    <p class="text-xs text-gray-400">Organize your questions</p>
-                </div>
-            </div>
-            <button id="closeBookmarkSidebarBtn" class="text-gray-400 hover:text-white p-2" aria-label="Close bookmarks sidebar">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-        </div>
-
-        <div class="p-4 overflow-y-auto flex-1 hide-scrollbar">
-            <!-- Quick Save Card -->
-            <div id="quickSaveSection" class="bg-gradient-to-br from-blue-900/40 to-blue-800/20 border border-blue-500/30 rounded-xl p-4 mb-6">
-                <div class="flex items-center justify-between mb-2">
-                    <div class="flex items-center gap-2 text-blue-400 font-bold">
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.381z" clip-rule="evenodd"></path></svg>
-                        <span>Quick Save to Chapter</span>
-                    </div>
-                    <span class="bg-[#FF9800] text-white text-[10px] font-bold px-1.5 py-0.5 rounded">NEW</span>
-                </div>
-                <p class="text-xs text-blue-200/70 mb-4">Automatically save to <strong id="quickSaveChapterName" class="text-blue-100">Chapter</strong> chapter group for quick access later.</p>
-                
-                <div class="bg-[#060b14]/50 rounded-lg p-3 mb-4 text-[11px] text-gray-400">
-                    <div class="flex items-center gap-1.5 mb-1 font-semibold text-gray-300">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        How to find this question:
-                    </div>
-                    <div>Physics &rsaquo; Chapters &rsaquo; <span id="quickSaveBreadcrumb" class="text-white">Chapter</span> &rsaquo; More &rsaquo; <span class="text-white">Bookmarked Questions</span></div>
-                </div>
-
-                <button id="quickSaveBtn" class="w-full bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 rounded-lg text-sm flex items-center justify-center gap-2 transition-colors shadow-[0_0_15px_rgba(59,130,246,0.3)]">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.381z" clip-rule="evenodd"></path></svg>
-                    Save to <span id="quickSaveBtnChapter">Chapter</span>
-                </button>
-            </div>
-
-            <!-- Custom Groups -->
-            <div class="flex items-center gap-2 mb-3 px-1">
-                <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path></svg>
-                <h4 class="font-bold text-gray-200">Your Bookmark Groups</h4>
-                <span id="bookmarkGroupCount" class="bg-white/10 text-xs px-2 py-0.5 rounded-full text-gray-400">0</span>
-            </div>
-
-            <div id="bookmarkGroupsList" class="flex flex-col gap-2">
-                <!-- Groups injected here -->
-            </div>
-        </div>
-
-        <!-- Footer / Create Group -->
-        <div class="p-4 border-t border-white/10 shrink-0 bg-[#060b14]">
-            <button id="createBookmarkGroupBtn" class="w-full bg-blue-500 hover:bg-blue-400 text-white font-bold py-2.5 rounded-lg flex items-center justify-center gap-2 transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                Create New Group
-            </button>
-            <p class="text-center text-[11px] text-gray-500 mt-2 flex items-center justify-center gap-1">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                Maximum 90 questions per group
-            </p>
-        </div>
-    </div>
-
-    <!-- Leaderboard Modal -->
-    <div id="leaderboardModal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-        <div class="bg-white dark:bg-navy-900 rounded-3xl shadow-2xl max-w-3xl w-full overflow-hidden flex flex-col max-h-[90vh]">
-            <!-- Header -->
-            <div class="bg-gradient-to-r from-purple-600 to-blue-600 p-6 text-white relative">
-                <h2 class="text-3xl font-extrabold text-center flex items-center justify-center gap-3">
-                    <svg class="w-8 h-8 text-yellow-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2.5a.5.5 0 01.5.5v1.25l1.615.808a2 2 0 011.118 1.118l.808 1.615V9.5a.5.5 0 01-1 0V7.793l-.808-1.615a1 1 0 00-.559-.559L10 4.811 8.385 5.62a1 1 0 00-.559.559l-.808 1.615V9.5a.5.5 0 01-1 0V7.793l.808-1.615a2 2 0 011.118-1.118l1.615-.808V3a.5.5 0 01.5-.5zM5 11.5a.5.5 0 011 0V13h8v-1.5a.5.5 0 011 0V14a1 1 0 01-1 1H6a1 1 0 01-1-1v-2.5z" clip-rule="evenodd"></path></svg>
-                    Live Test Leaderboard
-                </h2>
-                <button id="closeLeaderboardBtn" class="absolute top-4 right-4 text-white/80 hover:text-white bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-            
-            <!-- Table -->
-            <div class="overflow-y-auto p-6 bg-gray-50 dark:bg-navy-950 flex-1">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="text-xs uppercase text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-navy-700">
-                            <th class="pb-3 font-semibold">Rank</th>
-                            <th class="pb-3 font-semibold">Participant</th>
-                            <th class="pb-3 font-semibold text-right">Score</th>
-                            <th class="pb-3 font-semibold text-right">Accuracy</th>
-                        </tr>
-                    </thead>
-                    <tbody id="leaderboardTbody" class="divide-y divide-gray-200 dark:divide-navy-800">
-                        <!-- Leaderboard rows injected here -->
-                    </tbody>
-                </table>
-            </div>
-            
-            <div class="p-6 bg-white dark:bg-navy-900 border-t border-gray-200 dark:border-navy-800 flex justify-center">
-                <button id="exitLiveTestBtn" class="bg-gray-200 dark:bg-navy-800 hover:bg-gray-300 dark:hover:bg-navy-700 text-gray-800 dark:text-gray-200 font-bold py-2.5 px-8 rounded-xl transition-colors">
-                    Exit to Home
-                </button>
-            </div>
-        </div>
-    </div>
-    
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-    <script src="/app.js"></script>
-    <script src="/liveRoom.js"></script>
+    <script defer src="app.js?v=79"></script>
+    <script defer src="/liveRoom.js"></script>
 </body>
 </html>
