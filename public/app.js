@@ -4499,9 +4499,48 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // List rendering
         if (saHistoricalList) {
+            
+            function createGauge(val, max, color, bgColor, size, stroke, innerText, label) {
+                const radius = (size - stroke) / 2;
+                const circumference = Math.PI * radius; 
+                let fraction = max > 0 ? (val / max) : 0;
+                if (fraction > 1) fraction = 1;
+                if (fraction < 0) fraction = 0;
+                const dashoffset = circumference - (fraction * circumference);
+                return `
+                <div class="flex flex-col items-center">
+                    <div class="relative flex flex-col items-center justify-end" style="width: ${size}px; height: ${size/2 + stroke/2}px;">
+                        <svg width="${size}" height="${size/2 + stroke/2}" viewBox="0 0 ${size} ${size/2 + stroke/2}" class="absolute top-0 left-0 overflow-visible">
+                            <path d="M ${stroke/2} ${size/2} A ${radius} ${radius} 0 0 1 ${size - stroke/2} ${size/2}" fill="none" stroke="${bgColor}" stroke-width="${stroke}" stroke-linecap="round"/>
+                            <path d="M ${stroke/2} ${size/2} A ${radius} ${radius} 0 0 1 ${size - stroke/2} ${size/2}" fill="none" stroke="${color}" stroke-width="${stroke}" stroke-dasharray="${circumference}" stroke-dashoffset="${dashoffset}" stroke-linecap="round" class="transition-all duration-1000 ease-out"/>
+                        </svg>
+                        <div class="absolute bottom-1 w-full text-center leading-none flex flex-col items-center justify-end h-full">
+                            ${innerText}
+                        </div>
+                    </div>
+                    <div class="text-[11px] text-gray-500 dark:text-gray-400 mt-1 font-medium">${label}</div>
+                </div>
+                `;
+            }
+
             saHistoricalList.innerHTML = '';
-            const reversed = [...sessions].reverse();
-            reversed.forEach(s => {
+            
+            window.saCurrentFilter = window.saCurrentFilter || 'local';
+            
+            let filteredSessions = sessions;
+            if (window.saCurrentFilter === 'community') {
+                filteredSessions = sessions.filter(s => s.isCommunity === true); 
+            } else if (window.saCurrentFilter === 'local') {
+                filteredSessions = sessions.filter(s => !s.isCommunity);
+            }
+
+            if (filteredSessions.length === 0) {
+                saHistoricalList.innerHTML = '<div class="text-center text-gray-500 py-8">No tests found for this filter.</div>';
+            }
+
+            const reversedSessions = [...filteredSessions].reverse();
+
+            reversedSessions.forEach(s => {
                 const attempted = (s.correctCount || 0) + (s.incorrectCount || 0);
                 const total = attempted + (s.unansweredCount || 0);
                 const scorePerQ = s.practiceState?.scorePerQ || 4;
@@ -4509,49 +4548,60 @@ document.addEventListener('DOMContentLoaded', () => {
                 const penalty = hasNeg ? (s.incorrectCount || 0) : 0;
                 const score = ((s.correctCount || 0) * scorePerQ) - penalty;
                 const maxScore = total * scorePerQ;
-
-                const acc = attempted > 0 ? Math.round(((s.correctCount || 0) / attempted) * 100) : 0;
+                const accuracy = attempted > 0 ? Math.round(((s.correctCount || 0) / attempted) * 100) : 0;
                 
-                let testName = "Mock Test " + s.id;
-                if (s.practiceState?.pdfSource && typeof s.practiceState.pdfSource === 'string') {
-                    testName = s.practiceState.pdfSource.split('/').pop().substring(0, 60);
-                }
+                const hrs = Math.floor((s.totalSeconds||0) / 3600);
+                const mins = Math.floor(((s.totalSeconds||0) % 3600) / 60);
+                const secs = (s.totalSeconds||0) % 60;
+                const timeStr = [hrs, mins, secs].map(v => v < 10 ? '0' + v : v).join(':');
+
+                const isDark = document.documentElement.classList.contains('dark') || true;
+                const gaugeBg = isDark ? '#334155' : '#cbd5e1';
 
                 const item = document.createElement('div');
-                item.className = 'bg-[#121620] hover:bg-[#161b28] border border-gray-800 rounded-2xl p-4 md:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-all duration-300 shadow-xl';
-                
+                item.className = 'bg-[#1C212E] p-5 rounded-2xl flex flex-col md:flex-row items-center justify-between border border-gray-800 shadow-xl relative z-10 hover:z-20 mb-4';
+
                 item.innerHTML = `
-                    <div class="flex items-center gap-4 flex-1 overflow-hidden w-full">
-                        <div class="p-3 bg-gray-800/80 rounded-xl border border-gray-700/50 shrink-0">
-                            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    <!-- Left: Score -->
+                    <div class="flex items-center justify-center mr-0 md:mr-8 mb-6 md:mb-0">
+                        ${createGauge(score, maxScore, '#F59E0B', gaugeBg, 120, 10, `<div class="mb-1"><span class="text-2xl font-bold text-[#F59E0B] leading-none">${score}</span><span class="text-xs text-gray-500">/${maxScore}</span></div>`, 'Score')}
+                    </div>
+                    
+                    <!-- Middle: Info & Stats -->
+                    <div class="flex-1 flex flex-col items-center md:items-start text-center md:text-left">
+                        <div class="flex items-center gap-3 mb-1">
+                            <h4 class="text-lg font-bold text-white">Session #${s.id}</h4>
+                            <span class="px-2 py-0.5 rounded-full bg-blue-900/50 text-blue-400 text-[10px] font-bold flex items-center gap-1 border border-blue-800/50">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg> 
+                                Subject Test
+                            </span>
                         </div>
-                        <div class="flex flex-col min-w-0">
-                            <h4 class="text-white font-bold text-sm md:text-base truncate" title="${testName}">${testName}</h4>
-                            <div class="flex items-center gap-3 mt-1.5">
-                                <span class="text-[11px] font-semibold text-gray-500 flex items-center gap-1.5"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>${s.date || 'Saved Session'}</span>
-                                <span class="px-2 py-0.5 rounded text-[9px] font-black tracking-wider bg-gray-800 text-gray-400 border border-gray-700 uppercase">JEE MAIN</span>
-                            </div>
+                        <p class="text-[11px] text-gray-400 mb-6">${s.date || `Test #${s.id}`}</p>
+                        
+                        <div class="flex flex-wrap justify-center md:justify-start gap-5">
+                            ${createGauge(s.correctCount||0, total, '#10B981', gaugeBg, 70, 6, `<span class="text-sm font-bold text-[#10B981]">${s.correctCount||0}</span>`, 'Correct')}
+                            ${createGauge(s.incorrectCount||0, total, '#EF4444', gaugeBg, 70, 6, `<span class="text-sm font-bold text-[#EF4444]">${s.incorrectCount||0}</span>`, 'Wrong')}
+                            ${createGauge(attempted, total, '#3B82F6', gaugeBg, 70, 6, `<span class="text-sm font-bold text-[#3B82F6]">${attempted}/${total}</span>`, 'Attempted')}
+                            ${createGauge(accuracy, 100, '#10B981', gaugeBg, 70, 6, `<span class="text-sm font-bold text-[#10B981]">${accuracy}%</span>`, 'Accuracy')}
+                            ${createGauge(s.totalSeconds||0, 10800, '#F59E0B', gaugeBg, 70, 6, `<span class="text-[11px] font-bold text-[#F59E0B]">${timeStr}</span>`, 'Time')}
                         </div>
                     </div>
-                    <div class="flex items-center justify-between md:justify-end gap-6 w-full md:w-auto shrink-0 border-t md:border-t-0 border-gray-800 pt-4 md:pt-0">
-                        <div class="flex flex-col items-center">
-                            <span class="text-[10px] font-black text-gray-500 tracking-widest uppercase mb-1">ACC</span>
-                            <span class="text-lg font-black text-emerald-500">${acc}%</span>
-                        </div>
-                        <div class="flex flex-col items-center">
-                            <span class="text-[10px] font-black text-gray-500 tracking-widest uppercase mb-1">SCORE</span>
-                            <span class="text-lg font-black text-white">${score}<span class="text-[11px] text-gray-500 font-bold ml-1">/${maxScore}</span></span>
-                        </div>
-                        <button class="view-session-btn bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white border border-gray-700 text-xs font-bold py-2.5 px-4 rounded-xl flex items-center gap-2 transition-all shadow-md ml-2" data-id="${s.id}">
-                            ANALYSIS 
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg> 
+                    
+                    <!-- Right: Actions -->
+                    <div class="flex items-center gap-2 mt-6 md:mt-0">
+                        <button class="share-session-btn bg-[#286090] hover:bg-[#1e4b72] text-white text-sm font-bold py-2 px-3 rounded-lg flex items-center justify-center transition-colors" data-id="${s.id}" title="Share this test">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+                        </button>
+                        <button class="view-session-btn bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors" data-id="${s.id}">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg> 
+                            View Analysis
                         </button>
                         
                         <div class="relative group cursor-pointer" tabindex="0">
-                            <div class="text-gray-500 hover:text-white p-2 rounded-full transition-colors flex items-center justify-center">
+                            <div class="text-gray-400 hover:text-white p-2 rounded-full transition-colors flex items-center justify-center">
                                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path></svg>
                             </div>
-                            <div class="absolute right-0 top-full pt-2 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all z-50">
+                            <div class="absolute right-0 top-full pt-2 w-52 opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all z-50">
                                 <div class="bg-[#1C212E] rounded-xl shadow-2xl border border-gray-700 flex flex-col text-sm font-semibold overflow-hidden">
                                     <button class="history-reattempt-btn text-left px-4 py-3 text-red-400 hover:bg-gray-800 transition-colors" data-id="${s.id}" data-type="wrong">Reattempt Wrong</button>
                                     <button class="history-reattempt-btn text-left px-4 py-3 text-gray-300 hover:bg-gray-800 transition-colors" data-id="${s.id}" data-type="unanswered">Reattempt Unanswered</button>
@@ -4608,6 +4658,22 @@ document.addEventListener('DOMContentLoaded', () => {
                         renderScoreAnalysis();
                     }
                 });
+            });
+            
+            document.querySelectorAll('.sa-filter-tab').forEach(btn => {
+                btn.removeEventListener('click', window._saTabFilterHandler);
+                window._saTabFilterHandler = (e) => {
+                    window.saCurrentFilter = btn.getAttribute('data-filter');
+                    document.querySelectorAll('.sa-filter-tab').forEach(b => {
+                        if (b.getAttribute('data-filter') === window.saCurrentFilter) {
+                            b.className = "sa-filter-tab px-5 py-2 rounded-full text-sm font-semibold text-white bg-gray-800 shadow";
+                        } else {
+                            b.className = "sa-filter-tab px-5 py-2 rounded-full text-sm font-semibold text-gray-500 hover:text-gray-300 transition-colors";
+                        }
+                    });
+                    renderScoreAnalysis();
+                };
+                btn.addEventListener('click', window._saTabFilterHandler);
             });
         }
     }
