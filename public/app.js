@@ -2516,6 +2516,8 @@ function loadSessionAndShowSummary(session) {
     // Hide landing page elements
     uploadContainer.classList.add('hidden');
     document.getElementById('historyContainer').classList.add('hidden');
+    const analysisContainer = document.getElementById('analysisContainer');
+    if (analysisContainer) analysisContainer.classList.add('hidden');
     
     // The showSummary function expects these to exist if we try to navigate back/restart, 
     // but we can just let showSummary run directly with the restored practiceState
@@ -4544,9 +4546,22 @@ document.addEventListener('DOMContentLoaded', () => {
                             ANALYSIS 
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg> 
                         </button>
-                        <button class="delete-session-btn text-gray-600 hover:text-red-500 transition-colors p-1" data-id="${s.id}" title="Delete Test">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg>
-                        </button>
+                        
+                        <div class="relative group cursor-pointer" tabindex="0">
+                            <div class="text-gray-500 hover:text-white p-2 rounded-full transition-colors flex items-center justify-center">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path></svg>
+                            </div>
+                            <div class="absolute right-0 top-full pt-2 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all z-50">
+                                <div class="bg-[#1C212E] rounded-xl shadow-2xl border border-gray-700 flex flex-col text-sm font-semibold overflow-hidden">
+                                    <button class="history-reattempt-btn text-left px-4 py-3 text-red-400 hover:bg-gray-800 transition-colors" data-id="${s.id}" data-type="wrong">Reattempt Wrong</button>
+                                    <button class="history-reattempt-btn text-left px-4 py-3 text-gray-300 hover:bg-gray-800 transition-colors" data-id="${s.id}" data-type="unanswered">Reattempt Unanswered</button>
+                                    <button class="history-reattempt-btn text-left px-4 py-3 text-[#FBBF24] hover:bg-gray-800 transition-colors" data-id="${s.id}" data-type="marked">Reattempt Marked</button>
+                                    <button class="history-reattempt-btn text-left px-4 py-3 text-blue-400 hover:bg-gray-800 transition-colors" data-id="${s.id}" data-type="all">Reattempt All Qs</button>
+                                    <div class="border-t border-gray-700"></div>
+                                    <button class="delete-session-btn text-left px-4 py-3 text-red-500 hover:bg-red-500/10 transition-colors" data-id="${s.id}">Delete Session</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 `;
                 saHistoricalList.appendChild(item);
@@ -4558,6 +4573,28 @@ document.addEventListener('DOMContentLoaded', () => {
                     const session = await getSessionFromDB(id);
                     if (session) {
                         loadSessionAndShowSummary(session);
+                    }
+                });
+            });
+
+            document.querySelectorAll('#saHistoricalList .history-reattempt-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const id = parseInt(btn.getAttribute('data-id'));
+                    const filterType = btn.getAttribute('data-type');
+                    
+                    const session = await getSessionFromDB(id);
+                    if (session) {
+                        currentSessionId = session.id;
+                        practiceState = session.practiceState;
+                        extractedImages = session.extractedImages;
+                        
+                        uploadContainer.classList.add('hidden');
+                        document.getElementById('analysisContainer').classList.add('hidden');
+                        
+                        if (typeof reattemptPractice === 'function') {
+                            reattemptPractice(filterType);
+                        }
                     }
                 });
             });
