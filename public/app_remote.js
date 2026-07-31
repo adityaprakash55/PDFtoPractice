@@ -112,11 +112,11 @@ const ntaAImage = document.getElementById('ntaAImage');
 const ntaCorrectBtn = document.getElementById('ntaCorrectBtn');
 const ntaIncorrectBtn = document.getElementById('ntaIncorrectBtn');
 const ntaSaveNextBtn = document.getElementById('ntaSaveNextBtn');
-const ntaSaveReviewBtn = document.getElementById('ntaSaveReviewBtn');
+const ntaSaveReviewBtn = document.getElementById('ntaSaveReviewBtn'); // may be null in new UI
 const ntaClearBtn = document.getElementById('ntaClearBtn');
 const ntaMarkReviewBtn = document.getElementById('ntaMarkReviewBtn');
 const ntaBackBtn = document.getElementById('ntaBackBtn');
-const ntaNextBtn = document.getElementById('ntaNextBtn');
+const ntaNextBtn = document.getElementById('ntaNextBtn'); // may be null in new UI
 const ntaSubmitBtn = document.getElementById('ntaSubmitBtn');
 const ntaPaletteGrid = document.getElementById('ntaPaletteGrid');
 const ntaFullScreenBtn = document.getElementById('ntaFullScreenBtn');
@@ -830,7 +830,6 @@ async function detectExerciseHeadersFromPage(page, viewport) {
 // =============================================================
 // DRAG & DROP
 // =============================================================
-dropZone.addEventListener('dragenter', e => { e.preventDefault(); });
 dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('border-blue-500','bg-blue-50'); });
 dropZone.addEventListener('dragleave',e => { e.preventDefault(); dropZone.classList.remove('border-blue-500','bg-blue-50'); });
 dropZone.addEventListener('drop', e => {
@@ -1684,18 +1683,6 @@ function showPracticeSetup() {
     practiceSetupContainer.classList.remove('hidden');
 }
 
-function logQuestionJourney(realIndex, action, details = {}) {
-    if (!practiceState.stats[realIndex].journey) {
-        practiceState.stats[realIndex].journey = [];
-    }
-    practiceState.stats[realIndex].journey.push({
-        action,
-        timestamp: Date.now(),
-        timeSpentSoFar: practiceState.stats[realIndex].timeSpent || 0,
-        ...details
-    });
-}
-
 function startPracticeSession(indices) {
     practiceState.activeIndices = indices;
     practiceState.currentIndex = 0;
@@ -1742,9 +1729,6 @@ startPracticeBtn.addEventListener('click', () => {
     const negativeMarkingToggle = document.getElementById('negativeMarkingToggle');
     practiceState.negativeMarking = negativeMarkingToggle ? negativeMarkingToggle.checked : true;
     
-    const targetTimeInput = document.getElementById('targetTimeInput');
-    const globalTargetTime = targetTimeInput ? parseInt(targetTimeInput.value) || 0 : 0;
-    
     currentSessionId = Date.now();
     
     // Initialize stats
@@ -1754,7 +1738,6 @@ startPracticeBtn.addEventListener('click', () => {
         return {
             index: idx,
             timeSpent: 0,
-            targetTime: globalTargetTime,
             attempted: false,
             evaluation: null, // 'correct' | 'incorrect'
             ntaStatus: 'not_visited',
@@ -1902,7 +1885,15 @@ nextQBtn.addEventListener('click', () => {
     }
 });
 
-// Removed old endPracticeBtn listener
+endPracticeBtn.addEventListener('click', () => {
+    if (confirm("Are you sure you want to end your practice session?")) {
+        if (typeof window.showSummary === 'function' && window.showSummary !== showSummary) {
+            window.showSummary();
+        } else {
+            showSummary();
+        }
+    }
+});
 
 function showSummary() {
     if (practiceState.totalTimerInterval) clearInterval(practiceState.totalTimerInterval);
@@ -2163,25 +2154,6 @@ function renderReviewCards(filter = 'all') {
         }
         
         card.appendChild(imagesContainer);
-        
-        if (stat.journey && stat.journey.length > 0) {
-            const journeyDiv = document.createElement('div');
-            journeyDiv.className = 'mt-4 border-t border-gray-200 dark:border-gray-700 pt-4';
-            journeyDiv.innerHTML = `<h4 class="text-sm font-bold text-gray-500 dark:text-gray-400 mb-2">Question Journey</h4>
-                <div class="flex flex-wrap gap-2 text-xs">
-                ${stat.journey.map(j => {
-                    const t = new Date(j.timestamp).toLocaleTimeString();
-                    let color = 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300';
-                    if (j.action === 'correct') color = 'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300';
-                    if (j.action === 'incorrect') color = 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300';
-                    if (j.action === 'answered' || j.action === 'answered_marked') color = 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300';
-                    if (j.action === 'marked') color = 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-300';
-                    return `<span class="px-2 py-1 rounded ${color}">${j.action} @ ${t} (${Math.round(j.timeSpentSoFar)}s)</span>`;
-                }).join(' ➔ ')}
-                </div>`;
-            card.appendChild(journeyDiv);
-        }
-        
         reviewList.appendChild(card);
     });
     
@@ -2325,7 +2297,9 @@ async function renderHistory() {
             return;
         }
         
-        historyContainer.classList.remove('hidden');
+        if (!((typeof isLiveMode !== 'undefined' && isLiveMode) || new URLSearchParams(window.location.search).get('room'))) {
+            historyContainer.classList.remove('hidden');
+        }
         historyList.innerHTML = '';
         
         function createGauge(val, max, color, bgColor, size, stroke, innerText, label) {
@@ -2348,7 +2322,7 @@ async function renderHistory() {
                         ${innerText}
                     </div>
                 </div>
-                <div class="text-[11px] text-gray-500 dark:text-gray-400 mt-1 font-medium">${label}</div>
+                <div class="text-[11px] text-gray-400 mt-1">${label}</div>
             </div>
             `;
         }
@@ -2378,57 +2352,51 @@ async function renderHistory() {
             const score = (session.correctCount * scorePerQ) - penalty;
             const accuracy = attempted > 0 ? Math.round((session.correctCount / attempted) * 100) : 0;
 
-            const isDark = document.documentElement.classList.contains('dark');
-            const gaugeBg = isDark ? '#334155' : '#cbd5e1';
-
             card.innerHTML = `
                 <!-- Left: Score -->
                 <div class="flex items-center justify-center mr-0 md:mr-8 mb-6 md:mb-0">
-                    ${createGauge(score, maxScore, '#F59E0B', gaugeBg, 120, 10, `<div class="mb-1"><span class="text-2xl font-bold text-[#F59E0B] leading-none">${score}</span><span class="text-xs text-gray-500">/${maxScore}</span></div>`, 'Score')}
+                    ${createGauge(score, maxScore, '#F59E0B', '#334155', 120, 10, `<div class="mb-1"><span class="text-2xl font-bold text-[#F59E0B] leading-none">${score}</span><span class="text-xs text-gray-500">/${maxScore}</span></div>`, 'Score')}
                 </div>
                 
                 <!-- Middle: Info & Stats -->
                 <div class="flex-1 flex flex-col items-center md:items-start text-center md:text-left">
                     <div class="flex items-center gap-3 mb-1">
-                        <h4 class="text-lg font-bold text-gray-900 dark:text-white">Session #${session.id}</h4>
-                        <span class="px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-400 text-[10px] font-bold flex items-center gap-1 border border-blue-200 dark:border-blue-800/50">
+                        <h4 class="text-lg font-bold text-white">Session #${session.id}</h4>
+                        <span class="px-2 py-0.5 rounded-full bg-blue-900/50 text-blue-400 text-[10px] font-bold flex items-center gap-1 border border-blue-800/50">
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg> 
                             Subject Test
                         </span>
                     </div>
-                    <p class="text-[11px] text-gray-500 dark:text-gray-400 mb-6">${session.date}</p>
+                    <p class="text-[11px] text-gray-400 mb-6">${session.date}</p>
                     
                     <div class="flex flex-wrap justify-center md:justify-start gap-5">
-                        ${createGauge(session.correctCount, total, '#10B981', gaugeBg, 70, 6, `<span class="text-sm font-bold text-[#10B981]">${session.correctCount}</span>`, 'Correct')}
-                        ${createGauge(session.incorrectCount, total, '#EF4444', gaugeBg, 70, 6, `<span class="text-sm font-bold text-[#EF4444]">${session.incorrectCount}</span>`, 'Wrong')}
-                        ${createGauge(attempted, total, '#3B82F6', gaugeBg, 70, 6, `<span class="text-sm font-bold text-[#3B82F6]">${attempted}/${total}</span>`, 'Attempted')}
-                        ${createGauge(accuracy, 100, '#10B981', gaugeBg, 70, 6, `<span class="text-sm font-bold text-[#10B981]">${accuracy}%</span>`, 'Accuracy')}
-                        ${createGauge(session.totalSeconds, 10800, '#F59E0B', gaugeBg, 70, 6, `<span class="text-[11px] font-bold text-[#F59E0B]">${timeStr}</span>`, 'Time')}
+                        ${createGauge(session.correctCount, total, '#10B981', '#334155', 70, 6, `<span class="text-sm font-bold text-[#10B981]">${session.correctCount}</span>`, 'Correct')}
+                        ${createGauge(session.incorrectCount, total, '#EF4444', '#334155', 70, 6, `<span class="text-sm font-bold text-[#EF4444]">${session.incorrectCount}</span>`, 'Wrong')}
+                        ${createGauge(attempted, total, '#3B82F6', '#334155', 70, 6, `<span class="text-sm font-bold text-[#3B82F6]">${attempted}/${total}</span>`, 'Attempted')}
+                        ${createGauge(accuracy, 100, '#10B981', '#334155', 70, 6, `<span class="text-sm font-bold text-[#10B981]">${accuracy}%</span>`, 'Accuracy')}
+                        ${createGauge(session.totalSeconds, 10800, '#F59E0B', '#334155', 70, 6, `<span class="text-[11px] font-bold text-[#F59E0B]">${timeStr}</span>`, 'Time')}
                     </div>
                 </div>
                 
                 <!-- Right: Actions -->
                 <div class="flex items-center gap-2 mt-6 md:mt-0">
-                    <button class="share-session-btn bg-[#286090] hover:bg-[#1e4b72] text-white text-sm font-bold py-2 px-3 rounded-lg flex items-center justify-center transition-colors" data-id="${session.id}" title="Share this test">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
-                    </button>
                     <button class="view-session-btn bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors" data-id="${session.id}">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg> 
                         View Analysis
                     </button>
                     
                     <div class="relative group cursor-pointer" tabindex="0">
-                        <div class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white p-2 rounded-full transition-colors flex items-center justify-center">
+                        <div class="text-gray-400 hover:text-white p-2 rounded-full transition-colors flex items-center justify-center">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path></svg>
                         </div>
                         <div class="absolute right-0 top-full pt-2 w-52 opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all z-50">
-                            <div class="bg-white dark:bg-[#1C212E] rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col text-sm font-semibold overflow-hidden">
-                                <button class="history-reattempt-btn text-left px-4 py-3 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-gray-800 transition-colors" data-id="${session.id}" data-type="wrong">Reattempt Wrong</button>
-                                <button class="history-reattempt-btn text-left px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" data-id="${session.id}" data-type="unanswered">Reattempt Unanswered</button>
-                                <button class="history-reattempt-btn text-left px-4 py-3 text-amber-600 dark:text-[#FBBF24] hover:bg-amber-50 dark:hover:bg-gray-800 transition-colors" data-id="${session.id}" data-type="marked">Reattempt Marked</button>
-                                <button class="history-reattempt-btn text-left px-4 py-3 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors" data-id="${session.id}" data-type="all">Reattempt All Qs</button>
-                                <div class="border-t border-gray-200 dark:border-gray-700"></div>
-                                <button class="delete-session-btn text-left px-4 py-3 text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors" data-id="${session.id}">Delete Session</button>
+                            <div class="bg-white dark:bg-[#1C212E] rounded-xl shadow-2xl border border-gray-700 flex flex-col text-sm font-semibold overflow-hidden">
+                                <button class="history-reattempt-btn text-left px-4 py-3 text-red-400 hover:bg-gray-800 transition-colors" data-id="${session.id}" data-type="wrong">Reattempt Wrong</button>
+                                <button class="history-reattempt-btn text-left px-4 py-3 text-gray-300 hover:bg-gray-800 transition-colors" data-id="${session.id}" data-type="unanswered">Reattempt Unanswered</button>
+                                <button class="history-reattempt-btn text-left px-4 py-3 text-[#FBBF24] hover:bg-gray-800 transition-colors" data-id="${session.id}" data-type="marked">Reattempt Marked</button>
+                                <button class="history-reattempt-btn text-left px-4 py-3 text-blue-400 hover:bg-gray-800 transition-colors" data-id="${session.id}" data-type="all">Reattempt All Qs</button>
+                                <div class="border-t border-gray-700"></div>
+                                <button class="delete-session-btn text-left px-4 py-3 text-red-600 hover:bg-red-500/10 transition-colors" data-id="${session.id}">Delete Session</button>
                             </div>
                         </div>
                     </div>
@@ -2471,18 +2439,6 @@ async function renderHistory() {
             });
         });
         
-        document.querySelectorAll('.share-session-btn').forEach(btn => {
-            btn.addEventListener('click', async () => {
-                const id = parseInt(btn.getAttribute('data-id'));
-                const session = await getSessionFromDB(id);
-                if (session && typeof startLiveRoomFromSession === 'function') {
-                    startLiveRoomFromSession(session);
-                } else {
-                    alert('Unable to share this session.');
-                }
-            });
-        });
-        
         document.querySelectorAll('.history-reattempt-btn').forEach(btn => {
             btn.addEventListener('click', async (e) => {
                 e.stopPropagation();
@@ -2519,8 +2475,9 @@ function loadSessionAndShowSummary(session) {
     
     // The showSummary function expects these to exist if we try to navigate back/restart, 
     // but we can just let showSummary run directly with the restored practiceState
-    // trigger showResultsDashboard which recalculates from practiceState!
-    showResultsDashboard();
+    // Wait, showSummary recalculates stats. Let's just render the loaded stats directly
+    // by triggering showSummary() which recalculates from practiceState!
+    showSummary();
 }
 
 // Initial render
@@ -2670,193 +2627,6 @@ let currentNotedQuestions = [];
 
 async function renderNotedQuestions() {
     const notedQsList = document.getElementById('notedQsList');
-    const notedQsContainer = document.getElementById('notedQsContainer');
-    if (!notedQsList || !notedQsContainer) return;
-    
-    try {
-        currentNotedQuestions = await getAllGlobalNotes();
-        // notedQsContainer.classList.remove('hidden'); // Removed to fix dashboard layout
-        notedQsList.innerHTML = '';
-        
-        if (currentNotedQuestions.length === 0) {
-            notedQsList.innerHTML = `
-                <div class="col-span-1 sm:col-span-2 lg:col-span-3 bg-white dark:bg-[#1C212E] p-8 rounded-2xl border border-gray-200 dark:border-gray-800 border-dashed flex flex-col items-center justify-center text-center opacity-70">
-                    <div class="bg-yellow-500/10 p-4 rounded-full text-yellow-500 mb-4">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                    </div>
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-gray-400 mb-1">No Notes Yet</h3>
-                    <p class="text-sm text-gray-600 dark:text-gray-500 max-w-sm">Write notes using the scratchpad during practice. They will be saved here!</p>
-                </div>
-            `;
-            return;
-        }
-        
-        const card = document.createElement('div');
-        card.className = 'bg-white dark:bg-[#1C212E] p-5 rounded-2xl flex flex-col justify-between border border-gray-200 dark:border-gray-800 shadow-xl relative z-10 hover:z-20 transition-all hover:border-yellow-500/50 hover:shadow-[0_0_15px_rgba(234,179,8,0.2)] cursor-pointer group';
-        card.innerHTML = `
-            <div class="flex items-start justify-between mb-4">
-                <div class="flex items-center gap-3">
-                    <div class="bg-yellow-500/10 p-2 rounded-lg text-yellow-500 group-hover:bg-yellow-500 group-hover:text-white transition-colors">
-                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-lg text-white group-hover:text-yellow-400 transition-colors">My Noted Questions</h3>
-                        <p class="text-sm text-gray-400">${currentNotedQuestions.length} questions</p>
-                    </div>
-                </div>
-            </div>
-            <div class="mt-auto">
-                <button class="w-full bg-white/10 hover:bg-yellow-500 text-white font-bold py-2 rounded-lg text-sm transition-colors flex items-center justify-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                    View Notes
-                </button>
-            </div>
-        `;
-        
-        card.addEventListener('click', openNotedQsModal);
-        notedQsList.appendChild(card);
-        
-    } catch (e) {
-        console.error('Error loading notes', e);
-    }
-}
-
-function openNotedQsModal() {
-    const overlay = document.getElementById('notedQsOverlay');
-    const modal = document.getElementById('notedQsModal');
-    
-    document.getElementById('notedQsCount').textContent = `${currentNotedQuestions.length} questions with notes`;
-    renderNotedQsModalList();
-    
-    overlay.classList.remove('hidden');
-    void overlay.offsetWidth;
-    overlay.classList.remove('opacity-0');
-    modal.classList.remove('scale-95');
-}
-
-function renderNotedQsModalList() {
-    const list = document.getElementById('notedQsListModal');
-    list.innerHTML = '';
-    
-    if (currentNotedQuestions.length === 0) {
-        list.innerHTML = `<div class="text-center text-gray-500 py-10">You have no noted questions.</div>`;
-        return;
-    }
-    
-    currentNotedQuestions.forEach(q => {
-        const div = document.createElement('div');
-        div.className = 'bg-white dark:bg-[#1C212E] border border-gray-200 dark:border-gray-800 rounded-xl p-4 flex flex-col sm:flex-row gap-4 items-stretch relative group';
-        div.innerHTML = `
-            <div class="w-full sm:w-1/3 shrink-0 bg-white rounded-lg p-2 overflow-hidden flex items-center justify-center min-h-[100px]">
-                <img src="${q.dataUrl}" class="max-w-full max-h-32 object-contain mix-blend-multiply" />
-            </div>
-            <div class="flex-1 flex flex-col border-l border-gray-200 dark:border-gray-800 pl-4">
-                <div class="flex justify-between items-start mb-2">
-                    <div>
-                        <h4 class="font-bold text-white text-sm">${q.label}</h4>
-                        <p class="text-xs text-gray-400">Added ${new Date(q.timestamp).toLocaleDateString()}</p>
-                    </div>
-                    <button class="bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white p-2 rounded-lg transition-colors border border-red-500/20 hover:border-red-500 shrink-0" title="Delete Note" aria-label="Delete Note">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                    </button>
-                </div>
-                <div class="flex-1 bg-black/30 rounded-lg p-3 text-gray-300 text-sm whitespace-pre-wrap overflow-y-auto max-h-32 hide-scrollbar font-mono">${q.noteText}</div>
-            </div>
-        `;
-        
-        div.querySelector('button').addEventListener('click', async () => {
-            if (confirm('Are you sure you want to delete this note?')) {
-                await removeGlobalNote(q.id);
-                currentNotedQuestions = currentNotedQuestions.filter(n => n.id !== q.id);
-                document.getElementById('notedQsCount').textContent = `${currentNotedQuestions.length} questions with notes`;
-                renderNotedQsModalList();
-                renderNotedQuestions(); // Refresh home page card
-            }
-        });
-        
-        list.appendChild(div);
-    });
-}
-
-function closeNotedQsModal() {
-    const overlay = document.getElementById('notedQsOverlay');
-    const modal = document.getElementById('notedQsModal');
-    overlay.classList.add('opacity-0');
-    modal.classList.add('scale-95');
-    setTimeout(() => overlay.classList.add('hidden'), 300);
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    renderNotedQuestions();
-    
-    document.getElementById('closeNotedQsBtn')?.addEventListener('click', closeNotedQsModal);
-    document.getElementById('notedQsOverlay')?.addEventListener('click', (e) => {
-        if (e.target.id === 'notedQsOverlay') closeNotedQsModal();
-    });
-    
-    document.getElementById('practiceNotedQsBtn')?.addEventListener('click', () => {
-        if (currentNotedQuestions.length === 0) return alert('No noted questions to practice!');
-        
-        practiceState.isNotesSession = true;
-        practiceState.isBookmarkSession = false;
-        
-        extractedImages.length = 0;
-        currentNotedQuestions.forEach(q => extractedImages.push(q));
-        
-        // Hide containers
-        document.getElementById('uploadContainer')?.classList.add('hidden');
-        document.getElementById('historyContainer')?.classList.add('hidden');
-        document.getElementById('bookmarksContainer')?.classList.add('hidden');
-        document.getElementById('notedQsContainer')?.classList.add('hidden');
-        
-        const scorePerQInput = document.getElementById('scorePerQInput');
-        practiceState.scorePerQ = scorePerQInput ? parseInt(scorePerQInput.value) || 4 : 4;
-        const negativeMarkingToggle = document.getElementById('negativeMarkingToggle');
-        practiceState.negativeMarking = negativeMarkingToggle ? negativeMarkingToggle.checked : true;
-        currentSessionId = Date.now();
-
-        practiceState.stats = extractedImages.map((q, idx) => {
-            return {
-                index: idx,
-                label: q.label || `Q. ${idx+1}`,
-                exercise: 'Notes Session',
-                attempted: false,
-                evaluation: null,
-                timeSpent: 0,
-                ntaStatus: 'not_visited',
-                isMarkedForReview: false
-            };
-        });
-        
-        // Also pre-populate the scratchpadNotes for this session so the user sees their notes
-        practiceState.scratchpadNotes = {};
-        currentNotedQuestions.forEach((q, idx) => {
-            practiceState.scratchpadNotes[idx] = q.noteText;
-        });
-        
-        const indices = extractedImages.map((_, i) => i);
-        const mins = getCalculatedTimeMinutes(extractedImages.length);
-        practiceState.totalSecondsRemaining = mins * 60;
-        
-        closeNotedQsModal();
-        startPracticeSession(indices);
-    });
-});
-
-// Bookmarks UI rendering
-async function renderBookmarks() {
-    const bookmarksList = document.getElementById('bookmarksList');
-    const bookmarksContainer = document.getElementById('bookmarksContainer');
-    if (!bookmarksList || !bookmarksContainer) return;
-    
-    try {
-        const groups = await getAllBookmarkGroups();
-        // removed early return
-        // bookmarksContainer.classList.remove('hidden'); // Removed to fix dashboard layout
-        bookmarksList.innerHTML = '';
-
-        if (groups.length === 0) {
-            bookmarksList.innerHTML = `
                 <div class="col-span-1 sm:col-span-2 lg:col-span-3 bg-white dark:bg-[#1C212E] p-8 rounded-2xl border border-gray-200 dark:border-gray-800 border-dashed flex flex-col items-center justify-center text-center opacity-70">
                     <div class="bg-gray-100 dark:bg-white/5 p-4 rounded-full text-gray-500 mb-4">
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
@@ -3247,9 +3017,6 @@ function renderNtaQuestion(index) {
     
     if (stat.ntaStatus === 'not_visited') {
         stat.ntaStatus = 'not_answered';
-        logQuestionJourney(realIndex, 'viewed');
-    } else {
-        logQuestionJourney(realIndex, 'viewed');
     }
     
     updateNtaPaletteColors();
@@ -3343,7 +3110,6 @@ ntaCorrectBtn.addEventListener('click', () => {
     const realIndex = practiceState.activeIndices[practiceState.currentIndex];
     practiceState.stats[realIndex].ntaStatus = 'answered';
     practiceState.stats[realIndex].evaluation = 'correct';
-    logQuestionJourney(realIndex, 'correct');
     updateNtaPaletteColors();
 });
 
@@ -3351,7 +3117,6 @@ ntaIncorrectBtn.addEventListener('click', () => {
     const realIndex = practiceState.activeIndices[practiceState.currentIndex];
     practiceState.stats[realIndex].ntaStatus = 'answered';
     practiceState.stats[realIndex].evaluation = 'incorrect';
-    logQuestionJourney(realIndex, 'incorrect');
     updateNtaPaletteColors();
 });
 
@@ -3361,10 +3126,8 @@ ntaSaveNextBtn.addEventListener('click', () => {
     if (practiceState.answers[realIndex]) {
         s.ntaStatus = 'answered';
         s.attempted = true;
-        logQuestionJourney(realIndex, 'answered');
     } else {
         s.ntaStatus = 'not_answered';
-        logQuestionJourney(realIndex, 'not_answered');
     }
     updateNtaPaletteColors();
     if (practiceState.currentIndex < practiceState.activeIndices.length - 1) {
@@ -3377,7 +3140,6 @@ if (document.getElementById('ntaSaveReviewBtn')) {
         const realIndex = practiceState.activeIndices[practiceState.currentIndex];
         const s = practiceState.stats[realIndex];
         s.ntaStatus = s.attempted ? 'answered_marked' : 'marked';
-        logQuestionJourney(realIndex, s.ntaStatus);
         updateNtaPaletteColors();
         if (practiceState.currentIndex < practiceState.activeIndices.length - 1) {
             renderNtaQuestion(practiceState.currentIndex + 1);
@@ -3393,7 +3155,6 @@ ntaClearBtn.addEventListener('click', () => {
     s.evaluation = null;
     delete practiceState.answers[realIndex];
     practiceState.isAnswerRevealed = false;
-    logQuestionJourney(realIndex, 'cleared');
     updateNtaPaletteColors();
     renderNtaQuestion(practiceState.currentIndex); // Re-render to clear radio buttons
 });
@@ -3425,7 +3186,7 @@ if (ntaNextBtn) ntaNextBtn.addEventListener('click', () => {
     }
 });
 
-function triggerExamSummary() {
+ntaSubmitBtn.addEventListener('click', () => {
     const counts = { not_visited: 0, not_answered: 0, answered: 0, marked: 0, answered_marked: 0 };
     const sectionCounts = {};
     practiceState.activeIndices.forEach(realIndex => {
@@ -3435,61 +3196,51 @@ function triggerExamSummary() {
         if (!sectionCounts[ex]) sectionCounts[ex] = { answered: 0, not_answered: 0, not_visited: 0, marked: 0, answered_marked: 0 };
         sectionCounts[ex][stat.ntaStatus]++;
     });
-    
     document.getElementById('esTotalQ').textContent = practiceState.activeIndices.length;
     document.getElementById('esAnswered').textContent = counts.answered;
     document.getElementById('esNotAnswered').textContent = counts.not_answered;
     document.getElementById('esNotVisited').textContent = counts.not_visited;
     document.getElementById('esMarked').textContent = counts.marked;
     document.getElementById('esAnsMarked').textContent = counts.answered_marked;
-    
     const tbody = document.getElementById('esSectionBreakdown');
-    if (tbody) {
-        tbody.innerHTML = Object.entries(sectionCounts).map(([name, c]) => `
-            <tr class="hover:bg-gray-50 dark:hover:bg-[#1a1f2e]/50">
-                <td class="px-4 py-2.5 font-semibold text-gray-800 dark:text-gray-200">${name}</td>
-                <td class="px-3 py-2.5 text-center text-[#5cb85c] font-bold">${c.answered}</td>
-                <td class="px-3 py-2.5 text-center text-[#d9534f] font-bold">${c.not_answered}</td>
-                <td class="px-3 py-2.5 text-center text-gray-600 dark:text-gray-300 font-bold">${c.not_visited}</td>
-                <td class="px-3 py-2.5 text-center text-[#5bc0de] font-bold">${c.marked}</td>
-                <td class="px-3 py-2.5 text-center text-purple-500 font-bold">${c.answered_marked}</td>
-            </tr>
-        `).join('');
-    }
-    
+    tbody.innerHTML = Object.entries(sectionCounts).map(([name, c]) => `
+        <tr class="hover:bg-gray-50 dark:hover:bg-[#1a1f2e]/50">
+            <td class="px-4 py-2.5 font-semibold text-gray-800 dark:text-gray-200">${name}</td>
+            <td class="px-3 py-2.5 text-center text-[#5cb85c] font-bold">${c.answered}</td>
+            <td class="px-3 py-2.5 text-center text-[#d9534f] font-bold">${c.not_answered}</td>
+            <td class="px-3 py-2.5 text-center text-gray-600 dark:text-gray-300 font-bold">${c.not_visited}</td>
+            <td class="px-3 py-2.5 text-center text-[#5bc0de] font-bold">${c.marked}</td>
+            <td class="px-3 py-2.5 text-center text-purple-500 font-bold">${c.answered_marked}</td>
+        </tr>
+    `).join('');
     document.getElementById('examSummaryModal').classList.remove('hidden');
-}
+});
 
-ntaSubmitBtn.addEventListener('click', triggerExamSummary);
-endPracticeBtn.addEventListener('click', triggerExamSummary);
-
-// Modal button wiring
-document.addEventListener('DOMContentLoaded', () => {
-    const examSummaryModal = document.getElementById('examSummaryModal');
-    const areYouSureModal = document.getElementById('areYouSureModal');
-
-    document.getElementById('examSummaryCloseBtn').addEventListener('click', () => examSummaryModal.classList.add('hidden'));
-    document.getElementById('examSummaryReturnBtn').addEventListener('click', () => examSummaryModal.classList.add('hidden'));
+// Wire exam summary modal buttons
+const _examModal = document.getElementById('examSummaryModal');
+const _confirmModal = document.getElementById('areYouSureModal');
+if (_examModal) {
+    document.getElementById('examSummaryCloseBtn').addEventListener('click', () => _examModal.classList.add('hidden'));
+    document.getElementById('examSummaryReturnBtn').addEventListener('click', () => _examModal.classList.add('hidden'));
     document.getElementById('examSummaryFinalBtn').addEventListener('click', () => {
-        examSummaryModal.classList.add('hidden');
-        areYouSureModal.classList.remove('hidden');
+        _examModal.classList.add('hidden');
+        _confirmModal.classList.remove('hidden');
     });
-    
+}
+if (_confirmModal) {
     document.getElementById('areYouSureCancelBtn').addEventListener('click', () => {
-        areYouSureModal.classList.add('hidden');
-        examSummaryModal.classList.remove('hidden');
+        _confirmModal.classList.add('hidden');
+        _examModal.classList.remove('hidden');
     });
-    
     document.getElementById('areYouSureConfirmBtn').addEventListener('click', () => {
-        areYouSureModal.classList.add('hidden');
+        _confirmModal.classList.add('hidden');
         if (typeof confetti === 'function') {
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#26ccff', '#a25afd', '#ff5e7e', '#88ff5a', '#fcff42', '#ffa62d', '#ff36ff'] });
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#26ccff','#a25afd','#ff5e7e','#88ff5a','#fcff42','#ffa62d','#ff36ff'] });
         }
         showResultsDashboard();
     });
-});
+}
 
-// Mobile Palette Drawer Logic
 const ntaMobilePaletteBtn = document.getElementById('ntaMobilePaletteBtn');
 const ntaPaletteDrawer = document.getElementById('ntaPaletteDrawer');
 const ntaPaletteOverlay = document.getElementById('ntaPaletteOverlay');
@@ -3746,6 +3497,8 @@ document.getElementById('closeFullAnswerKeyBtn')?.addEventListener('click', () =
 });
 
 
+
+// ================================================================
 // RESULTS DASHBOARD - Full post-test analysis view
 // ================================================================
 let _lrdNavWired = false;
@@ -3783,9 +3536,6 @@ function showResultsDashboard() {
     });
 
     const skippedCount = totalQ - attemptedCount;
-    const markedCount = indices.filter(ri => practiceState.stats[ri]?.ntaStatus === 'marked' || practiceState.stats[ri]?.ntaStatus === 'answered_marked').length;
-    const lrdMarkedText = document.getElementById('lrdMarkedText');
-    if (lrdMarkedText) lrdMarkedText.textContent = `Marked for Review (${markedCount})`;
     const maxScore = totalQ * scorePerQ;
     const score = (correctCount * scorePerQ) - (hasNeg ? incorrectCount : 0);
     const scorePercent = maxScore > 0 ? Math.max(score, 0) / maxScore * 100 : 0;
@@ -3826,14 +3576,13 @@ function showResultsDashboard() {
         if (overviewBtn) { overviewBtn.classList.add('bg-white/10', 'text-white'); overviewBtn.classList.remove('text-gray-400'); }
 
         const exitBtn = document.getElementById('lrdExitBtn');
-        if (exitBtn) exitBtn.addEventListener('click', () => { window.location.reload(); });
+        if (exitBtn) exitBtn.addEventListener('click', () => { if (confirm('Exit test results?')) window.location.reload(); });
     }
 
     // Populate all panels
     _lrdFillOverview(stats);
     _lrdFillTimeAnalysis(stats);
     _lrdFillInsights(stats);
-    _lrdFillPeerCompare(stats);
     _lrdFillScoreProgress(stats);
     _lrdFillLeaderboard();
 
@@ -3940,9 +3689,7 @@ function _lrdFillTimeAnalysis(s) {
     if (el('lrdTimeMeta')) el('lrdTimeMeta').textContent = 'AVG PACE: ' + avgTimePerQ + 'S/Q · TOTAL: ' + mins + 'M ' + secs + 'S';
     if (el('lrdAvgLabel')) el('lrdAvgLabel').textContent = '- - - - Avg: ' + avgTimePerQ + 's/Q';
 
-    let fastCorrect = 0, fastIncorrect = 0;
-    let atParCorrect = 0, atParIncorrect = 0;
-    let slowCorrect = 0, slowIncorrect = 0;
+    let fastCorrect = 0, fastIncorrect = 0, slowCorrect = 0, slowIncorrect = 0;
     const timeData = [], colorData = [];
 
     (practiceState.activeIndices || []).forEach(ri => {
@@ -3950,24 +3697,12 @@ function _lrdFillTimeAnalysis(s) {
         if (!stat) return;
         const t = stat.timeSpent || 0;
         timeData.push(t);
-        
-        const referenceTime = (stat.targetTime && stat.targetTime > 0) ? stat.targetTime : avgTimePerQ;
-        const fastThreshold = referenceTime * 0.8;
-        const slowThreshold = referenceTime * 1.2;
-        
-        let pace = 'at_par';
-        if (t < fastThreshold) pace = 'fast';
-        else if (t > slowThreshold) pace = 'slow';
-
+        const isFast = t <= avgTimePerQ;
         if (stat.evaluation === 'correct') {
-            if (pace === 'fast') fastCorrect++;
-            else if (pace === 'slow') slowCorrect++;
-            else atParCorrect++;
+            if (isFast) fastCorrect++; else slowCorrect++;
             colorData.push('rgba(34,197,94,0.8)');
         } else if (stat.evaluation === 'incorrect') {
-            if (pace === 'fast') fastIncorrect++;
-            else if (pace === 'slow') slowIncorrect++;
-            else atParIncorrect++;
+            if (isFast) fastIncorrect++; else slowIncorrect++;
             colorData.push('rgba(239,68,68,0.8)');
         } else {
             colorData.push('rgba(107,114,128,0.4)');
@@ -3975,10 +3710,8 @@ function _lrdFillTimeAnalysis(s) {
     });
 
     if (el('lrdFastCorrect')) el('lrdFastCorrect').textContent = fastCorrect;
-    if (el('lrdAtParCorrect')) el('lrdAtParCorrect').textContent = atParCorrect;
-    if (el('lrdSlowCorrect')) el('lrdSlowCorrect').textContent = slowCorrect;
     if (el('lrdFastIncorrect')) el('lrdFastIncorrect').textContent = fastIncorrect;
-    if (el('lrdAtParIncorrect')) el('lrdAtParIncorrect').textContent = atParIncorrect;
+    if (el('lrdSlowCorrect')) el('lrdSlowCorrect').textContent = slowCorrect;
     if (el('lrdSlowIncorrect')) el('lrdSlowIncorrect').textContent = slowIncorrect;
 
     const ctx = el('lrdTimeChart');
@@ -4000,55 +3733,6 @@ function _lrdFillTimeAnalysis(s) {
             }
         });
     }
-}
-
-function _lrdFillPeerCompare(s) {
-    const { correctCount, totalQ, maxScore, hasNeg, scorePerQ, totalSeconds, attemptedCount } = s;
-    const el = id => document.getElementById(id);
-    if (!el('lrdPeerCompare')) return;
-
-    // You
-    const youAcc = attemptedCount > 0 ? Math.round((correctCount / attemptedCount) * 100) : 0;
-    const penalty = hasNeg ? s.incorrectCount : 0;
-    const youScore = (correctCount * scorePerQ) - penalty;
-    const youScorePct = maxScore > 0 ? Math.round((youScore / maxScore) * 100) : 0;
-    const youPace = attemptedCount > 0 ? Math.round(totalSeconds / attemptedCount) : 0;
-
-    // Simulate Top 10%ile and Top 25%ile based on current test's complexity 
-    // (In reality, this would be fetched from a backend, but we're simulating here)
-    const top10Acc = Math.min(95, Math.max(youAcc + 15, 80));
-    const top25Acc = Math.min(85, Math.max(youAcc + 5, 65));
-
-    const top10Score = Math.min(90, Math.max(youScorePct + 20, 75));
-    const top25Score = Math.min(75, Math.max(youScorePct + 10, 60));
-
-    const top10Pace = Math.max(15, youPace > 0 ? Math.round(youPace * 0.7) : 45);
-    const top25Pace = Math.max(20, youPace > 0 ? Math.round(youPace * 0.85) : 55);
-
-    // Update Accuracy
-    if (el('peerYouAcc')) el('peerYouAcc').textContent = youAcc + '%';
-    if (el('peerYouAccBar')) el('peerYouAccBar').style.width = youAcc + '%';
-    if (el('peerTop10Acc')) el('peerTop10Acc').textContent = top10Acc + '%';
-    if (el('peerTop10AccBar')) el('peerTop10AccBar').style.width = top10Acc + '%';
-    if (el('peerTop25Acc')) el('peerTop25Acc').textContent = top25Acc + '%';
-    if (el('peerTop25AccBar')) el('peerTop25AccBar').style.width = top25Acc + '%';
-
-    // Update Score
-    if (el('peerYouScore')) el('peerYouScore').textContent = youScorePct + '%';
-    if (el('peerYouScoreBar')) el('peerYouScoreBar').style.width = Math.max(0, youScorePct) + '%';
-    if (el('peerTop10Score')) el('peerTop10Score').textContent = top10Score + '%';
-    if (el('peerTop10ScoreBar')) el('peerTop10ScoreBar').style.width = top10Score + '%';
-    if (el('peerTop25Score')) el('peerTop25Score').textContent = top25Score + '%';
-    if (el('peerTop25ScoreBar')) el('peerTop25ScoreBar').style.width = top25Score + '%';
-
-    // Update Pace (inverse logic, shorter bar is better but let's just make max 120s)
-    const paceToPct = p => Math.min(100, Math.round((p / 120) * 100));
-    if (el('peerYouPace')) el('peerYouPace').textContent = youPace + 's';
-    if (el('peerYouPaceBar')) el('peerYouPaceBar').style.width = paceToPct(youPace) + '%';
-    if (el('peerTop10Pace')) el('peerTop10Pace').textContent = top10Pace + 's';
-    if (el('peerTop10PaceBar')) el('peerTop10PaceBar').style.width = paceToPct(top10Pace) + '%';
-    if (el('peerTop25Pace')) el('peerTop25Pace').textContent = top25Pace + 's';
-    if (el('peerTop25PaceBar')) el('peerTop25PaceBar').style.width = paceToPct(top25Pace) + '%';
 }
 
 function _lrdFillInsights(s) {
@@ -4307,271 +3991,3 @@ function _lrdUpdateLeaderboard(participants) {
     }
 }
 window._lrdUpdateLeaderboard = _lrdUpdateLeaderboard;
-// Dashboard Review Exam Panel Wiring
-document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.lrd-reattempt-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const type = btn.getAttribute('data-type');
-            document.getElementById('liveResultsDashboard').classList.add('hidden');
-            reattemptPractice(type);
-        });
-    });
-    const btnAll = document.getElementById('lrdViewAllQsBtn');
-    if (btnAll) btnAll.addEventListener('click', () => {
-        document.getElementById('liveResultsDashboard').classList.add('hidden');
-        reattemptPractice('all');
-    });
-    const btnMarked = document.getElementById('lrdMarkedQsBtn');
-    if (btnMarked) btnMarked.addEventListener('click', () => {
-        document.getElementById('liveResultsDashboard').classList.add('hidden');
-        reattemptPractice('marked');
-    });
-    const btnHome = document.getElementById('lrdReturnHome');
-    if (btnHome) btnHome.addEventListener('click', () => {
-        document.getElementById('liveResultsDashboard').classList.add('hidden');
-        location.reload();
-    });
-});
-
-
-// ---- DASHBOARD NAVIGATION & RESPONSIVE SIDEBAR LOGIC ----
-document.addEventListener('DOMContentLoaded', () => {
-    const dashNavBtns = document.querySelectorAll('.dash-nav-btn');
-    const dashViews = document.querySelectorAll('.dash-view');
-    const landingSidebar = document.getElementById('landingSidebar');
-    const sidebarCollapseBtn = document.getElementById('sidebarCollapseBtn');
-    const mobileSidebarToggleBtn = document.getElementById('mobileSidebarToggleBtn');
-    const mobileSidebarCloseBtn = document.getElementById('mobileSidebarCloseBtn');
-    const mobileSidebarBackdrop = document.getElementById('mobileSidebarBackdrop');
-
-    // Desktop Collapse Toggle with LocalStorage persistence
-    if (localStorage.getItem('sidebarCollapsed') === 'true' && landingSidebar) {
-        landingSidebar.classList.add('collapsed');
-    }
-
-    if (sidebarCollapseBtn && landingSidebar) {
-        sidebarCollapseBtn.addEventListener('click', () => {
-            landingSidebar.classList.toggle('collapsed');
-            const isCollapsed = landingSidebar.classList.contains('collapsed');
-            localStorage.setItem('sidebarCollapsed', isCollapsed ? 'true' : 'false');
-        });
-    }
-
-    // Mobile Sidebar Drawer Controls
-    function openMobileSidebar() {
-        if (!landingSidebar) return;
-        landingSidebar.classList.add('mobile-open');
-        if (mobileSidebarBackdrop) mobileSidebarBackdrop.classList.remove('hidden');
-    }
-
-    function closeMobileSidebar() {
-        if (!landingSidebar) return;
-        landingSidebar.classList.remove('mobile-open');
-        if (mobileSidebarBackdrop) mobileSidebarBackdrop.classList.add('hidden');
-    }
-
-    if (mobileSidebarToggleBtn) mobileSidebarToggleBtn.addEventListener('click', openMobileSidebar);
-    if (mobileSidebarCloseBtn) mobileSidebarCloseBtn.addEventListener('click', closeMobileSidebar);
-    if (mobileSidebarBackdrop) mobileSidebarBackdrop.addEventListener('click', closeMobileSidebar);
-    
-    window.switchDashView = function(targetView) {
-        dashViews.forEach(v => v.classList.add('hidden'));
-        document.querySelectorAll('.' + targetView).forEach(v => v.classList.remove('hidden'));
-        
-        dashNavBtns.forEach(btn => {
-            if (btn.dataset.target === targetView) {
-                btn.classList.add('sidebar-active');
-            } else {
-                btn.classList.remove('sidebar-active');
-            }
-        });
-        
-        closeMobileSidebar();
-        if (targetView === 'analysisView') renderScoreAnalysis();
-    };
-    
-    dashNavBtns.forEach(btn => {
-        btn.addEventListener('click', () => switchDashView(btn.dataset.target));
-    });
-    
-    async function renderScoreAnalysis() {
-        const saStatsTestsTaken = document.getElementById('saStatsTestsTaken');
-        const saStatsAvgAcc = document.getElementById('saStatsAvgAcc');
-        const saStatsQsPracticed = document.getElementById('saStatsQsPracticed');
-        const saHistoricalList = document.getElementById('saHistoricalList');
-        
-        let sessions = [];
-        try {
-            sessions = await getAllSessionsFromDB();
-        } catch (e) {
-            console.error('Error fetching sessions for analysis:', e);
-        }
-
-        if (!sessions || sessions.length === 0) {
-            if (saStatsTestsTaken) saStatsTestsTaken.textContent = '0';
-            if (saStatsAvgAcc) saStatsAvgAcc.textContent = '0%';
-            if (saStatsQsPracticed) saStatsQsPracticed.textContent = '0';
-            if (saHistoricalList) {
-                saHistoricalList.innerHTML = '<div class="text-center text-gray-500 py-8">No tests recorded yet. Start practicing!</div>';
-            }
-            return;
-        }
-
-        let totalAttempted = 0;
-        let totalCorrect = 0;
-        let chartDates = [];
-        let chartScores = [];
-
-        sessions.forEach(s => {
-            const attempted = (s.correctCount || 0) + (s.incorrectCount || 0);
-            const total = attempted + (s.unansweredCount || 0);
-            const scorePerQ = s.practiceState?.scorePerQ || 4;
-            const hasNeg = s.practiceState?.negativeMarking !== false;
-            const penalty = hasNeg ? (s.incorrectCount || 0) : 0;
-            const score = ((s.correctCount || 0) * scorePerQ) - penalty;
-            const maxScore = total * scorePerQ;
-
-            totalAttempted += attempted;
-            totalCorrect += (s.correctCount || 0);
-            
-            const scorePct = maxScore > 0 ? Math.round((score / maxScore) * 100) : 0;
-            
-            chartDates.push(s.date || `Test #${s.id}`);
-            chartScores.push(scorePct);
-        });
-
-        if (saStatsTestsTaken) saStatsTestsTaken.textContent = sessions.length;
-        if (saStatsQsPracticed) saStatsQsPracticed.textContent = totalAttempted;
-        const avgAcc = totalAttempted > 0 ? Math.round((totalCorrect / totalAttempted) * 100) : 0;
-        if (saStatsAvgAcc) saStatsAvgAcc.textContent = avgAcc + '%';
-
-        // Chart.js rendering
-        const ctxEl = document.getElementById('saScoreTrajectoryChart');
-        if (ctxEl && typeof Chart !== 'undefined') {
-            const ctx = ctxEl.getContext('2d');
-            if (window._saScoreTrajectoryChartInstance) {
-                window._saScoreTrajectoryChartInstance.destroy();
-            }
-            
-            const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-            gradient.addColorStop(0, 'rgba(59, 130, 246, 0.4)'); // blue-500 with opacity
-            gradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
-            
-            window._saScoreTrajectoryChartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: chartDates,
-                    datasets: [{
-                        label: 'Score %',
-                        data: chartScores,
-                        borderColor: '#3B82F6',
-                        backgroundColor: gradient,
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.4,
-                        pointBackgroundColor: '#1E3A8A',
-                        pointBorderColor: '#3B82F6',
-                        pointBorderWidth: 2,
-                        pointRadius: 4,
-                        pointHoverRadius: 6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: {
-                            grid: { display: false, drawBorder: false },
-                            ticks: { color: '#6B7280', font: { size: 10 }, maxTicksLimit: 6 }
-                        },
-                        y: {
-                            display: false,
-                            min: 0,
-                            max: 100
-                        }
-                    }
-                }
-            });
-        }
-
-        // List rendering
-        if (saHistoricalList) {
-            saHistoricalList.innerHTML = '';
-            const reversed = [...sessions].reverse();
-            reversed.forEach(s => {
-                const attempted = (s.correctCount || 0) + (s.incorrectCount || 0);
-                const total = attempted + (s.unansweredCount || 0);
-                const scorePerQ = s.practiceState?.scorePerQ || 4;
-                const hasNeg = s.practiceState?.negativeMarking !== false;
-                const penalty = hasNeg ? (s.incorrectCount || 0) : 0;
-                const score = ((s.correctCount || 0) * scorePerQ) - penalty;
-                const maxScore = total * scorePerQ;
-
-                const acc = attempted > 0 ? Math.round(((s.correctCount || 0) / attempted) * 100) : 0;
-                
-                let testName = "Mock Test " + s.id;
-                if (s.practiceState?.pdfSource && typeof s.practiceState.pdfSource === 'string') {
-                    testName = s.practiceState.pdfSource.split('/').pop().substring(0, 60);
-                }
-
-                const item = document.createElement('div');
-                item.className = 'bg-[#121620] hover:bg-[#161b28] border border-gray-800 rounded-2xl p-4 md:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-all duration-300 shadow-xl';
-                
-                item.innerHTML = `
-                    <div class="flex items-center gap-4 flex-1 overflow-hidden w-full">
-                        <div class="p-3 bg-gray-800/80 rounded-xl border border-gray-700/50 shrink-0">
-                            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                        </div>
-                        <div class="flex flex-col min-w-0">
-                            <h4 class="text-white font-bold text-sm md:text-base truncate" title="${testName}">${testName}</h4>
-                            <div class="flex items-center gap-3 mt-1.5">
-                                <span class="text-[11px] font-semibold text-gray-500 flex items-center gap-1.5"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>${s.date || 'Saved Session'}</span>
-                                <span class="px-2 py-0.5 rounded text-[9px] font-black tracking-wider bg-gray-800 text-gray-400 border border-gray-700 uppercase">JEE MAIN</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-between md:justify-end gap-6 w-full md:w-auto shrink-0 border-t md:border-t-0 border-gray-800 pt-4 md:pt-0">
-                        <div class="flex flex-col items-center">
-                            <span class="text-[10px] font-black text-gray-500 tracking-widest uppercase mb-1">ACC</span>
-                            <span class="text-lg font-black text-emerald-500">${acc}%</span>
-                        </div>
-                        <div class="flex flex-col items-center">
-                            <span class="text-[10px] font-black text-gray-500 tracking-widest uppercase mb-1">SCORE</span>
-                            <span class="text-lg font-black text-white">${score}<span class="text-[11px] text-gray-500 font-bold ml-1">/${maxScore}</span></span>
-                        </div>
-                        <button class="view-session-btn bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white border border-gray-700 text-xs font-bold py-2.5 px-4 rounded-xl flex items-center gap-2 transition-all shadow-md ml-2" data-id="${s.id}">
-                            ANALYSIS 
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg> 
-                        </button>
-                        <button class="delete-session-btn text-gray-600 hover:text-red-500 transition-colors p-1" data-id="${s.id}" title="Delete Test">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg>
-                        </button>
-                    </div>
-                `;
-                saHistoricalList.appendChild(item);
-            });
-
-            document.querySelectorAll('#saHistoricalList .view-session-btn').forEach(btn => {
-                btn.addEventListener('click', async () => {
-                    const id = parseInt(btn.getAttribute('data-id'));
-                    const session = await getSessionFromDB(id);
-                    if (session) {
-                        loadSessionAndShowSummary(session);
-                    }
-                });
-            });
-
-            document.querySelectorAll('#saHistoricalList .delete-session-btn').forEach(btn => {
-                btn.addEventListener('click', async (e) => {
-                    e.stopPropagation();
-                    if(confirm("Delete this test session permanently?")) {
-                        const id = parseInt(btn.getAttribute('data-id'));
-                        await deleteSessionFromDB(id);
-                        renderScoreAnalysis();
-                    }
-                });
-            });
-        }
-    }
-});

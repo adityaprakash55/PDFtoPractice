@@ -1,0 +1,10 @@
+const fs = require('fs');
+let html = fs.readFileSync('views/index.html', 'utf8');
+html = html.replace(/<title>.*?<\/title>/, '<title><%= title %></title>');
+html = html.replace(/<meta name="description" content=".*?">/, '<meta name="description" content="<%= description %>">');
+html = html.replace(/<link rel="canonical" href=".*?">/, '<link rel="canonical" href="<%= canonical %>">');
+html = html.replace(/<meta name="twitter:title" content=".*?">/, '<meta name="twitter:title" content="<%= title %>">');
+html = html.replace(/<meta name="twitter:description" content=".*?">/, '<meta name="twitter:description" content="<%= description %>">');
+html = html.replace(/<style>.*?<\/style>/s, "<style><%- include('../public/styles.css') %></style>");
+fs.writeFileSync('views/index.ejs', html);
+console.log('Restored index.ejs');

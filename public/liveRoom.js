@@ -289,10 +289,13 @@ if (startLiveTestBtn) {
         const hostName = hostParticipatingName;
         
         const totalMins = parseInt(document.getElementById('totalTimeInput').value) || 60;
+        const directLaunchToggle = document.getElementById('directLaunchToggle');
+        const directLaunch = directLaunchToggle ? directLaunchToggle.checked : false;
         
         const payload = {
             type: 'START_TEST',
-            timeLimit: totalMins * 60
+            timeLimit: totalMins * 60,
+            directLaunch: directLaunch
         };
         
         liveConnections.forEach(conn => conn.send(payload));
@@ -301,8 +304,13 @@ if (startLiveTestBtn) {
             hostParticipating = true;
             participants.push({ id: 'host', name: hostName.trim(), score: null, accuracy: null, ready: true });
             
-            // Start the practice for Host locally (show instructions first)
-            showLiveInstructions(totalMins * 60);
+            // Start the practice for Host locally
+            if (directLaunch) {
+                if (document.getElementById('liveLobbyContainer')) document.getElementById('liveLobbyContainer').classList.add('hidden');
+                startLocalLiveTest(totalMins * 60);
+            } else {
+                showLiveInstructions(totalMins * 60);
+            }
         } else {
             // Spectator mode
             liveLobbyContainer.innerHTML = `
@@ -325,7 +333,11 @@ function handleParticipantData(data) {
         liveConn.send({ type: 'READY' });
       } else if (data.type === 'START_TEST') {
           if (waitingForHostContainer) waitingForHostContainer.classList.add('hidden');
-          showLiveInstructions(data.timeLimit);
+          if (data.directLaunch) {
+              startLocalLiveTest(data.timeLimit);
+          } else {
+              showLiveInstructions(data.timeLimit);
+          }
       } else if (data.type === 'LEADERBOARD') {
         renderLeaderboard(data.leaderboard);
         window.liveRoomParticipants = data.leaderboard;
