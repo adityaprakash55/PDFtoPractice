@@ -2145,6 +2145,57 @@
                 </button>
             </div>
         </div>
+    <!-- Test Instructions & Setup Modal -->
+    <div id="testInstructionsModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[99999] flex items-center justify-center p-4">
+        <div class="bg-[#0e121b] border border-gray-800 rounded-3xl max-w-lg w-full p-6 text-left shadow-2xl relative overflow-hidden flex flex-col gap-5">
+            <!-- Header -->
+            <div class="flex items-start justify-between border-b border-gray-800 pb-4">
+                <div>
+                    <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest bg-blue-500/10 text-blue-400 border border-blue-500/20 mb-1">Test Instructions</span>
+                    <h3 id="instructionsModalTitle" class="text-lg font-bold text-white leading-tight">Mock Test Session</h3>
+                    <p id="instructionsModalSubtitle" class="text-xs text-gray-400 mt-0.5">25 Questions • Standard Marking</p>
+                </div>
+                <button id="closeInstructionsModalBtn" class="text-gray-400 hover:text-white p-1 rounded-lg hover:bg-gray-800 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <!-- Rules & Guidelines -->
+            <div class="space-y-3 text-xs text-gray-300">
+                <div class="flex items-start gap-2.5 bg-[#141924] p-3 rounded-xl border border-gray-800/60">
+                    <div class="text-blue-400 mt-0.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+                    <div>
+                        <strong class="text-white">Timer & Duration:</strong>
+                        <p class="text-gray-400 text-[11px] mt-0.5">The countdown timer starts as soon as you click "Start Exam Now". Manage your time wisely.</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-2.5 bg-[#141924] p-3 rounded-xl border border-gray-800/60">
+                    <div class="text-emerald-400 mt-0.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+                    <div>
+                        <strong class="text-white">Scoring Scheme:</strong>
+                        <p class="text-gray-400 text-[11px] mt-0.5">Correct response: <span class="text-emerald-400 font-bold">+4</span> • Incorrect response: <span class="text-red-400 font-bold">-1</span></p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-2.5 bg-[#141924] p-3 rounded-xl border border-gray-800/60">
+                    <div class="text-purple-400 mt-0.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+                    <div>
+                        <strong class="text-white">Navigation:</strong>
+                        <p class="text-gray-400 text-[11px] mt-0.5">Use the question palette to jump between questions. You can save, clear, or mark questions for review.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Action Footer -->
+            <div class="flex items-center justify-end gap-3 border-t border-gray-800 pt-4">
+                <button id="cancelInstructionsModalBtn" class="px-4 py-2.5 rounded-xl text-xs font-semibold text-gray-400 hover:text-white hover:bg-gray-800 transition-colors">
+                    Cancel
+                </button>
+                <button id="confirmStartTestBtn" class="flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-600/30 transition-all active:scale-95">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
+                    Start Exam Now
+                </button>
+            </div>
+        </div>
     </div>
     <script defer src="app.js?v=79"></script>
     <script defer src="/liveRoom.js"></script>

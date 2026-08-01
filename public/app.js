@@ -2362,37 +2362,48 @@ async function renderHistory() {
         
         sessionsToShow.forEach(session => {
             const card = document.createElement('div');
-            card.className = 'bg-[#151921] hover:bg-[#1a1e28] transition-colors p-4 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between border border-gray-800/60 shadow-lg relative group mb-3';
+            card.className = 'bg-[#090b10] hover:bg-[#0d1017] transition-all p-4 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between border border-gray-800/80 hover:border-gray-700 shadow-xl relative group mb-3.5 gap-4';
             
-            const title = session.title || `Mock Test Session #${session.id}`;
+            let rawTitle = session.title || `Mock Test Session #${session.id}`;
+            let formattedTitle = rawTitle;
+            if (rawTitle.includes('#')) {
+                const parts = rawTitle.split('#');
+                formattedTitle = `${parts[0]}<span class="text-blue-400 font-extrabold">#${parts[1]}</span>`;
+            }
+            
             const dateStr = session.date ? session.date.split(',')[0] : 'Unknown';
             
             card.innerHTML = `
-                <div class="flex-1 min-w-0 mb-4 sm:mb-0">
-                    <h4 class="text-sm sm:text-base font-bold text-gray-200 truncate pr-4">${title}</h4>
-                    <p class="text-xs text-gray-500 mt-1">Created: ${dateStr}</p>
+                <div class="flex-1 min-w-0">
+                    <h4 class="text-sm sm:text-base font-bold text-white truncate tracking-tight">${formattedTitle}</h4>
+                    <p class="text-xs text-slate-400 mt-1 font-medium">Created: ${dateStr}</p>
                 </div>
                 
-                <div class="flex items-center justify-end gap-2 shrink-0">
-                    <button class="rename-session-btn p-2 rounded-lg bg-transparent hover:bg-gray-800 text-gray-500 hover:text-yellow-400 transition-colors border border-transparent hover:border-gray-700" data-id="${session.id}" title="Rename Test">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                <div class="flex items-center justify-end gap-2.5 shrink-0">
+                    <button class="rename-session-btn text-gray-400 hover:text-white p-2 rounded-xl hover:bg-gray-800/60 transition-colors" data-id="${session.id}" title="Rename Test">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                     </button>
-                    <button class="delete-session-btn p-2 rounded-lg bg-transparent hover:bg-gray-800 text-gray-500 hover:text-red-400 transition-colors border border-transparent hover:border-gray-700" data-id="${session.id}" title="Delete Test">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    <button class="delete-session-btn text-gray-400 hover:text-rose-400 p-2 rounded-xl hover:bg-gray-800/60 transition-colors" data-id="${session.id}" title="Delete Test">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                     </button>
-                    <button class="view-session-btn p-2 rounded-lg bg-transparent hover:bg-gray-800 text-gray-500 hover:text-white transition-colors border border-transparent hover:border-gray-700" data-id="${session.id}" title="View Stats / Analysis">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    <button class="view-session-btn text-gray-400 hover:text-white p-2 rounded-xl hover:bg-gray-800/60 transition-colors" data-id="${session.id}" title="View Analysis">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                     </button>
-                    <button class="share-session-btn p-2 rounded-lg bg-transparent hover:bg-gray-800 text-gray-500 hover:text-white transition-colors border border-transparent hover:border-gray-700" data-id="${session.id}" title="Share / Host Test">
+
+                    <!-- Share Button (Square Dark Blue Container) -->
+                    <button class="share-session-btn bg-[#1e293b] hover:bg-[#283750] text-blue-400 p-2.5 rounded-xl border border-blue-800/40 transition-all shadow-sm active:scale-95 flex items-center justify-center" data-id="${session.id}" title="Share Test">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
                     </button>
-                    <button class="share-session-btn p-2 rounded-lg bg-transparent hover:bg-gray-800 text-gray-500 hover:text-blue-400 transition-colors border border-transparent hover:border-gray-700 mr-2" data-id="${session.id}" title="Host Live Test">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path></svg>
+
+                    <!-- Host Wifi Icon -->
+                    <button class="share-session-btn text-gray-400 hover:text-blue-400 p-2 rounded-xl hover:bg-gray-800/60 transition-colors" data-id="${session.id}" title="Host Live Test">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path></svg>
                     </button>
                     
-                    <button class="history-reattempt-btn bg-[#2d5bff] hover:bg-[#2049e5] text-white text-sm font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors shadow-lg" data-id="${session.id}" data-type="all">
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
-                        Take Test
+                    <!-- Black Pill Take Test Button -->
+                    <button class="take-test-modal-btn bg-black hover:bg-neutral-900 text-white text-xs font-bold py-2 px-4 rounded-full flex items-center gap-2 border border-neutral-700 shadow-md transition-all active:scale-95 shrink-0 ml-1" data-id="${session.id}" data-type="all">
+                        <svg class="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
+                        <span>Take Test</span>
                     </button>
                 </div>
             `;
@@ -2481,25 +2492,21 @@ async function renderHistory() {
             });
         });
         
-        document.querySelectorAll('.history-reattempt-btn').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
+        document.querySelectorAll('.take-test-modal-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const id = parseInt(btn.getAttribute('data-id'));
                 const filterType = btn.getAttribute('data-type');
-                
-                const session = await getSessionFromDB(id);
-                if (session) {
-                    currentSessionId = session.id;
-                    practiceState = session.practiceState;
-                    extractedImages = session.extractedImages;
-                    
-                    document.getElementById('uploadContainer').classList.add('hidden');
-                    document.getElementById('historyContainer').classList.add('hidden');
-                    
-                    if (typeof reattemptPractice === 'function') {
-                        reattemptPractice(filterType);
-                    }
-                }
+                openInstructionsModalForSession(id, filterType);
+            });
+        });
+        
+        document.querySelectorAll('.history-reattempt-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const id = parseInt(btn.getAttribute('data-id'));
+                const filterType = btn.getAttribute('data-type');
+                openInstructionsModalForSession(id, filterType);
             });
         });
         
@@ -4897,4 +4904,67 @@ function renderExternalSources() {
             }
         });
     });
+}
+
+
+// =============================================================
+// TEST INSTRUCTIONS MODAL LOGIC
+// =============================================================
+let pendingSessionToLaunch = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('testInstructionsModal');
+    const closeBtn = document.getElementById('closeInstructionsModalBtn');
+    const cancelBtn = document.getElementById('cancelInstructionsModalBtn');
+    const confirmStartBtn = document.getElementById('confirmStartTestBtn');
+    
+    function hideModal() {
+        if(modal) modal.classList.add('hidden');
+        pendingSessionToLaunch = null;
+    }
+    
+    if(closeBtn) closeBtn.addEventListener('click', hideModal);
+    if(cancelBtn) cancelBtn.addEventListener('click', hideModal);
+    
+    if(confirmStartBtn) {
+        confirmStartBtn.addEventListener('click', async () => {
+            if (pendingSessionToLaunch) {
+                const { id, type } = pendingSessionToLaunch;
+                hideModal();
+                
+                const session = await getSessionFromDB(id);
+                if (session) {
+                    currentSessionId = session.id;
+                    practiceState = session.practiceState;
+                    extractedImages = session.extractedImages;
+                    
+                    document.getElementById('uploadContainer').classList.add('hidden');
+                    document.getElementById('historyContainer').classList.add('hidden');
+                    
+                    if (typeof reattemptPractice === 'function') {
+                        reattemptPractice(type);
+                    }
+                }
+            }
+        });
+    }
+});
+
+async function openInstructionsModalForSession(id, type) {
+    const session = await getSessionFromDB(id);
+    if (!session) return;
+    
+    pendingSessionToLaunch = { id, type };
+    
+    const modal = document.getElementById('testInstructionsModal');
+    const titleEl = document.getElementById('instructionsModalTitle');
+    const subtitleEl = document.getElementById('instructionsModalSubtitle');
+    
+    if (titleEl) titleEl.textContent = session.title || `Mock Test Session #${session.id}`;
+    if (subtitleEl) {
+        const count = session.extractedImages ? session.extractedImages.length : 0;
+        subtitleEl.textContent = `${count} Questions • Standard Marking (+4 / -1)`;
+    }
+    
+    if (modal) modal.classList.remove('hidden');
 }
