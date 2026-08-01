@@ -75,8 +75,10 @@ document.querySelectorAll('input[name="timingMode"]').forEach(radio => {
 });
 
 function getCalculatedTimeMinutes(numQuestions) {
-    const mode = document.querySelector('input[name="timingMode"]:checked').value;
-    let mins = parseInt(totalTimeInput.value, 10) || 60;
+    const timingModeInput = document.querySelector('input[name="timingMode"]:checked');
+    const mode = timingModeInput ? timingModeInput.value : 'total';
+    const totalTimeEl = document.getElementById('totalTimeInput');
+    let mins = totalTimeEl ? (parseInt(totalTimeEl.value, 10) || 60) : 60;
     if (mode === 'perQuestion') {
         mins = mins * (numQuestions || 1);
     }
@@ -1711,7 +1713,7 @@ function startPracticeSession(indices) {
     // Determine unique exercises for NTA tabs based on active indices
     const uniqueExercises = [...new Set(practiceState.activeIndices.map(idx => {
         const q = extractedImages[idx];
-        if (q && q.label && q.label.includes(' - ')) return q.label.split(' - ')[0];
+        if (q && typeof q.label === 'string' && q.label.includes(' - ')) return q.label.split(' - ')[0];
         return 'Exercise 1';
     }))];
 
@@ -4979,66 +4981,73 @@ function initTestInstructionsModal() {
     
     if(confirmStartBtn) {
         confirmStartBtn.onclick = () => {
-            if (!window.pendingSessionToLaunch) return;
-            
-            const session = window.pendingSessionToLaunch;
-            hideModal();
-            
-            // Set up global session variables
-            currentSessionId = Date.now();
-            extractedImages = session.extractedImages || [];
-            
-            if (extractedImages.length === 0) {
-                alert("No questions found in this test.");
-                return;
-            }
-            
-            // Calculate time
-            const mins = (typeof getCalculatedTimeMinutes === 'function') ? getCalculatedTimeMinutes(extractedImages.length) : 60;
-            
-            // Fresh practiceState for test run
-            practiceState = {
-                activeIndices: extractedImages.map((_, i) => i),
-                currentIndex: 0,
-                theme: 'nta',
-                totalSecondsRemaining: mins * 60,
-                scorePerQ: 4,
-                negativeMarking: true,
-                answers: {},
-                scratchpadNotes: {},
-                stats: extractedImages.map((q, idx) => {
-                    let ex = 'Exercise 1';
-                    if (q.label && q.label.includes(' - ')) ex = q.label.split(' - ')[0];
-                    return {
-                        index: idx,
-                        timeSpent: 0,
-                        targetTime: 0,
-                        attempted: false,
-                        evaluation: null,
-                        ntaStatus: 'not_visited',
-                        exercise: ex
-                    };
-                })
-            };
-            
-            // Hide dashboard & landing containers
-            const uploadContainer = document.getElementById('uploadContainer');
-            const historyContainer = document.getElementById('historyContainer');
-            const configContainer = document.getElementById('configContainer');
-            const practiceSetupContainer = document.getElementById('practiceSetupContainer');
-            const analysisContainer = document.getElementById('analysisContainer');
-            const liveResultsDashboard = document.getElementById('liveResultsDashboard');
-            
-            if(uploadContainer) uploadContainer.classList.add('hidden');
-            if(historyContainer) historyContainer.classList.add('hidden');
-            if(configContainer) configContainer.classList.add('hidden');
-            if(practiceSetupContainer) practiceSetupContainer.classList.add('hidden');
-            if(analysisContainer) analysisContainer.classList.add('hidden');
-            if(liveResultsDashboard) liveResultsDashboard.classList.add('hidden');
-            
-            // Start the practice session
-            if (typeof startPracticeSession === 'function') {
-                startPracticeSession(practiceState.activeIndices);
+            try {
+                if (!window.pendingSessionToLaunch) return;
+                
+                const session = window.pendingSessionToLaunch;
+                hideModal();
+                
+                // Set up global session variables
+                currentSessionId = Date.now();
+                extractedImages = session.extractedImages || [];
+                
+                if (extractedImages.length === 0) {
+                    alert("No questions found in this test.");
+                    return;
+                }
+                
+                // Calculate time
+                const mins = (typeof getCalculatedTimeMinutes === 'function') ? getCalculatedTimeMinutes(extractedImages.length) : 60;
+                
+                // Fresh practiceState for test run
+                practiceState = {
+                    activeIndices: extractedImages.map((_, i) => i),
+                    currentIndex: 0,
+                    theme: 'nta',
+                    totalSecondsRemaining: mins * 60,
+                    scorePerQ: 4,
+                    negativeMarking: true,
+                    answers: {},
+                    scratchpadNotes: {},
+                    stats: extractedImages.map((q, idx) => {
+                        let ex = 'Exercise 1';
+                        if (q && typeof q.label === 'string' && q.label.includes(' - ')) ex = q.label.split(' - ')[0];
+                        return {
+                            index: idx,
+                            timeSpent: 0,
+                            targetTime: 0,
+                            attempted: false,
+                            evaluation: null,
+                            ntaStatus: 'not_visited',
+                            exercise: ex
+                        };
+                    })
+                };
+                
+                // Hide dashboard & landing containers
+                const uploadContainer = document.getElementById('uploadContainer');
+                const historyContainer = document.getElementById('historyContainer');
+                const configContainer = document.getElementById('configContainer');
+                const practiceSetupContainer = document.getElementById('practiceSetupContainer');
+                const analysisContainer = document.getElementById('analysisContainer');
+                const liveResultsDashboard = document.getElementById('liveResultsDashboard');
+                const summaryContainer = document.getElementById('summaryContainer');
+                
+                if(uploadContainer) uploadContainer.classList.add('hidden');
+                if(historyContainer) historyContainer.classList.add('hidden');
+                if(configContainer) configContainer.classList.add('hidden');
+                if(practiceSetupContainer) practiceSetupContainer.classList.add('hidden');
+                if(analysisContainer) analysisContainer.classList.add('hidden');
+                if(liveResultsDashboard) liveResultsDashboard.classList.add('hidden');
+                if(summaryContainer) summaryContainer.classList.add('hidden');
+                
+                // Start the practice session
+                if (typeof startPracticeSession === 'function') {
+                    startPracticeSession(practiceState.activeIndices);
+                }
+            } catch(e) {
+                console.error("Failed to launch practice session:", e);
+                alert("An error occurred while launching the test session: " + e.message);
             }
         };
     }
