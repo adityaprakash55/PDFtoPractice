@@ -1711,7 +1711,7 @@ function startPracticeSession(indices) {
     // Determine unique exercises for NTA tabs based on active indices
     const uniqueExercises = [...new Set(practiceState.activeIndices.map(idx => {
         const q = extractedImages[idx];
-        if (q.label.includes(' - ')) return q.label.split(' - ')[0];
+        if (q && q.label && q.label.includes(' - ')) return q.label.split(' - ')[0];
         return 'Exercise 1';
     }))];
 
@@ -2443,7 +2443,8 @@ async function renderHistory() {
         document.querySelectorAll('.rename-session-btn').forEach(btn => {
             btn.addEventListener('click', async (e) => {
                 e.stopPropagation();
-                const id = parseInt(btn.getAttribute('data-id'));
+                const rawId = btn.getAttribute('data-id');
+                const id = /^\d+$/.test(rawId) ? parseInt(rawId, 10) : rawId;
                 const session = await getSessionFromDB(id);
                 if (session) {
                     const newName = prompt("Enter new test name:", session.title || `Mock Test Session #${session.id}`);
@@ -2460,7 +2461,8 @@ async function renderHistory() {
             btn.addEventListener('click', async (e) => {
                 e.stopPropagation();
                 if(confirm("Delete this session?")) {
-                    const id = parseInt(btn.getAttribute('data-id'));
+                    const rawId = btn.getAttribute('data-id');
+                    const id = /^\d+$/.test(rawId) ? parseInt(rawId, 10) : rawId;
                     await deleteSessionFromDB(id);
                     renderHistory();
                 }
@@ -2468,8 +2470,10 @@ async function renderHistory() {
         });
         
         document.querySelectorAll('.view-session-btn').forEach(btn => {
-            btn.addEventListener('click', async () => {
-                const id = parseInt(btn.getAttribute('data-id'));
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const rawId = btn.getAttribute('data-id');
+                const id = /^\d+$/.test(rawId) ? parseInt(rawId, 10) : rawId;
                 const session = await getSessionFromDB(id);
                 if (session) {
                     loadSessionAndShowSummary(session);
@@ -2478,8 +2482,10 @@ async function renderHistory() {
         });
         
         document.querySelectorAll('#historyList .share-session-btn').forEach(btn => {
-            btn.addEventListener('click', async () => {
-                const id = parseInt(btn.getAttribute('data-id'));
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const rawId = btn.getAttribute('data-id');
+                const id = /^\d+$/.test(rawId) ? parseInt(rawId, 10) : rawId;
                 const session = await getSessionFromDB(id);
                 if (session && typeof startLiveRoomFromSession === 'function') {
                     session.isHosted = true;
@@ -2495,7 +2501,8 @@ async function renderHistory() {
         document.querySelectorAll('.take-test-modal-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                const id = parseInt(btn.getAttribute('data-id'));
+                const rawId = btn.getAttribute('data-id');
+                const id = /^\d+$/.test(rawId) ? parseInt(rawId, 10) : rawId;
                 const filterType = btn.getAttribute('data-type');
                 openInstructionsModalForSession(id, filterType);
             });
@@ -2504,7 +2511,8 @@ async function renderHistory() {
         document.querySelectorAll('.history-reattempt-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                const id = parseInt(btn.getAttribute('data-id'));
+                const rawId = btn.getAttribute('data-id');
+                const id = /^\d+$/.test(rawId) ? parseInt(rawId, 10) : rawId;
                 const filterType = btn.getAttribute('data-type');
                 openInstructionsModalForSession(id, filterType);
             });
@@ -4587,8 +4595,10 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             document.querySelectorAll('#saHistoricalList .share-session-btn').forEach(btn => {
-                btn.addEventListener('click', async () => {
-                    const id = parseInt(btn.getAttribute('data-id'));
+                btn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const rawId = btn.getAttribute('data-id');
+                    const id = /^\d+$/.test(rawId) ? parseInt(rawId, 10) : rawId;
                     const session = await getSessionFromDB(id);
                     if (session && typeof startLiveRoomFromSession === 'function') {
                         session.isHosted = true;
@@ -4602,8 +4612,10 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             document.querySelectorAll('#saHistoricalList .view-session-btn').forEach(btn => {
-                btn.addEventListener('click', async () => {
-                    const id = parseInt(btn.getAttribute('data-id'));
+                btn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const rawId = btn.getAttribute('data-id');
+                    const id = /^\d+$/.test(rawId) ? parseInt(rawId, 10) : rawId;
                     const session = await getSessionFromDB(id);
                     if (session) {
                         loadSessionAndShowSummary(session);
@@ -4639,7 +4651,8 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('#saHistoricalList .history-reattempt-btn_old').forEach(btn => {
                 btn.addEventListener('click', async (e) => {
                     e.stopPropagation();
-                    const id = parseInt(btn.getAttribute('data-id'));
+                    const rawId = btn.getAttribute('data-id');
+                    const id = /^\d+$/.test(rawId) ? parseInt(rawId, 10) : rawId;
                     const filterType = btn.getAttribute('data-type');
                     
                     const session = await getSessionFromDB(id);
@@ -4662,7 +4675,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.addEventListener('click', async (e) => {
                     e.stopPropagation();
                     if(confirm("Delete this test session permanently?")) {
-                        const id = parseInt(btn.getAttribute('data-id'));
+                        const rawId = btn.getAttribute('data-id');
+                        const id = /^\d+$/.test(rawId) ? parseInt(rawId, 10) : rawId;
                         await deleteSessionFromDB(id);
                         renderScoreAnalysis();
                     }
@@ -4990,6 +5004,8 @@ function initTestInstructionsModal() {
                 totalSecondsRemaining: mins * 60,
                 scorePerQ: 4,
                 negativeMarking: true,
+                answers: {},
+                scratchpadNotes: {},
                 stats: extractedImages.map((q, idx) => {
                     let ex = 'Exercise 1';
                     if (q.label && q.label.includes(' - ')) ex = q.label.split(' - ')[0];
