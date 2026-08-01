@@ -75,10 +75,8 @@ document.querySelectorAll('input[name="timingMode"]').forEach(radio => {
 });
 
 function getCalculatedTimeMinutes(numQuestions) {
-    const timingModeInput = document.querySelector('input[name="timingMode"]:checked');
-    const mode = timingModeInput ? timingModeInput.value : 'total';
-    const totalTimeEl = document.getElementById('totalTimeInput');
-    let mins = totalTimeEl ? (parseInt(totalTimeEl.value, 10) || 60) : 60;
+    const mode = document.querySelector('input[name="timingMode"]:checked').value;
+    let mins = parseInt(totalTimeInput.value, 10) || 60;
     if (mode === 'perQuestion') {
         mins = mins * (numQuestions || 1);
     }
@@ -1713,7 +1711,7 @@ function startPracticeSession(indices) {
     // Determine unique exercises for NTA tabs based on active indices
     const uniqueExercises = [...new Set(practiceState.activeIndices.map(idx => {
         const q = extractedImages[idx];
-        if (q && typeof q.label === 'string' && q.label.includes(' - ')) return q.label.split(' - ')[0];
+        if (q && q.label && q.label.includes(' - ')) return q.label.split(' - ')[0];
         return 'Exercise 1';
     }))];
 
@@ -2501,21 +2499,25 @@ async function renderHistory() {
         });
         
         document.querySelectorAll('.take-test-modal-btn').forEach(btn => {
+            console.log("Binding click listener to take-test-modal-btn, data-id:", btn.getAttribute('data-id'));
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const rawId = btn.getAttribute('data-id');
                 const id = /^\d+$/.test(rawId) ? parseInt(rawId, 10) : rawId;
                 const filterType = btn.getAttribute('data-type');
+                console.log("take-test-modal-btn clicked. rawId:", rawId, "parsedId:", id, "filterType:", filterType);
                 openInstructionsModalForSession(id, filterType);
             });
         });
         
         document.querySelectorAll('.history-reattempt-btn').forEach(btn => {
+            console.log("Binding click listener to history-reattempt-btn, data-id:", btn.getAttribute('data-id'));
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const rawId = btn.getAttribute('data-id');
                 const id = /^\d+$/.test(rawId) ? parseInt(rawId, 10) : rawId;
                 const filterType = btn.getAttribute('data-type');
+                console.log("history-reattempt-btn clicked. rawId:", rawId, "parsedId:", id, "filterType:", filterType);
                 openInstructionsModalForSession(id, filterType);
             });
         });
@@ -4927,22 +4929,36 @@ function renderExternalSources() {
 window.pendingSessionToLaunch = null;
 
 async function openInstructionsModalForSession(id, type) {
+    console.log("openInstructionsModalForSession called with ID:", id, "Type:", type);
     try {
         let session = await getSessionFromDB(id);
+        console.log("getSessionFromDB returned:", session);
         if (!session) {
             const numId = parseInt(id);
-            if (!isNaN(numId)) session = await getSessionFromDB(numId);
+            if (!isNaN(numId)) {
+                session = await getSessionFromDB(numId);
+                console.log("getSessionFromDB(numId) returned:", session);
+            }
         }
         if (!session) {
             const strId = String(id);
             session = await getSessionFromDB(strId);
+            console.log("getSessionFromDB(strId) returned:", session);
         }
         if (!session) {
             const all = await getAllSessionsFromDB();
             session = all.find(s => String(s.id) === String(id));
+            console.log("allSessions search returned:", session);
         }
         
-        if (!session || !session.extractedImages || session.extractedImages.length === 0) {
+        if (!session) {
+            console.log("No session found in DB for ID:", id);
+            alert("Could not load test session (session not found).");
+            return;
+        }
+
+        if (!session.extractedImages || session.extractedImages.length === 0) {
+            console.log("Session has no extractedImages:", session);
             alert("This test does not contain any valid questions to launch.");
             return;
         }
@@ -4953,13 +4969,19 @@ async function openInstructionsModalForSession(id, type) {
         const titleEl = document.getElementById('instructionsModalTitle');
         const subtitleEl = document.getElementById('instructionsModalSubtitle');
         
+        console.log("Modal element:", modal);
         if (titleEl) titleEl.textContent = session.title || `Mock Test Session #${session.id}`;
         if (subtitleEl) {
             const count = session.extractedImages ? session.extractedImages.length : 0;
             subtitleEl.textContent = `${count} Questions • Standard Marking (+4 / -1)`;
         }
         
-        if (modal) modal.classList.remove('hidden');
+        if (modal) {
+            modal.classList.remove('hidden');
+            console.log("Removed hidden class from modal. Class list:", modal.className);
+        } else {
+            console.error("Modal element 'testInstructionsModal' not found in DOM!");
+        }
     } catch(e) {
         console.error("Error opening instructions modal:", e);
         alert("Could not load test session.");
@@ -4981,73 +5003,66 @@ function initTestInstructionsModal() {
     
     if(confirmStartBtn) {
         confirmStartBtn.onclick = () => {
-            try {
-                if (!window.pendingSessionToLaunch) return;
-                
-                const session = window.pendingSessionToLaunch;
-                hideModal();
-                
-                // Set up global session variables
-                currentSessionId = Date.now();
-                extractedImages = session.extractedImages || [];
-                
-                if (extractedImages.length === 0) {
-                    alert("No questions found in this test.");
-                    return;
-                }
-                
-                // Calculate time
-                const mins = (typeof getCalculatedTimeMinutes === 'function') ? getCalculatedTimeMinutes(extractedImages.length) : 60;
-                
-                // Fresh practiceState for test run
-                practiceState = {
-                    activeIndices: extractedImages.map((_, i) => i),
-                    currentIndex: 0,
-                    theme: 'nta',
-                    totalSecondsRemaining: mins * 60,
-                    scorePerQ: 4,
-                    negativeMarking: true,
-                    answers: {},
-                    scratchpadNotes: {},
-                    stats: extractedImages.map((q, idx) => {
-                        let ex = 'Exercise 1';
-                        if (q && typeof q.label === 'string' && q.label.includes(' - ')) ex = q.label.split(' - ')[0];
-                        return {
-                            index: idx,
-                            timeSpent: 0,
-                            targetTime: 0,
-                            attempted: false,
-                            evaluation: null,
-                            ntaStatus: 'not_visited',
-                            exercise: ex
-                        };
-                    })
-                };
-                
-                // Hide dashboard & landing containers
-                const uploadContainer = document.getElementById('uploadContainer');
-                const historyContainer = document.getElementById('historyContainer');
-                const configContainer = document.getElementById('configContainer');
-                const practiceSetupContainer = document.getElementById('practiceSetupContainer');
-                const analysisContainer = document.getElementById('analysisContainer');
-                const liveResultsDashboard = document.getElementById('liveResultsDashboard');
-                const summaryContainer = document.getElementById('summaryContainer');
-                
-                if(uploadContainer) uploadContainer.classList.add('hidden');
-                if(historyContainer) historyContainer.classList.add('hidden');
-                if(configContainer) configContainer.classList.add('hidden');
-                if(practiceSetupContainer) practiceSetupContainer.classList.add('hidden');
-                if(analysisContainer) analysisContainer.classList.add('hidden');
-                if(liveResultsDashboard) liveResultsDashboard.classList.add('hidden');
-                if(summaryContainer) summaryContainer.classList.add('hidden');
-                
-                // Start the practice session
-                if (typeof startPracticeSession === 'function') {
-                    startPracticeSession(practiceState.activeIndices);
-                }
-            } catch(e) {
-                console.error("Failed to launch practice session:", e);
-                alert("An error occurred while launching the test session: " + e.message);
+            if (!window.pendingSessionToLaunch) return;
+            
+            const session = window.pendingSessionToLaunch;
+            hideModal();
+            
+            // Set up global session variables
+            currentSessionId = Date.now();
+            extractedImages = session.extractedImages || [];
+            
+            if (extractedImages.length === 0) {
+                alert("No questions found in this test.");
+                return;
+            }
+            
+            // Calculate time
+            const mins = (typeof getCalculatedTimeMinutes === 'function') ? getCalculatedTimeMinutes(extractedImages.length) : 60;
+            
+            // Fresh practiceState for test run
+            practiceState = {
+                activeIndices: extractedImages.map((_, i) => i),
+                currentIndex: 0,
+                theme: 'nta',
+                totalSecondsRemaining: mins * 60,
+                scorePerQ: 4,
+                negativeMarking: true,
+                answers: {},
+                scratchpadNotes: {},
+                stats: extractedImages.map((q, idx) => {
+                    let ex = 'Exercise 1';
+                    if (q.label && q.label.includes(' - ')) ex = q.label.split(' - ')[0];
+                    return {
+                        index: idx,
+                        timeSpent: 0,
+                        targetTime: 0,
+                        attempted: false,
+                        evaluation: null,
+                        ntaStatus: 'not_visited',
+                        exercise: ex
+                    };
+                })
+            };
+            
+            // Hide dashboard & landing containers
+            const uploadContainer = document.getElementById('uploadContainer');
+            const historyContainer = document.getElementById('historyContainer');
+            const configContainer = document.getElementById('configContainer');
+            const practiceSetupContainer = document.getElementById('practiceSetupContainer');
+            const analysisContainer = document.getElementById('analysisContainer');
+            const liveResultsDashboard = document.getElementById('liveResultsDashboard');
+            
+            if(uploadContainer) uploadContainer.classList.add('hidden');
+            if(historyContainer) historyContainer.classList.add('hidden');
+            if(configContainer) configContainer.classList.add('hidden');
+            if(practiceSetupContainer) practiceSetupContainer.classList.add('hidden');
+            if(analysisContainer) analysisContainer.classList.add('hidden');
+            if(liveResultsDashboard) liveResultsDashboard.classList.add('hidden');
+            
+            // Start the practice session
+            if (typeof startPracticeSession === 'function') {
+                startPracticeSession(practiceState.activeIndices);
             }
         };
     }
