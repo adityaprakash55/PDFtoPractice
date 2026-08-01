@@ -3801,9 +3801,9 @@ function showResultsDashboard() {
         const inLive = typeof isLiveMode !== 'undefined' && isLiveMode;
         if (inLive) {
             const amHost = typeof isHost !== 'undefined' && isHost;
-            roleBadge.textContent = amHost ? '👑 Host' : '👤 Participant';
+            roleBadge.textContent = amHost ? 'Host' : 'Participant';
         } else {
-            roleBadge.textContent = '📝 Solo Practice';
+            roleBadge.textContent = 'Solo Practice';
         }
     }
 
