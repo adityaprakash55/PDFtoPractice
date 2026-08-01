@@ -2323,87 +2323,6 @@ document.getElementById('backToHomeBtn').addEventListener('click', () => {
 
 // History UI rendering
 let historyDisplayLimit = 10;
-let combineMode = false;
-let selectedCombineIds = new Set();
-
-function updateCombineActionBar() {
-    const bar = document.getElementById('combineActionBar');
-    const countEl = document.getElementById('combineSelectedCount');
-    if (!bar || !countEl) return;
-    
-    if (combineMode && selectedCombineIds.size > 0) {
-        countEl.textContent = selectedCombineIds.size;
-        bar.classList.remove('hidden');
-    } else {
-        bar.classList.add('hidden');
-    }
-}
-
-// Bind Combine Toggle button
-document.addEventListener('DOMContentLoaded', () => {
-    const toggleBtn = document.getElementById('toggleCombineModeBtn');
-    if (toggleBtn) {
-        toggleBtn.addEventListener('click', () => {
-            combineMode = !combineMode;
-            if (!combineMode) {
-                selectedCombineIds.clear();
-                updateCombineActionBar();
-            }
-            if (combineMode) {
-                toggleBtn.className = "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white bg-blue-600 hover:bg-blue-500 border border-blue-500 transition-colors shadow-lg shadow-blue-500/20";
-                toggleBtn.querySelector('span').textContent = "Exit Combine";
-            } else {
-                toggleBtn.className = "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-gray-300 hover:text-white bg-[#1a1e26] hover:bg-[#252a36] transition-colors border border-gray-700";
-                toggleBtn.querySelector('span').textContent = "Combine Tests";
-            }
-            renderHistory();
-        });
-    }
-    
-    const startCombinedBtn = document.getElementById('startCombinedTestBtn');
-    if (startCombinedBtn) {
-        startCombinedBtn.addEventListener('click', async () => {
-            if (selectedCombineIds.size === 0) return;
-            const sessionsToCombine = [];
-            for (const id of selectedCombineIds) {
-                const session = await getSessionFromDB(id);
-                if (session) sessionsToCombine.push(session);
-            }
-            
-            if (sessionsToCombine.length === 0) {
-                alert("Could not load selected sessions.");
-                return;
-            }
-            
-            // Merge sessions
-            const combinedImages = [];
-            sessionsToCombine.forEach((session, sIdx) => {
-                const testPrefix = session.title || `Test #${session.id}`;
-                const imgs = session.extractedImages || [];
-                imgs.forEach((img, iIdx) => {
-                    combinedImages.push({
-                        ...img,
-                        label: img.label ? `[T${sIdx+1}] ${img.label}` : `[T${sIdx+1}] Q${iIdx+1}`
-                    });
-                });
-            });
-            
-            if (combinedImages.length === 0) {
-                alert("The selected tests do not contain any valid questions to combine.");
-                return;
-            }
-            
-            const combinedSession = {
-                id: 'combined-' + Date.now(),
-                title: `Combined Exam (${sessionsToCombine.length} Tests)`,
-                extractedImages: combinedImages
-            };
-            
-            openInstructionsModalForSession(combinedSession);
-        });
-    }
-});
-
 async function renderHistory() {
     const historyList = document.getElementById('historyList');
     const historyContainer = document.getElementById('historyContainer');
@@ -2455,17 +2374,12 @@ async function renderHistory() {
             const dateStr = session.date ? session.date.split(',')[0] : 'Unknown';
             
             card.innerHTML = `
-                <div class="flex items-center gap-3.5 w-full sm:w-auto flex-1 min-w-0">
-                    ${combineMode ? `
-                        <input type="checkbox" class="combine-session-checkbox w-4 h-4 rounded border-gray-700 bg-gray-900 text-blue-600 focus:ring-blue-500 focus:ring-offset-gray-900" data-id="${session.id}" ${selectedCombineIds.has(session.id) ? 'checked' : ''}>
-                    ` : ''}
-                    <div class="flex-1 min-w-0">
-                        <h4 class="text-sm sm:text-base font-bold text-white truncate tracking-tight">${formattedTitle}</h4>
-                        <p class="text-xs text-slate-400 mt-1 font-medium">Created: ${dateStr}</p>
-                    </div>
+                <div class="flex-1 min-w-0">
+                    <h4 class="text-sm sm:text-base font-bold text-white truncate tracking-tight">${formattedTitle}</h4>
+                    <p class="text-xs text-slate-400 mt-1 font-medium">Created: ${dateStr}</p>
                 </div>
                 
-                <div class="flex items-center justify-end gap-2.5 shrink-0 ${combineMode ? 'opacity-30 pointer-events-none' : ''}">
+                <div class="flex items-center justify-end gap-2.5 shrink-0">
                     <button class="rename-session-btn text-gray-400 hover:text-white p-2 rounded-xl hover:bg-gray-800/60 transition-colors" data-id="${session.id}" title="Rename Test">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                     </button>
@@ -2605,20 +2519,6 @@ async function renderHistory() {
                 const filterType = btn.getAttribute('data-type');
                 console.log("history-reattempt-btn clicked. rawId:", rawId, "parsedId:", id, "filterType:", filterType);
                 openInstructionsModalForSession(id, filterType);
-            });
-        });
-
-        // Bind Combine checkboxes
-        document.querySelectorAll('.combine-session-checkbox').forEach(cb => {
-            cb.addEventListener('change', (e) => {
-                const id = e.target.getAttribute('data-id');
-                const parsedId = /^\d+$/.test(id) ? parseInt(id, 10) : id;
-                if (e.target.checked) {
-                    selectedCombineIds.add(parsedId);
-                } else {
-                    selectedCombineIds.delete(parsedId);
-                }
-                updateCombineActionBar();
             });
         });
         
@@ -5028,37 +4928,31 @@ function renderExternalSources() {
 // =============================================================
 window.pendingSessionToLaunch = null;
 
-async function openInstructionsModalForSession(idOrSession, type) {
-    console.log("openInstructionsModalForSession called with ID/Session:", idOrSession, "Type:", type);
+async function openInstructionsModalForSession(id, type) {
+    console.log("openInstructionsModalForSession called with ID:", id, "Type:", type);
     try {
-        let session;
-        if (idOrSession && typeof idOrSession === 'object') {
-            session = idOrSession;
-        } else {
-            const id = idOrSession;
-            session = await getSessionFromDB(id);
-            console.log("getSessionFromDB returned:", session);
-            if (!session) {
-                const numId = parseInt(id);
-                if (!isNaN(numId)) {
-                    session = await getSessionFromDB(numId);
-                    console.log("getSessionFromDB(numId) returned:", session);
-                }
+        let session = await getSessionFromDB(id);
+        console.log("getSessionFromDB returned:", session);
+        if (!session) {
+            const numId = parseInt(id);
+            if (!isNaN(numId)) {
+                session = await getSessionFromDB(numId);
+                console.log("getSessionFromDB(numId) returned:", session);
             }
-            if (!session) {
-                const strId = String(id);
-                session = await getSessionFromDB(strId);
-                console.log("getSessionFromDB(strId) returned:", session);
-            }
-            if (!session) {
-                const all = await getAllSessionsFromDB();
-                session = all.find(s => String(s.id) === String(id));
-                console.log("allSessions search returned:", session);
-            }
+        }
+        if (!session) {
+            const strId = String(id);
+            session = await getSessionFromDB(strId);
+            console.log("getSessionFromDB(strId) returned:", session);
+        }
+        if (!session) {
+            const all = await getAllSessionsFromDB();
+            session = all.find(s => String(s.id) === String(id));
+            console.log("allSessions search returned:", session);
         }
         
         if (!session) {
-            console.log("No session found for:", idOrSession);
+            console.log("No session found in DB for ID:", id);
             alert("Could not load test session (session not found).");
             return;
         }
@@ -5174,8 +5068,194 @@ function initTestInstructionsModal() {
     }
 }
 
+function initCombineTestsModal() {
+    const combineBtn = document.getElementById('combineTestsBtn');
+    const modal = document.getElementById('combineTestsModal');
+    const closeBtn = document.getElementById('closeCombineTestsModalBtn');
+    const cancelBtn = document.getElementById('cancelCombineTestsModalBtn');
+    const confirmBtn = document.getElementById('confirmCombineTestsBtn');
+    const listContainer = document.getElementById('combineTestsList');
+    const selectedCountEl = document.getElementById('combineSelectedCount');
+    const totalQuestionsCountEl = document.getElementById('combineTotalQuestionsCount');
+    const nameInput = document.getElementById('combinedTestNameInput');
+
+    if (!combineBtn || !modal) return;
+
+    function hideModal() {
+        modal.classList.add('hidden');
+    }
+
+    if (closeBtn) closeBtn.onclick = hideModal;
+    if (cancelBtn) cancelBtn.onclick = hideModal;
+
+    combineBtn.onclick = async () => {
+        // Fetch all sessions
+        const sessions = await getAllSessionsFromDB();
+        if (sessions.length < 2) {
+            alert("You need at least two tests in your Vault to combine them!");
+            return;
+        }
+
+        // Populate list
+        listContainer.innerHTML = '';
+        selectedCountEl.textContent = '0';
+        totalQuestionsCountEl.textContent = '0';
+        nameInput.value = '';
+
+        sessions.forEach(session => {
+            const item = document.createElement('div');
+            item.className = 'flex items-center gap-3 bg-[#151921] border border-gray-800 rounded-xl p-3 hover:border-gray-700 transition-colors cursor-pointer select-none';
+            
+            const qCount = session.extractedImages ? session.extractedImages.length : 0;
+            
+            item.innerHTML = `
+                <input type="checkbox" id="combine_check_${session.id}" data-id="${session.id}" data-qcount="${qCount}" data-title="${session.title || `Mock Test Session #${session.id}`}" class="combine-checkbox w-5 h-5 rounded border-gray-700 text-blue-600 focus:ring-blue-500 cursor-pointer" />
+                <label for="combine_check_${session.id}" class="flex-1 min-w-0 cursor-pointer">
+                    <h4 class="text-sm font-bold text-gray-200 truncate">${session.title || `Mock Test Session #${session.id}`}</h4>
+                    <p class="text-[11px] text-gray-500 mt-0.5">${session.date || 'Unknown Date'} • ${qCount} Questions</p>
+                </label>
+            `;
+            
+            // Toggle checkbox when clicking row
+            item.onclick = (e) => {
+                if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'LABEL') {
+                    const checkbox = item.querySelector('input[type="checkbox"]');
+                    checkbox.checked = !checkbox.checked;
+                    checkbox.dispatchEvent(new Event('change'));
+                }
+            };
+
+            listContainer.appendChild(item);
+        });
+
+        // Add event listener to all checkboxes to update stats and name
+        const checkboxes = listContainer.querySelectorAll('.combine-checkbox');
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', () => {
+                let selectedCount = 0;
+                let totalQuestions = 0;
+                const titles = [];
+
+                checkboxes.forEach(c => {
+                    if (c.checked) {
+                        selectedCount++;
+                        totalQuestions += parseInt(c.getAttribute('data-qcount'), 10) || 0;
+                        titles.push(c.getAttribute('data-title'));
+                    }
+                });
+
+                selectedCountEl.textContent = selectedCount;
+                totalQuestionsCountEl.textContent = totalQuestions;
+
+                // Auto-generate name based on selection
+                if (titles.length >= 2) {
+                    nameInput.value = `Combined: ${titles.slice(0, 3).join(' + ')}${titles.length > 3 ? '...' : ''}`;
+                } else {
+                    nameInput.value = '';
+                }
+            });
+        });
+
+        modal.classList.remove('hidden');
+    };
+
+    confirmBtn.onclick = async () => {
+        const checkboxes = listContainer.querySelectorAll('.combine-checkbox:checked');
+        if (checkboxes.length < 2) {
+            alert("Please select at least 2 tests to combine.");
+            return;
+        }
+
+        const testName = nameInput.value.trim() || `Combined Test (${new Date().toLocaleDateString()})`;
+
+        try {
+            const selectedIds = Array.from(checkboxes).map(cb => {
+                const rawId = cb.getAttribute('data-id');
+                return /^\d+$/.test(rawId) ? parseInt(rawId, 10) : rawId;
+            });
+            
+            // Fetch selected sessions in order
+            const allSessions = await getAllSessionsFromDB();
+            const selectedSessions = [];
+            selectedIds.forEach(id => {
+                const s = allSessions.find(sess => sess.id === id);
+                if (s) selectedSessions.push(s);
+            });
+
+            // Merge questions
+            const combinedImages = [];
+            selectedSessions.forEach(session => {
+                const testTitle = session.title || `Mock Test #${session.id}`;
+                const images = session.extractedImages || [];
+                images.forEach((img, idx) => {
+                    // Normalize the label by prefixing with testTitle (useful for NTA layout group parsing)
+                    const cleanLabel = img.label || `Q${idx + 1}`;
+                    const labelPrefix = testTitle.replace(/[\-\#]/g, '').trim(); // clean special chars
+                    const finalLabel = `${labelPrefix} - ${cleanLabel}`;
+                    
+                    combinedImages.push({
+                        label: finalLabel,
+                        dataUrl: img.dataUrl,
+                        answerDataUrl: img.answerDataUrl,
+                        yOffset: img.yOffset || 0,
+                        type: img.type || null
+                    });
+                });
+            });
+
+            // Create combined session
+            const newSessionId = Date.now();
+            const combinedSession = {
+                id: newSessionId,
+                date: new Date(newSessionId).toLocaleString(),
+                title: testName,
+                totalSeconds: 0,
+                correctCount: 0,
+                incorrectCount: 0,
+                unansweredCount: combinedImages.length,
+                extractedImages: combinedImages,
+                practiceState: {
+                    activeIndices: combinedImages.map((_, i) => i),
+                    currentIndex: 0,
+                    theme: 'nta',
+                    totalSecondsRemaining: 60 * 60, // Default 60 minutes
+                    scorePerQ: 4,
+                    negativeMarking: true,
+                    answers: {},
+                    scratchpadNotes: {},
+                    stats: combinedImages.map((q, idx) => {
+                        let ex = 'Exercise 1';
+                        if (q.label && q.label.includes(' - ')) ex = q.label.split(' - ')[0];
+                        return {
+                            index: idx,
+                            timeSpent: 0,
+                            targetTime: 0,
+                            attempted: false,
+                            evaluation: null,
+                            ntaStatus: 'not_visited',
+                            exercise: ex
+                        };
+                    })
+                }
+            };
+
+            await saveSessionToDB(combinedSession);
+            hideModal();
+            alert("Successfully combined tests into a new practice session!");
+            renderHistory();
+        } catch (e) {
+            console.error("Failed to combine tests:", e);
+            alert("Error: Could not combine selected tests.");
+        }
+    };
+}
+
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initTestInstructionsModal);
+    document.addEventListener('DOMContentLoaded', () => {
+        initTestInstructionsModal();
+        initCombineTestsModal();
+    });
 } else {
     initTestInstructionsModal();
+    initCombineTestsModal();
 }
