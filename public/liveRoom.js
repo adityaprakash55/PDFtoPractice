@@ -631,7 +631,11 @@ window.startLiveRoomFromSession = function(session) {
     // Simulate clicking Host Live Test
     document.getElementById('historyContainer').classList.add('hidden');
     document.getElementById('uploadContainer').classList.add('hidden');
-      document.querySelectorAll('.dash-view').forEach(v => v.classList.add('hidden'));
+    const saCont = document.getElementById('analysisContainer');
+    if (saCont) saCont.classList.add('hidden');
+    const lrdDash = document.getElementById('liveResultsDashboard');
+    if (lrdDash) lrdDash.classList.add('hidden');
+    document.querySelectorAll('.dash-view').forEach(v => v.classList.add('hidden'));
       const sb = document.getElementById('landingSidebar');
       if(sb) { sb.classList.remove('md:flex'); sb.classList.add('hidden', '!hidden'); }
       

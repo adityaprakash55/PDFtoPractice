@@ -2281,6 +2281,8 @@ async function saveCurrentSession(totalSeconds, correctCount, incorrectCount, un
     const sessionData = {
         id: currentSessionId,
         date: new Date(currentSessionId).toLocaleString(),
+        isHosted: (typeof isLiveMode !== 'undefined' && isLiveMode) || (typeof isHost !== 'undefined' && isHost) || false,
+        isCommunity: (typeof isLiveMode !== 'undefined' && isLiveMode) || (typeof isHost !== 'undefined' && isHost) || false,
         totalSeconds,
         correctCount,
         incorrectCount,
@@ -2471,11 +2473,14 @@ async function renderHistory() {
             });
         });
         
-        document.querySelectorAll('.share-session-btn').forEach(btn => {
+        document.querySelectorAll('#historyList .share-session-btn').forEach(btn => {
             btn.addEventListener('click', async () => {
                 const id = parseInt(btn.getAttribute('data-id'));
                 const session = await getSessionFromDB(id);
                 if (session && typeof startLiveRoomFromSession === 'function') {
+                    session.isHosted = true;
+                    session.isCommunity = true;
+                    await saveSessionToDB(session);
                     startLiveRoomFromSession(session);
                 } else {
                     alert('Unable to share this session.');
@@ -4529,13 +4534,17 @@ document.addEventListener('DOMContentLoaded', () => {
             
             let filteredSessions = sessions;
             if (window.saCurrentFilter === 'community') {
-                filteredSessions = sessions.filter(s => s.isCommunity === true); 
+                filteredSessions = sessions.filter(s => s.isCommunity === true || s.isHosted === true); 
             } else if (window.saCurrentFilter === 'local') {
-                filteredSessions = sessions.filter(s => !s.isCommunity);
+                filteredSessions = sessions.filter(s => !s.isCommunity && !s.isHosted);
             }
 
             if (filteredSessions.length === 0) {
-                saHistoricalList.innerHTML = '<div class="text-center text-gray-500 py-8">No tests found for this filter.</div>';
+                if (window.saCurrentFilter === 'community') {
+                    saHistoricalList.innerHTML = '<div class="text-center text-gray-400 py-12 flex flex-col items-center justify-center gap-3"><svg class="w-12 h-12 text-blue-500/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg><span class="text-sm font-semibold">No hosted community tests yet.</span><span class="text-xs text-gray-500">Click the Share button on any test to host it for the community!</span></div>';
+                } else {
+                    saHistoricalList.innerHTML = '<div class="text-center text-gray-500 py-8">No tests found for this filter.</div>';
+                }
             }
 
             const reversedSessions = [...filteredSessions].reverse();
@@ -4615,6 +4624,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
                 saHistoricalList.appendChild(item);
+            });
+
+            document.querySelectorAll('#saHistoricalList .share-session-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const id = parseInt(btn.getAttribute('data-id'));
+                    const session = await getSessionFromDB(id);
+                    if (session && typeof startLiveRoomFromSession === 'function') {
+                        session.isHosted = true;
+                        session.isCommunity = true;
+                        await saveSessionToDB(session);
+                        startLiveRoomFromSession(session);
+                    } else {
+                        alert('Unable to share this session.');
+                    }
+                });
             });
 
             document.querySelectorAll('#saHistoricalList .view-session-btn').forEach(btn => {
