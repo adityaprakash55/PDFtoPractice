@@ -4907,10 +4907,39 @@ function renderExternalSources() {
 }
 
 
+
+
 // =============================================================
 // TEST INSTRUCTIONS MODAL LOGIC
 // =============================================================
-let pendingSessionToLaunch = null;
+window.pendingSessionToLaunch = null;
+
+async function openInstructionsModalForSession(id, type) {
+    try {
+        const session = await getSessionFromDB(id);
+        if (!session || !session.extractedImages || session.extractedImages.length === 0) {
+            alert("This test does not contain any valid questions to launch.");
+            return;
+        }
+        
+        window.pendingSessionToLaunch = session;
+        
+        const modal = document.getElementById('testInstructionsModal');
+        const titleEl = document.getElementById('instructionsModalTitle');
+        const subtitleEl = document.getElementById('instructionsModalSubtitle');
+        
+        if (titleEl) titleEl.textContent = session.title || `Mock Test Session #${session.id}`;
+        if (subtitleEl) {
+            const count = session.extractedImages ? session.extractedImages.length : 0;
+            subtitleEl.textContent = `${count} Questions • Standard Marking (+4 / -1)`;
+        }
+        
+        if (modal) modal.classList.remove('hidden');
+    } catch(e) {
+        console.error("Error opening instructions modal:", e);
+        alert("Could not load test session.");
+    }
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('testInstructionsModal');
@@ -4920,51 +4949,68 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function hideModal() {
         if(modal) modal.classList.add('hidden');
-        pendingSessionToLaunch = null;
     }
     
     if(closeBtn) closeBtn.addEventListener('click', hideModal);
     if(cancelBtn) cancelBtn.addEventListener('click', hideModal);
     
     if(confirmStartBtn) {
-        confirmStartBtn.addEventListener('click', async () => {
-            if (pendingSessionToLaunch) {
-                const { id, type } = pendingSessionToLaunch;
-                hideModal();
-                
-                const session = await getSessionFromDB(id);
-                if (session) {
-                    currentSessionId = session.id;
-                    practiceState = session.practiceState;
-                    extractedImages = session.extractedImages;
-                    
-                    document.getElementById('uploadContainer').classList.add('hidden');
-                    document.getElementById('historyContainer').classList.add('hidden');
-                    
-                    if (typeof reattemptPractice === 'function') {
-                        reattemptPractice(type);
-                    }
-                }
+        confirmStartBtn.addEventListener('click', () => {
+            if (!window.pendingSessionToLaunch) return;
+            
+            const session = window.pendingSessionToLaunch;
+            hideModal();
+            
+            // Set up global session variables
+            currentSessionId = Date.now();
+            extractedImages = session.extractedImages || [];
+            
+            if (extractedImages.length === 0) {
+                alert("No questions found in this test.");
+                return;
+            }
+            
+            // Calculate time
+            const mins = (typeof getCalculatedTimeMinutes === 'function') ? getCalculatedTimeMinutes(extractedImages.length) : 60;
+            
+            // Fresh practiceState for test run
+            practiceState = {
+                activeIndices: extractedImages.map((_, i) => i),
+                currentIndex: 0,
+                theme: 'nta',
+                totalSecondsRemaining: mins * 60,
+                scorePerQ: 4,
+                negativeMarking: true,
+                stats: extractedImages.map((q, idx) => {
+                    let ex = 'Exercise 1';
+                    if (q.label && q.label.includes(' - ')) ex = q.label.split(' - ')[0];
+                    return {
+                        index: idx,
+                        timeSpent: 0,
+                        targetTime: 0,
+                        attempted: false,
+                        evaluation: null,
+                        ntaStatus: 'not_visited',
+                        exercise: ex
+                    };
+                })
+            };
+            
+            // Hide dashboard & landing containers
+            const uploadContainer = document.getElementById('uploadContainer');
+            const historyContainer = document.getElementById('historyContainer');
+            const configContainer = document.getElementById('configContainer');
+            const practiceSetupContainer = document.getElementById('practiceSetupContainer');
+            
+            if(uploadContainer) uploadContainer.classList.add('hidden');
+            if(historyContainer) historyContainer.classList.add('hidden');
+            if(configContainer) configContainer.classList.add('hidden');
+            if(practiceSetupContainer) practiceSetupContainer.classList.add('hidden');
+            
+            // Start the practice session
+            if (typeof startPracticeSession === 'function') {
+                startPracticeSession(practiceState.activeIndices);
             }
         });
     }
 });
-
-async function openInstructionsModalForSession(id, type) {
-    const session = await getSessionFromDB(id);
-    if (!session) return;
-    
-    pendingSessionToLaunch = { id, type };
-    
-    const modal = document.getElementById('testInstructionsModal');
-    const titleEl = document.getElementById('instructionsModalTitle');
-    const subtitleEl = document.getElementById('instructionsModalSubtitle');
-    
-    if (titleEl) titleEl.textContent = session.title || `Mock Test Session #${session.id}`;
-    if (subtitleEl) {
-        const count = session.extractedImages ? session.extractedImages.length : 0;
-        subtitleEl.textContent = `${count} Questions • Standard Marking (+4 / -1)`;
-    }
-    
-    if (modal) modal.classList.remove('hidden');
-}
