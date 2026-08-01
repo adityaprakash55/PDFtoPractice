@@ -4540,77 +4540,47 @@ document.addEventListener('DOMContentLoaded', () => {
             const reversedSessions = [...filteredSessions].reverse();
 
             reversedSessions.forEach(s => {
-                const attempted = (s.correctCount || 0) + (s.incorrectCount || 0);
-                const total = attempted + (s.unansweredCount || 0);
-                const scorePerQ = s.practiceState?.scorePerQ || 4;
-                const hasNeg = s.practiceState?.negativeMarking !== false;
-                const penalty = hasNeg ? (s.incorrectCount || 0) : 0;
-                const score = ((s.correctCount || 0) * scorePerQ) - penalty;
-                const maxScore = total * scorePerQ;
-                const accuracy = attempted > 0 ? Math.round(((s.correctCount || 0) / attempted) * 100) : 0;
-                
-                const hrs = Math.floor((s.totalSeconds||0) / 3600);
-                const mins = Math.floor(((s.totalSeconds||0) % 3600) / 60);
-                const secs = (s.totalSeconds||0) % 60;
-                const timeStr = [hrs, mins, secs].map(v => v < 10 ? '0' + v : v).join(':');
-
-                const isDark = document.documentElement.classList.contains('dark') || true;
-                const gaugeBg = isDark ? '#334155' : '#cbd5e1';
-
                 const item = document.createElement('div');
-                item.className = 'bg-[#1C212E] p-5 rounded-2xl flex flex-col md:flex-row items-center justify-between border border-gray-800 shadow-xl relative z-10 hover:z-20 mb-4';
-
+                item.className = 'bg-[#090b10] hover:bg-[#0d1017] transition-all p-4 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between border border-gray-800/80 hover:border-gray-700 shadow-xl relative group mb-3.5 gap-4';
+                
+                let rawTitle = s.title || `Mock Test Session #${s.id}`;
+                let formattedTitle = rawTitle;
+                if (rawTitle.includes('#')) {
+                    const parts = rawTitle.split('#');
+                    formattedTitle = `${parts[0]}<span class="text-blue-400 font-extrabold">#${parts[1]}</span>`;
+                }
+                
+                const dateStr = s.date ? s.date.split(',')[0] : 'Unknown';
+                
                 item.innerHTML = `
-                    <!-- Left: Score -->
-                    <div class="flex items-center justify-center mr-0 md:mr-8 mb-6 md:mb-0">
-                        ${createGauge(score, maxScore, '#F59E0B', gaugeBg, 120, 10, `<div class="mb-1"><span class="text-2xl font-bold text-[#F59E0B] leading-none">${score}</span><span class="text-xs text-gray-500">/${maxScore}</span></div>`, 'Score')}
+                    <div class="flex-1 min-w-0">
+                        <h4 class="text-sm sm:text-base font-bold text-white truncate tracking-tight">${formattedTitle}</h4>
+                        <p class="text-xs text-slate-400 mt-1 font-medium">Created: ${dateStr}</p>
                     </div>
                     
-                    <!-- Middle: Info & Stats -->
-                    <div class="flex-1 flex flex-col items-center md:items-start text-center md:text-left">
-                        <div class="flex items-center gap-3 mb-1">
-                            <h4 class="text-lg font-bold text-white">Session #${s.id}</h4>
-                            <span class="px-2 py-0.5 rounded-full bg-blue-900/50 text-blue-400 text-[10px] font-bold flex items-center gap-1 border border-blue-800/50">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg> 
-                                Subject Test
-                            </span>
-                        </div>
-                        <p class="text-[11px] text-gray-400 mb-6">${s.date || `Test #${s.id}`}</p>
-                        
-                        <div class="flex flex-wrap justify-center md:justify-start gap-5">
-                            ${createGauge(s.correctCount||0, total, '#10B981', gaugeBg, 70, 6, `<span class="text-sm font-bold text-[#10B981]">${s.correctCount||0}</span>`, 'Correct')}
-                            ${createGauge(s.incorrectCount||0, total, '#EF4444', gaugeBg, 70, 6, `<span class="text-sm font-bold text-[#EF4444]">${s.incorrectCount||0}</span>`, 'Wrong')}
-                            ${createGauge(attempted, total, '#3B82F6', gaugeBg, 70, 6, `<span class="text-sm font-bold text-[#3B82F6]">${attempted}/${total}</span>`, 'Attempted')}
-                            ${createGauge(accuracy, 100, '#10B981', gaugeBg, 70, 6, `<span class="text-sm font-bold text-[#10B981]">${accuracy}%</span>`, 'Accuracy')}
-                            ${createGauge(s.totalSeconds||0, 10800, '#F59E0B', gaugeBg, 70, 6, `<span class="text-[11px] font-bold text-[#F59E0B]">${timeStr}</span>`, 'Time')}
-                        </div>
-                    </div>
-                    
-                    <!-- Right: Actions -->
-                    <div class="flex items-center gap-2 mt-6 md:mt-0">
-                        <button class="share-session-btn bg-[#286090] hover:bg-[#1e4b72] text-white text-sm font-bold py-2 px-3 rounded-lg flex items-center justify-center transition-colors" data-id="${s.id}" title="Share this test">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+                    <div class="flex items-center justify-end gap-2.5 shrink-0">
+                        <button class="rename-session-btn text-gray-400 hover:text-white p-2 rounded-xl hover:bg-gray-800/60 transition-colors" data-id="${s.id}" title="Rename Test">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                         </button>
-                        <button class="view-session-btn bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors" data-id="${s.id}">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg> 
-                            View Analysis
+                        <button class="delete-session-btn text-gray-400 hover:text-rose-400 p-2 rounded-xl hover:bg-gray-800/60 transition-colors" data-id="${s.id}" title="Delete Test">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                        <button class="view-session-btn text-gray-400 hover:text-white p-2 rounded-xl hover:bg-gray-800/60 transition-colors" data-id="${s.id}" title="View Analysis">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                        </button>
+
+                        <button class="share-session-btn bg-[#1e293b] hover:bg-[#283750] text-blue-400 p-2.5 rounded-xl border border-blue-800/40 transition-all shadow-sm active:scale-95 flex items-center justify-center" data-id="${s.id}" title="Share Test">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
+                        </button>
+
+                        <button class="share-session-btn text-gray-400 hover:text-blue-400 p-2 rounded-xl hover:bg-gray-800/60 transition-colors" data-id="${s.id}" title="Host Live Test">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path></svg>
                         </button>
                         
-                        <div class="relative group cursor-pointer" tabindex="0">
-                            <div class="text-gray-400 hover:text-white p-2 rounded-full transition-colors flex items-center justify-center">
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path></svg>
-                            </div>
-                            <div class="absolute right-0 top-full pt-2 w-52 opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all z-50">
-                                <div class="bg-[#1C212E] rounded-xl shadow-2xl border border-gray-700 flex flex-col text-sm font-semibold overflow-hidden">
-                                    <button class="history-reattempt-btn text-left px-4 py-3 text-red-400 hover:bg-gray-800 transition-colors" data-id="${s.id}" data-type="wrong">Reattempt Wrong</button>
-                                    <button class="history-reattempt-btn text-left px-4 py-3 text-gray-300 hover:bg-gray-800 transition-colors" data-id="${s.id}" data-type="unanswered">Reattempt Unanswered</button>
-                                    <button class="history-reattempt-btn text-left px-4 py-3 text-[#FBBF24] hover:bg-gray-800 transition-colors" data-id="${s.id}" data-type="marked">Reattempt Marked</button>
-                                    <button class="history-reattempt-btn text-left px-4 py-3 text-blue-400 hover:bg-gray-800 transition-colors" data-id="${s.id}" data-type="all">Reattempt All Qs</button>
-                                    <div class="border-t border-gray-700"></div>
-                                    <button class="delete-session-btn text-left px-4 py-3 text-red-500 hover:bg-red-500/10 transition-colors" data-id="${s.id}">Delete Session</button>
-                                </div>
-                            </div>
-                        </div>
+                        <button class="take-test-modal-btn bg-black hover:bg-neutral-900 text-white text-xs font-bold py-2 px-4 rounded-full flex items-center gap-2 border border-neutral-700 shadow-md transition-all active:scale-95 shrink-0 ml-1" data-id="${s.id}" data-type="all">
+                            <svg class="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
+                            <span>Take Test</span>
+                        </button>
                     </div>
                 `;
                 saHistoricalList.appendChild(item);
@@ -4641,7 +4611,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             });
 
-            document.querySelectorAll('#saHistoricalList .history-reattempt-btn').forEach(btn => {
+            document.querySelectorAll('#saHistoricalList .take-test-modal-btn, #saHistoricalList .history-reattempt-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const rawId = btn.getAttribute('data-id');
+                    const filterType = btn.getAttribute('data-type') || 'all';
+                    openInstructionsModalForSession(rawId, filterType);
+                });
+            });
+
+            document.querySelectorAll('#saHistoricalList .rename-session-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const rawId = btn.getAttribute('data-id');
+                    const session = await getSessionFromDB(rawId) || await getSessionFromDB(parseInt(rawId));
+                    if (session) {
+                        const newName = prompt("Enter new test name:", session.title || `Mock Test Session #${session.id}`);
+                        if (newName !== null && newName.trim() !== "") {
+                            session.title = newName.trim();
+                            await saveSessionToDB(session);
+                            renderScoreAnalysis();
+                        }
+                    }
+                });
+            });
+
+            document.querySelectorAll('#saHistoricalList .history-reattempt-btn_old').forEach(btn => {
                 btn.addEventListener('click', async (e) => {
                     e.stopPropagation();
                     const id = parseInt(btn.getAttribute('data-id'));
@@ -4914,9 +4909,23 @@ function renderExternalSources() {
 // =============================================================
 window.pendingSessionToLaunch = null;
 
+
 async function openInstructionsModalForSession(id, type) {
     try {
-        const session = await getSessionFromDB(id);
+        let session = await getSessionFromDB(id);
+        if (!session) {
+            const numId = parseInt(id);
+            if (!isNaN(numId)) session = await getSessionFromDB(numId);
+        }
+        if (!session) {
+            const strId = String(id);
+            session = await getSessionFromDB(strId);
+        }
+        if (!session) {
+            const all = await getAllSessionsFromDB();
+            session = all.find(s => String(s.id) === String(id));
+        }
+        
         if (!session || !session.extractedImages || session.extractedImages.length === 0) {
             alert("This test does not contain any valid questions to launch.");
             return;
@@ -4940,77 +4949,3 @@ async function openInstructionsModalForSession(id, type) {
         alert("Could not load test session.");
     }
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-    const modal = document.getElementById('testInstructionsModal');
-    const closeBtn = document.getElementById('closeInstructionsModalBtn');
-    const cancelBtn = document.getElementById('cancelInstructionsModalBtn');
-    const confirmStartBtn = document.getElementById('confirmStartTestBtn');
-    
-    function hideModal() {
-        if(modal) modal.classList.add('hidden');
-    }
-    
-    if(closeBtn) closeBtn.addEventListener('click', hideModal);
-    if(cancelBtn) cancelBtn.addEventListener('click', hideModal);
-    
-    if(confirmStartBtn) {
-        confirmStartBtn.addEventListener('click', () => {
-            if (!window.pendingSessionToLaunch) return;
-            
-            const session = window.pendingSessionToLaunch;
-            hideModal();
-            
-            // Set up global session variables
-            currentSessionId = Date.now();
-            extractedImages = session.extractedImages || [];
-            
-            if (extractedImages.length === 0) {
-                alert("No questions found in this test.");
-                return;
-            }
-            
-            // Calculate time
-            const mins = (typeof getCalculatedTimeMinutes === 'function') ? getCalculatedTimeMinutes(extractedImages.length) : 60;
-            
-            // Fresh practiceState for test run
-            practiceState = {
-                activeIndices: extractedImages.map((_, i) => i),
-                currentIndex: 0,
-                theme: 'nta',
-                totalSecondsRemaining: mins * 60,
-                scorePerQ: 4,
-                negativeMarking: true,
-                stats: extractedImages.map((q, idx) => {
-                    let ex = 'Exercise 1';
-                    if (q.label && q.label.includes(' - ')) ex = q.label.split(' - ')[0];
-                    return {
-                        index: idx,
-                        timeSpent: 0,
-                        targetTime: 0,
-                        attempted: false,
-                        evaluation: null,
-                        ntaStatus: 'not_visited',
-                        exercise: ex
-                    };
-                })
-            };
-            
-            // Hide dashboard & landing containers
-            const uploadContainer = document.getElementById('uploadContainer');
-            const historyContainer = document.getElementById('historyContainer');
-            const configContainer = document.getElementById('configContainer');
-            const practiceSetupContainer = document.getElementById('practiceSetupContainer');
-            
-            if(uploadContainer) uploadContainer.classList.add('hidden');
-            if(historyContainer) historyContainer.classList.add('hidden');
-            if(configContainer) configContainer.classList.add('hidden');
-            if(practiceSetupContainer) practiceSetupContainer.classList.add('hidden');
-            
-            // Start the practice session
-            if (typeof startPracticeSession === 'function') {
-                startPracticeSession(practiceState.activeIndices);
-            }
-        });
-    }
-});
