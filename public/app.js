@@ -2374,6 +2374,9 @@ async function renderHistory() {
                 </div>
                 
                 <div class="flex items-center justify-end gap-2 shrink-0">
+                    <button class="rename-session-btn p-2 rounded-lg bg-transparent hover:bg-gray-800 text-gray-500 hover:text-yellow-400 transition-colors border border-transparent hover:border-gray-700" data-id="${session.id}" title="Rename Test">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                    </button>
                     <button class="delete-session-btn p-2 rounded-lg bg-transparent hover:bg-gray-800 text-gray-500 hover:text-red-400 transition-colors border border-transparent hover:border-gray-700" data-id="${session.id}" title="Delete Test">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                     </button>
@@ -2426,6 +2429,22 @@ async function renderHistory() {
         });
         
         // Event listeners for history cards
+        document.querySelectorAll('.rename-session-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const id = parseInt(btn.getAttribute('data-id'));
+                const session = await getSessionFromDB(id);
+                if (session) {
+                    const newName = prompt("Enter new test name:", session.title || `Mock Test Session #${session.id}`);
+                    if (newName !== null && newName.trim() !== "") {
+                        session.title = newName.trim();
+                        await saveSessionToDB(session);
+                        renderHistory();
+                    }
+                }
+            });
+        });
+        
         document.querySelectorAll('.delete-session-btn').forEach(btn => {
             btn.addEventListener('click', async (e) => {
                 e.stopPropagation();
@@ -4752,4 +4771,130 @@ async function autoExportCurrentTest() {
     } catch (e) {
         console.error("Auto export failed:", e);
     }
+}
+
+
+// =============================================================
+// EXTERNAL SOURCES & TABS LOGIC
+// =============================================================
+document.addEventListener('DOMContentLoaded', () => {
+    const tabRecentTests = document.getElementById('tabRecentTests');
+    const tabExternalSources = document.getElementById('tabExternalSources');
+    const recentTestsView = document.getElementById('recentTestsView');
+    const externalSourcesView = document.getElementById('externalSourcesView');
+    
+    const subTabSources = document.getElementById('subTabSources');
+    const subTabAddSource = document.getElementById('subTabAddSource');
+    const addSourceFormContainer = document.getElementById('addSourceFormContainer');
+    const sourcesListContainer = document.getElementById('sourcesListContainer');
+    
+    const extSourceUrl = document.getElementById('extSourceUrl');
+    const extSourceName = document.getElementById('extSourceName');
+    const saveExternalSourceBtn = document.getElementById('saveExternalSourceBtn');
+    
+    if(tabRecentTests && tabExternalSources) {
+        tabRecentTests.addEventListener('click', () => {
+            tabRecentTests.className = "text-white font-bold text-lg pb-2 border-b-2 border-blue-500 transition-colors";
+            tabExternalSources.className = "text-gray-500 hover:text-gray-300 font-bold text-lg pb-2 border-b-2 border-transparent hover:border-gray-600 transition-colors";
+            recentTestsView.classList.remove('hidden');
+            externalSourcesView.classList.add('hidden');
+        });
+        
+        tabExternalSources.addEventListener('click', () => {
+            tabExternalSources.className = "text-white font-bold text-lg pb-2 border-b-2 border-blue-500 transition-colors";
+            tabRecentTests.className = "text-gray-500 hover:text-gray-300 font-bold text-lg pb-2 border-b-2 border-transparent hover:border-gray-600 transition-colors";
+            externalSourcesView.classList.remove('hidden');
+            recentTestsView.classList.add('hidden');
+            // Default to add source view if none exists, else sources
+            const sources = JSON.parse(localStorage.getItem('externalSources') || '[]');
+            if(sources.length > 0) {
+                subTabSources.click();
+            } else {
+                subTabAddSource.click();
+            }
+        });
+    }
+    
+    if(subTabSources && subTabAddSource) {
+        subTabSources.addEventListener('click', () => {
+            subTabSources.className = "text-white font-semibold text-sm pb-1 border-b-2 border-blue-500 transition-colors";
+            subTabAddSource.className = "text-gray-500 hover:text-gray-300 font-semibold text-sm pb-1 border-b-2 border-transparent hover:border-gray-600 transition-colors";
+            sourcesListContainer.classList.remove('hidden');
+            addSourceFormContainer.classList.add('hidden');
+            renderExternalSources();
+        });
+        
+        subTabAddSource.addEventListener('click', () => {
+            subTabAddSource.className = "text-white font-semibold text-sm pb-1 border-b-2 border-blue-500 transition-colors";
+            subTabSources.className = "text-gray-500 hover:text-gray-300 font-semibold text-sm pb-1 border-b-2 border-transparent hover:border-gray-600 transition-colors";
+            addSourceFormContainer.classList.remove('hidden');
+            sourcesListContainer.classList.add('hidden');
+        });
+    }
+    
+    if(saveExternalSourceBtn) {
+        saveExternalSourceBtn.addEventListener('click', () => {
+            const url = extSourceUrl.value.trim();
+            const name = extSourceName.value.trim() || 'Untitled Source';
+            if(!url) {
+                alert("Please enter a Source URL");
+                return;
+            }
+            
+            const sources = JSON.parse(localStorage.getItem('externalSources') || '[]');
+            sources.push({ id: Date.now(), url, name, date: new Date().toLocaleDateString() });
+            localStorage.setItem('externalSources', JSON.stringify(sources));
+            
+            extSourceUrl.value = '';
+            extSourceName.value = '';
+            subTabSources.click(); // Switch to list
+        });
+    }
+});
+
+function renderExternalSources() {
+    const list = document.getElementById('externalSourcesList');
+    if(!list) return;
+    
+    const sources = JSON.parse(localStorage.getItem('externalSources') || '[]');
+    list.innerHTML = '';
+    
+    if(sources.length === 0) {
+        list.innerHTML = '<div class="text-center text-gray-500 py-8">No external sources added yet.</div>';
+        return;
+    }
+    
+    sources.forEach(src => {
+        const card = document.createElement('div');
+        card.className = 'bg-[#151921] border border-gray-800 rounded-xl p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:border-gray-700 transition-colors';
+        card.innerHTML = `
+            <div class="flex-1 min-w-0">
+                <h4 class="text-base font-bold text-gray-200 truncate">${src.name}</h4>
+                <p class="text-xs text-blue-400 mt-1 truncate">${src.url}</p>
+                <p class="text-[10px] text-gray-500 mt-1">Added: ${src.date}</p>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+                <button class="delete-source-btn p-2 rounded-lg bg-[#1a1e26] hover:bg-red-900/30 text-gray-400 hover:text-red-400 border border-gray-700 hover:border-red-900/50 transition-colors" data-id="${src.id}" title="Remove Source">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
+                <button class="bg-[#28498f] hover:bg-[#3459a8] text-white text-sm font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors border border-blue-900/50 shadow" onclick="alert('Fetching data from external sources will be implemented in future updates!')">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                    Fetch
+                </button>
+            </div>
+        `;
+        list.appendChild(card);
+    });
+    
+    document.querySelectorAll('.delete-source-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if(confirm("Remove this source?")) {
+                const id = parseInt(btn.getAttribute('data-id'));
+                const sources = JSON.parse(localStorage.getItem('externalSources') || '[]');
+                const filtered = sources.filter(s => s.id !== id);
+                localStorage.setItem('externalSources', JSON.stringify(filtered));
+                renderExternalSources();
+            }
+        });
+    });
 }

@@ -374,8 +374,54 @@
             </div>
         </div>
 
-        <!-- Practice History Section (Visible on Landing Page & History Tab) -->
+        <!-- Practice History & External Sources Section -->
         <div id="historyContainer" class="dash-view homeView historyView max-w-5xl mx-auto mt-20">
+            
+            <!-- Top Level Tabs -->
+            <div class="flex items-center gap-6 mb-8 border-b border-gray-800/50 pb-2">
+                <button id="tabRecentTests" class="text-white font-bold text-lg pb-2 border-b-2 border-blue-500 transition-colors">Recent Tests</button>
+                <button id="tabExternalSources" class="text-gray-500 hover:text-gray-300 font-bold text-lg pb-2 border-b-2 border-transparent hover:border-gray-600 transition-colors">External Sources</button>
+            </div>
+            
+            <!-- External Sources View (Hidden by default) -->
+            <div id="externalSourcesView" class="hidden">
+                <!-- Sub Tabs -->
+                <div class="flex items-center gap-6 mb-6">
+                    <button id="subTabSources" class="text-gray-500 hover:text-gray-300 font-semibold text-sm pb-1 border-b-2 border-transparent hover:border-gray-600 transition-colors">Sources</button>
+                    <button id="subTabAddSource" class="text-white font-semibold text-sm pb-1 border-b-2 border-blue-500 transition-colors">Add Source</button>
+                </div>
+                
+                <!-- Add Source Form -->
+                <div id="addSourceFormContainer" class="bg-[#121620] border border-gray-800 rounded-3xl p-6 shadow-2xl">
+                    <h3 class="text-sm font-bold text-white mb-6 uppercase tracking-wider flex items-center gap-2">
+                        <span class="text-blue-500 text-lg">+</span> ADD SOURCE
+                    </h3>
+                    
+                    <div class="flex flex-col md:flex-row items-end gap-6">
+                        <div class="flex-1 w-full">
+                            <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Source URL</label>
+                            <input type="text" id="extSourceUrl" placeholder="GitHub repo or direct .zip/.newt link" class="w-full bg-[#0a0c10] border border-gray-800 text-gray-300 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors">
+                        </div>
+                        <div class="flex-1 w-full">
+                            <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Custom Name (Optional)</label>
+                            <input type="text" id="extSourceName" placeholder="e.g. Physics 2026" class="w-full bg-[#0a0c10] border border-gray-800 text-gray-300 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors">
+                        </div>
+                        <button id="saveExternalSourceBtn" class="bg-[#28498f] hover:bg-[#3459a8] text-white font-bold py-3 px-6 rounded-xl transition-colors shrink-0 w-full md:w-auto shadow-lg border border-blue-900/50">
+                            Save Source
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Sources List -->
+                <div id="sourcesListContainer" class="hidden">
+                    <div id="externalSourcesList" class="flex flex-col gap-3">
+                        <!-- Source cards injected here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Tests View (Vault) -->
+            <div id="recentTestsView">
             <div class="bg-[#0f1115] border border-gray-800 rounded-3xl p-6 shadow-2xl">
                 <!-- Vault Header -->
                 <div class="flex items-center justify-between mb-6 pb-6 border-b border-gray-800">
@@ -409,6 +455,7 @@
                     <!-- Cards injected here -->
                 </div>
             </div>
+            </div> <!-- End recentTestsView -->
         </div>
 
         <!-- 2. Configuration & Margin Setup -->
