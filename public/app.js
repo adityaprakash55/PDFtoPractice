@@ -2323,6 +2323,87 @@ document.getElementById('backToHomeBtn').addEventListener('click', () => {
 
 // History UI rendering
 let historyDisplayLimit = 10;
+let combineMode = false;
+let selectedCombineIds = new Set();
+
+function updateCombineActionBar() {
+    const bar = document.getElementById('combineActionBar');
+    const countEl = document.getElementById('combineSelectedCount');
+    if (!bar || !countEl) return;
+    
+    if (combineMode && selectedCombineIds.size > 0) {
+        countEl.textContent = selectedCombineIds.size;
+        bar.classList.remove('hidden');
+    } else {
+        bar.classList.add('hidden');
+    }
+}
+
+// Bind Combine Toggle button
+document.addEventListener('DOMContentLoaded', () => {
+    const toggleBtn = document.getElementById('toggleCombineModeBtn');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => {
+            combineMode = !combineMode;
+            if (!combineMode) {
+                selectedCombineIds.clear();
+                updateCombineActionBar();
+            }
+            if (combineMode) {
+                toggleBtn.className = "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white bg-blue-600 hover:bg-blue-500 border border-blue-500 transition-colors shadow-lg shadow-blue-500/20";
+                toggleBtn.querySelector('span').textContent = "Exit Combine";
+            } else {
+                toggleBtn.className = "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-gray-300 hover:text-white bg-[#1a1e26] hover:bg-[#252a36] transition-colors border border-gray-700";
+                toggleBtn.querySelector('span').textContent = "Combine Tests";
+            }
+            renderHistory();
+        });
+    }
+    
+    const startCombinedBtn = document.getElementById('startCombinedTestBtn');
+    if (startCombinedBtn) {
+        startCombinedBtn.addEventListener('click', async () => {
+            if (selectedCombineIds.size === 0) return;
+            const sessionsToCombine = [];
+            for (const id of selectedCombineIds) {
+                const session = await getSessionFromDB(id);
+                if (session) sessionsToCombine.push(session);
+            }
+            
+            if (sessionsToCombine.length === 0) {
+                alert("Could not load selected sessions.");
+                return;
+            }
+            
+            // Merge sessions
+            const combinedImages = [];
+            sessionsToCombine.forEach((session, sIdx) => {
+                const testPrefix = session.title || `Test #${session.id}`;
+                const imgs = session.extractedImages || [];
+                imgs.forEach((img, iIdx) => {
+                    combinedImages.push({
+                        ...img,
+                        label: img.label ? `[T${sIdx+1}] ${img.label}` : `[T${sIdx+1}] Q${iIdx+1}`
+                    });
+                });
+            });
+            
+            if (combinedImages.length === 0) {
+                alert("The selected tests do not contain any valid questions to combine.");
+                return;
+            }
+            
+            const combinedSession = {
+                id: 'combined-' + Date.now(),
+                title: `Combined Exam (${sessionsToCombine.length} Tests)`,
+                extractedImages: combinedImages
+            };
+            
+            openInstructionsModalForSession(combinedSession);
+        });
+    }
+});
+
 async function renderHistory() {
     const historyList = document.getElementById('historyList');
     const historyContainer = document.getElementById('historyContainer');
@@ -2374,12 +2455,17 @@ async function renderHistory() {
             const dateStr = session.date ? session.date.split(',')[0] : 'Unknown';
             
             card.innerHTML = `
-                <div class="flex-1 min-w-0">
-                    <h4 class="text-sm sm:text-base font-bold text-white truncate tracking-tight">${formattedTitle}</h4>
-                    <p class="text-xs text-slate-400 mt-1 font-medium">Created: ${dateStr}</p>
+                <div class="flex items-center gap-3.5 w-full sm:w-auto flex-1 min-w-0">
+                    ${combineMode ? `
+                        <input type="checkbox" class="combine-session-checkbox w-4 h-4 rounded border-gray-700 bg-gray-900 text-blue-600 focus:ring-blue-500 focus:ring-offset-gray-900" data-id="${session.id}" ${selectedCombineIds.has(session.id) ? 'checked' : ''}>
+                    ` : ''}
+                    <div class="flex-1 min-w-0">
+                        <h4 class="text-sm sm:text-base font-bold text-white truncate tracking-tight">${formattedTitle}</h4>
+                        <p class="text-xs text-slate-400 mt-1 font-medium">Created: ${dateStr}</p>
+                    </div>
                 </div>
                 
-                <div class="flex items-center justify-end gap-2.5 shrink-0">
+                <div class="flex items-center justify-end gap-2.5 shrink-0 ${combineMode ? 'opacity-30 pointer-events-none' : ''}">
                     <button class="rename-session-btn text-gray-400 hover:text-white p-2 rounded-xl hover:bg-gray-800/60 transition-colors" data-id="${session.id}" title="Rename Test">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                     </button>
@@ -2519,6 +2605,20 @@ async function renderHistory() {
                 const filterType = btn.getAttribute('data-type');
                 console.log("history-reattempt-btn clicked. rawId:", rawId, "parsedId:", id, "filterType:", filterType);
                 openInstructionsModalForSession(id, filterType);
+            });
+        });
+
+        // Bind Combine checkboxes
+        document.querySelectorAll('.combine-session-checkbox').forEach(cb => {
+            cb.addEventListener('change', (e) => {
+                const id = e.target.getAttribute('data-id');
+                const parsedId = /^\d+$/.test(id) ? parseInt(id, 10) : id;
+                if (e.target.checked) {
+                    selectedCombineIds.add(parsedId);
+                } else {
+                    selectedCombineIds.delete(parsedId);
+                }
+                updateCombineActionBar();
             });
         });
         
@@ -4928,31 +5028,37 @@ function renderExternalSources() {
 // =============================================================
 window.pendingSessionToLaunch = null;
 
-async function openInstructionsModalForSession(id, type) {
-    console.log("openInstructionsModalForSession called with ID:", id, "Type:", type);
+async function openInstructionsModalForSession(idOrSession, type) {
+    console.log("openInstructionsModalForSession called with ID/Session:", idOrSession, "Type:", type);
     try {
-        let session = await getSessionFromDB(id);
-        console.log("getSessionFromDB returned:", session);
-        if (!session) {
-            const numId = parseInt(id);
-            if (!isNaN(numId)) {
-                session = await getSessionFromDB(numId);
-                console.log("getSessionFromDB(numId) returned:", session);
+        let session;
+        if (idOrSession && typeof idOrSession === 'object') {
+            session = idOrSession;
+        } else {
+            const id = idOrSession;
+            session = await getSessionFromDB(id);
+            console.log("getSessionFromDB returned:", session);
+            if (!session) {
+                const numId = parseInt(id);
+                if (!isNaN(numId)) {
+                    session = await getSessionFromDB(numId);
+                    console.log("getSessionFromDB(numId) returned:", session);
+                }
             }
-        }
-        if (!session) {
-            const strId = String(id);
-            session = await getSessionFromDB(strId);
-            console.log("getSessionFromDB(strId) returned:", session);
-        }
-        if (!session) {
-            const all = await getAllSessionsFromDB();
-            session = all.find(s => String(s.id) === String(id));
-            console.log("allSessions search returned:", session);
+            if (!session) {
+                const strId = String(id);
+                session = await getSessionFromDB(strId);
+                console.log("getSessionFromDB(strId) returned:", session);
+            }
+            if (!session) {
+                const all = await getAllSessionsFromDB();
+                session = all.find(s => String(s.id) === String(id));
+                console.log("allSessions search returned:", session);
+            }
         }
         
         if (!session) {
-            console.log("No session found in DB for ID:", id);
+            console.log("No session found for:", idOrSession);
             alert("Could not load test session (session not found).");
             return;
         }
