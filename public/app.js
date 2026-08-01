@@ -1764,6 +1764,11 @@ startPracticeBtn.addEventListener('click', () => {
     
     // Default active indices is ALL questions
     startPracticeSession(extractedImages.map((_, i) => i));
+    
+    // Save to cache and auto-export the .practice file
+    saveCurrentSession().then(() => {
+        autoExportCurrentTest();
+    });
 });
 
 function formatTime(seconds) {
@@ -2281,6 +2286,8 @@ async function saveCurrentSession(totalSeconds, correctCount, incorrectCount, un
     const sessionData = {
         id: currentSessionId,
         date: new Date(currentSessionId).toLocaleString(),
+        title: window.currentPdfFilename || `Mock Test Session #${currentSessionId}`,
+
         isHosted: (typeof isLiveMode !== 'undefined' && isLiveMode) || (typeof isHost !== 'undefined' && isHost) || false,
         isCommunity: (typeof isLiveMode !== 'undefined' && isLiveMode) || (typeof isHost !== 'undefined' && isHost) || false,
         totalSeconds,
@@ -2323,117 +2330,67 @@ async function renderHistory() {
     try {
         const sessions = await getAllSessionsFromDB();
         if (sessions.length === 0) {
-            historyContainer.classList.add('hidden');
+            historyContainer.classList.remove('hidden');
+            historyList.innerHTML = '<div class="text-center text-gray-500 py-12">Your Vault is empty. Extract a PDF to create a test!</div>';
             return;
         }
         
         historyContainer.classList.remove('hidden');
         historyList.innerHTML = '';
         
-        function createGauge(val, max, color, bgColor, size, stroke, innerText, label) {
-            const radius = (size - stroke) / 2;
-            const circumference = Math.PI * radius; 
-            let fraction = max > 0 ? (val / max) : 0;
-            if (fraction > 1) fraction = 1;
-            if (fraction < 0) fraction = 0;
-            
-            const dashoffset = circumference - (fraction * circumference);
-            
-            return `
-            <div class="flex flex-col items-center">
-                <div class="relative flex flex-col items-center justify-end" style="width: ${size}px; height: ${size/2 + stroke/2}px;">
-                    <svg width="${size}" height="${size/2 + stroke/2}" viewBox="0 0 ${size} ${size/2 + stroke/2}" class="absolute top-0 left-0 overflow-visible">
-                        <path d="M ${stroke/2} ${size/2} A ${radius} ${radius} 0 0 1 ${size - stroke/2} ${size/2}" fill="none" stroke="${bgColor}" stroke-width="${stroke}" stroke-linecap="round"/>
-                        <path d="M ${stroke/2} ${size/2} A ${radius} ${radius} 0 0 1 ${size - stroke/2} ${size/2}" fill="none" stroke="${color}" stroke-width="${stroke}" stroke-dasharray="${circumference}" stroke-dashoffset="${dashoffset}" stroke-linecap="round" class="transition-all duration-1000 ease-out"/>
-                    </svg>
-                    <div class="absolute bottom-1 w-full text-center leading-none flex flex-col items-center justify-end h-full">
-                        ${innerText}
-                    </div>
-                </div>
-                <div class="text-[11px] text-gray-500 dark:text-gray-400 mt-1 font-medium">${label}</div>
-            </div>
-            `;
+        window.vaultCurrentFilter = window.vaultCurrentFilter || 'recent';
+        
+        let filteredSessions = sessions;
+        if (window.vaultCurrentFilter === 'created') {
+            filteredSessions = sessions.filter(s => !s.isCommunity && !s.isHosted);
+        } else if (window.vaultCurrentFilter === 'shared') {
+            filteredSessions = sessions.filter(s => s.isCommunity === true || s.isHosted === true);
+        } else if (window.vaultCurrentFilter === 'all') {
+            filteredSessions = sessions;
+        } else {
+            // recent - just show all but we can limit or just sort
+            filteredSessions = sessions; 
+        }
+
+        if (filteredSessions.length === 0) {
+            historyList.innerHTML = '<div class="text-center text-gray-500 py-12">No tests found for this filter.</div>';
         }
         
-        const reversedSessions = [...sessions].reverse();
+        const reversedSessions = [...filteredSessions].reverse();
         const totalSessions = reversedSessions.length;
         const sessionsToShow = reversedSessions.slice(0, historyDisplayLimit);
         
         sessionsToShow.forEach(session => {
             const card = document.createElement('div');
-            card.className = 'bg-white dark:bg-[#1C212E] p-5 rounded-2xl flex flex-col md:flex-row items-center justify-between border border-gray-200 dark:border-gray-800 shadow-xl relative z-10 hover:z-20';
+            card.className = 'bg-[#151921] hover:bg-[#1a1e28] transition-colors p-4 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between border border-gray-800/60 shadow-lg relative group mb-3';
             
-            // Format time spent beautifully (01:07:59 format)
-            const hrs = Math.floor(session.totalSeconds / 3600);
-            const mins = Math.floor((session.totalSeconds % 3600) / 60);
-            const secs = session.totalSeconds % 60;
-            const timeStr = [hrs, mins, secs].map(v => v < 10 ? "0" + v : v).join(":");
-
-            // Calculate metrics
-            const total = session.correctCount + session.incorrectCount + session.unansweredCount;
-            const attempted = session.correctCount + session.incorrectCount;
-            const scorePerQ = session.practiceState?.scorePerQ || 4;
-            const hasNeg = session.practiceState?.negativeMarking !== false;
-            const penalty = hasNeg ? session.incorrectCount : 0;
+            const title = session.title || `Mock Test Session #${session.id}`;
+            const dateStr = session.date ? session.date.split(',')[0] : 'Unknown';
             
-            const maxScore = total * scorePerQ;
-            const score = (session.correctCount * scorePerQ) - penalty;
-            const accuracy = attempted > 0 ? Math.round((session.correctCount / attempted) * 100) : 0;
-
-            const isDark = document.documentElement.classList.contains('dark');
-            const gaugeBg = isDark ? '#334155' : '#cbd5e1';
-
             card.innerHTML = `
-                <!-- Left: Score -->
-                <div class="flex items-center justify-center mr-0 md:mr-8 mb-6 md:mb-0">
-                    ${createGauge(score, maxScore, '#F59E0B', gaugeBg, 120, 10, `<div class="mb-1"><span class="text-2xl font-bold text-[#F59E0B] leading-none">${score}</span><span class="text-xs text-gray-500">/${maxScore}</span></div>`, 'Score')}
+                <div class="flex-1 min-w-0 mb-4 sm:mb-0">
+                    <h4 class="text-sm sm:text-base font-bold text-gray-200 truncate pr-4">${title}</h4>
+                    <p class="text-xs text-gray-500 mt-1">Created: ${dateStr}</p>
                 </div>
                 
-                <!-- Middle: Info & Stats -->
-                <div class="flex-1 flex flex-col items-center md:items-start text-center md:text-left">
-                    <div class="flex items-center gap-3 mb-1">
-                        <h4 class="text-lg font-bold text-gray-900 dark:text-white">Session #${session.id}</h4>
-                        <span class="px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-400 text-[10px] font-bold flex items-center gap-1 border border-blue-200 dark:border-blue-800/50">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg> 
-                            Subject Test
-                        </span>
-                    </div>
-                    <p class="text-[11px] text-gray-500 dark:text-gray-400 mb-6">${session.date}</p>
-                    
-                    <div class="flex flex-wrap justify-center md:justify-start gap-5">
-                        ${createGauge(session.correctCount, total, '#10B981', gaugeBg, 70, 6, `<span class="text-sm font-bold text-[#10B981]">${session.correctCount}</span>`, 'Correct')}
-                        ${createGauge(session.incorrectCount, total, '#EF4444', gaugeBg, 70, 6, `<span class="text-sm font-bold text-[#EF4444]">${session.incorrectCount}</span>`, 'Wrong')}
-                        ${createGauge(attempted, total, '#3B82F6', gaugeBg, 70, 6, `<span class="text-sm font-bold text-[#3B82F6]">${attempted}/${total}</span>`, 'Attempted')}
-                        ${createGauge(accuracy, 100, '#10B981', gaugeBg, 70, 6, `<span class="text-sm font-bold text-[#10B981]">${accuracy}%</span>`, 'Accuracy')}
-                        ${createGauge(session.totalSeconds, 10800, '#F59E0B', gaugeBg, 70, 6, `<span class="text-[11px] font-bold text-[#F59E0B]">${timeStr}</span>`, 'Time')}
-                    </div>
-                </div>
-                
-                <!-- Right: Actions -->
-                <div class="flex items-center gap-2 mt-6 md:mt-0">
-                    <button class="share-session-btn bg-[#286090] hover:bg-[#1e4b72] text-white text-sm font-bold py-2 px-3 rounded-lg flex items-center justify-center transition-colors" data-id="${session.id}" title="Share this test">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+                <div class="flex items-center justify-end gap-2 shrink-0">
+                    <button class="delete-session-btn p-2 rounded-lg bg-transparent hover:bg-gray-800 text-gray-500 hover:text-red-400 transition-colors border border-transparent hover:border-gray-700" data-id="${session.id}" title="Delete Test">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                     </button>
-                    <button class="view-session-btn bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors" data-id="${session.id}">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg> 
-                        View Analysis
+                    <button class="view-session-btn p-2 rounded-lg bg-transparent hover:bg-gray-800 text-gray-500 hover:text-white transition-colors border border-transparent hover:border-gray-700" data-id="${session.id}" title="View Stats / Analysis">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    </button>
+                    <button class="share-session-btn p-2 rounded-lg bg-transparent hover:bg-gray-800 text-gray-500 hover:text-white transition-colors border border-transparent hover:border-gray-700" data-id="${session.id}" title="Share / Host Test">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
+                    </button>
+                    <button class="share-session-btn p-2 rounded-lg bg-transparent hover:bg-gray-800 text-gray-500 hover:text-blue-400 transition-colors border border-transparent hover:border-gray-700 mr-2" data-id="${session.id}" title="Host Live Test">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path></svg>
                     </button>
                     
-                    <div class="relative group cursor-pointer" tabindex="0">
-                        <div class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white p-2 rounded-full transition-colors flex items-center justify-center">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path></svg>
-                        </div>
-                        <div class="absolute right-0 top-full pt-2 w-52 opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all z-50">
-                            <div class="bg-white dark:bg-[#1C212E] rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col text-sm font-semibold overflow-hidden">
-                                <button class="history-reattempt-btn text-left px-4 py-3 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-gray-800 transition-colors" data-id="${session.id}" data-type="wrong">Reattempt Wrong</button>
-                                <button class="history-reattempt-btn text-left px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" data-id="${session.id}" data-type="unanswered">Reattempt Unanswered</button>
-                                <button class="history-reattempt-btn text-left px-4 py-3 text-amber-600 dark:text-[#FBBF24] hover:bg-amber-50 dark:hover:bg-gray-800 transition-colors" data-id="${session.id}" data-type="marked">Reattempt Marked</button>
-                                <button class="history-reattempt-btn text-left px-4 py-3 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors" data-id="${session.id}" data-type="all">Reattempt All Qs</button>
-                                <div class="border-t border-gray-200 dark:border-gray-700"></div>
-                                <button class="delete-session-btn text-left px-4 py-3 text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors" data-id="${session.id}">Delete Session</button>
-                            </div>
-                        </div>
-                    </div>
+                    <button class="history-reattempt-btn bg-[#2d5bff] hover:bg-[#2049e5] text-white text-sm font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors shadow-lg" data-id="${session.id}" data-type="all">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
+                        Take Test
+                    </button>
                 </div>
             `;
             historyList.appendChild(card);
@@ -2442,7 +2399,7 @@ async function renderHistory() {
         if (historyDisplayLimit < totalSessions) {
             const viewMoreContainer = document.createElement('div');
             viewMoreContainer.className = 'flex justify-center mt-6 w-full';
-            viewMoreContainer.innerHTML = `<button id="viewMoreHistoryBtn" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-8 rounded-lg shadow-lg transition-colors border border-blue-500">View More</button>`;
+            viewMoreContainer.innerHTML = `<button id="viewMoreHistoryBtn" class="bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold py-2 px-8 rounded-lg transition-colors border border-gray-700">View More</button>`;
             historyList.appendChild(viewMoreContainer);
             
             document.getElementById('viewMoreHistoryBtn').addEventListener('click', () => {
@@ -2450,6 +2407,23 @@ async function renderHistory() {
                 renderHistory();
             });
         }
+        
+        // Bind Filter Tabs
+        document.querySelectorAll('.vault-filter-tab').forEach(btn => {
+            btn.removeEventListener('click', window._vaultTabHandler);
+            window._vaultTabHandler = (e) => {
+                window.vaultCurrentFilter = btn.getAttribute('data-filter');
+                document.querySelectorAll('.vault-filter-tab').forEach(b => {
+                    if (b.getAttribute('data-filter') === window.vaultCurrentFilter) {
+                        b.className = "vault-filter-tab active px-4 py-1.5 rounded-full text-xs font-semibold text-white bg-gray-700 border border-gray-600 shadow";
+                    } else {
+                        b.className = "vault-filter-tab px-4 py-1.5 rounded-full text-xs font-semibold text-gray-400 hover:text-gray-200 transition-colors bg-transparent border border-gray-800 hover:border-gray-600";
+                    }
+                });
+                renderHistory();
+            };
+            btn.addEventListener('click', window._vaultTabHandler);
+        });
         
         // Event listeners for history cards
         document.querySelectorAll('.delete-session-btn').forEach(btn => {
@@ -2500,10 +2474,12 @@ async function renderHistory() {
                     practiceState = session.practiceState;
                     extractedImages = session.extractedImages;
                     
-                    uploadContainer.classList.add('hidden');
+                    document.getElementById('uploadContainer').classList.add('hidden');
                     document.getElementById('historyContainer').classList.add('hidden');
                     
-                    reattemptPractice(filterType);
+                    if (typeof reattemptPractice === 'function') {
+                        reattemptPractice(filterType);
+                    }
                 }
             });
         });
@@ -2512,7 +2488,6 @@ async function renderHistory() {
         console.error("Could not load history", e);
     }
 }
-
 function loadSessionAndShowSummary(session) {
     currentSessionId = session.id;
     practiceState = session.practiceState;
@@ -4677,3 +4652,104 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+
+// =============================================================
+// VAULT BACKUP & RESTORE (.practice FILES)
+// =============================================================
+
+async function backupVault() {
+    try {
+        const sessions = await getAllSessionsFromDB();
+        if (sessions.length === 0) {
+            alert("Your vault is empty. Nothing to backup.");
+            return;
+        }
+        
+        const backupData = JSON.stringify(sessions);
+        const blob = new Blob([backupData], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        const dateStr = new Date().toISOString().split('T')[0];
+        a.download = `JeeMock_Vault_${dateStr}.practice`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+    } catch (e) {
+        console.error("Backup failed:", e);
+        alert("Failed to backup vault.");
+    }
+}
+
+async function restoreVault(file) {
+    if (!file) return;
+    try {
+        const text = await file.text();
+        const importedSessions = JSON.parse(text);
+        
+        if (!Array.isArray(importedSessions)) {
+            throw new Error("Invalid format");
+        }
+        
+        let importedCount = 0;
+        for (const session of importedSessions) {
+            if (session.id && session.extractedImages) {
+                await saveSessionToDB(session);
+                importedCount++;
+            }
+        }
+        
+        alert(`Successfully restored ${importedCount} tests into your Vault.`);
+        renderHistory();
+    } catch (e) {
+        console.error("Restore failed:", e);
+        alert("Failed to restore vault. Make sure you selected a valid .practice file.");
+    }
+}
+
+// Bind Vault Buttons
+document.addEventListener('DOMContentLoaded', () => {
+    const backupBtn = document.getElementById('backupVaultBtn');
+    const restoreBtn = document.getElementById('restoreVaultBtn');
+    const restoreInput = document.getElementById('restoreVaultInput');
+    
+    if (backupBtn) {
+        backupBtn.addEventListener('click', backupVault);
+    }
+    
+    if (restoreBtn && restoreInput) {
+        restoreBtn.addEventListener('click', () => restoreInput.click());
+        restoreInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                restoreVault(file);
+                restoreInput.value = ""; // reset
+            }
+        });
+    }
+});
+
+async function autoExportCurrentTest() {
+    try {
+        const session = await getSessionFromDB(currentSessionId);
+        if (!session) return;
+        
+        const backupData = JSON.stringify([session]);
+        const blob = new Blob([backupData], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        const title = session.title ? session.title.replace(/[^a-z0-9]/gi, '_').toLowerCase() : 'mock_test';
+        a.download = `${title}.practice`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    } catch (e) {
+        console.error("Auto export failed:", e);
+    }
+}
