@@ -4904,11 +4904,11 @@ function renderExternalSources() {
 
 
 
+
 // =============================================================
 // TEST INSTRUCTIONS MODAL LOGIC
 // =============================================================
 window.pendingSessionToLaunch = null;
-
 
 async function openInstructionsModalForSession(id, type) {
     try {
@@ -4948,4 +4948,88 @@ async function openInstructionsModalForSession(id, type) {
         console.error("Error opening instructions modal:", e);
         alert("Could not load test session.");
     }
+}
+
+function initTestInstructionsModal() {
+    const modal = document.getElementById('testInstructionsModal');
+    const closeBtn = document.getElementById('closeInstructionsModalBtn');
+    const cancelBtn = document.getElementById('cancelInstructionsModalBtn');
+    const confirmStartBtn = document.getElementById('confirmStartTestBtn');
+    
+    function hideModal() {
+        if(modal) modal.classList.add('hidden');
+    }
+    
+    if(closeBtn) closeBtn.onclick = hideModal;
+    if(cancelBtn) cancelBtn.onclick = hideModal;
+    
+    if(confirmStartBtn) {
+        confirmStartBtn.onclick = () => {
+            if (!window.pendingSessionToLaunch) return;
+            
+            const session = window.pendingSessionToLaunch;
+            hideModal();
+            
+            // Set up global session variables
+            currentSessionId = Date.now();
+            extractedImages = session.extractedImages || [];
+            
+            if (extractedImages.length === 0) {
+                alert("No questions found in this test.");
+                return;
+            }
+            
+            // Calculate time
+            const mins = (typeof getCalculatedTimeMinutes === 'function') ? getCalculatedTimeMinutes(extractedImages.length) : 60;
+            
+            // Fresh practiceState for test run
+            practiceState = {
+                activeIndices: extractedImages.map((_, i) => i),
+                currentIndex: 0,
+                theme: 'nta',
+                totalSecondsRemaining: mins * 60,
+                scorePerQ: 4,
+                negativeMarking: true,
+                stats: extractedImages.map((q, idx) => {
+                    let ex = 'Exercise 1';
+                    if (q.label && q.label.includes(' - ')) ex = q.label.split(' - ')[0];
+                    return {
+                        index: idx,
+                        timeSpent: 0,
+                        targetTime: 0,
+                        attempted: false,
+                        evaluation: null,
+                        ntaStatus: 'not_visited',
+                        exercise: ex
+                    };
+                })
+            };
+            
+            // Hide dashboard & landing containers
+            const uploadContainer = document.getElementById('uploadContainer');
+            const historyContainer = document.getElementById('historyContainer');
+            const configContainer = document.getElementById('configContainer');
+            const practiceSetupContainer = document.getElementById('practiceSetupContainer');
+            const analysisContainer = document.getElementById('analysisContainer');
+            const liveResultsDashboard = document.getElementById('liveResultsDashboard');
+            
+            if(uploadContainer) uploadContainer.classList.add('hidden');
+            if(historyContainer) historyContainer.classList.add('hidden');
+            if(configContainer) configContainer.classList.add('hidden');
+            if(practiceSetupContainer) practiceSetupContainer.classList.add('hidden');
+            if(analysisContainer) analysisContainer.classList.add('hidden');
+            if(liveResultsDashboard) liveResultsDashboard.classList.add('hidden');
+            
+            // Start the practice session
+            if (typeof startPracticeSession === 'function') {
+                startPracticeSession(practiceState.activeIndices);
+            }
+        };
+    }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initTestInstructionsModal);
+} else {
+    initTestInstructionsModal();
 }
