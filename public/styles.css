@@ -1533,12 +1533,6 @@
       border-color: color-mix(in oklab, var(--color-cyan-500) 20%, transparent);
     }
   }
-  .border-cyan-500\/30 {
-    border-color: color-mix(in srgb, oklch(71.5% 0.143 215.221) 30%, transparent);
-    @supports (color: color-mix(in lab, red, red)) {
-      border-color: color-mix(in oklab, var(--color-cyan-500) 30%, transparent);
-    }
-  }
   .border-emerald-400 {
     border-color: var(--color-emerald-400);
   }
@@ -1669,12 +1663,6 @@
     border-color: color-mix(in srgb, oklch(63.7% 0.237 25.331) 50%, transparent);
     @supports (color: color-mix(in lab, red, red)) {
       border-color: color-mix(in oklab, var(--color-red-500) 50%, transparent);
-    }
-  }
-  .border-rose-500\/30 {
-    border-color: color-mix(in srgb, oklch(64.5% 0.246 16.439) 30%, transparent);
-    @supports (color: color-mix(in lab, red, red)) {
-      border-color: color-mix(in oklab, var(--color-rose-500) 30%, transparent);
     }
   }
   .border-transparent {
@@ -2190,11 +2178,8 @@
   .bg-red-600 {
     background-color: var(--color-red-600);
   }
-  .bg-rose-500\/10 {
-    background-color: color-mix(in srgb, oklch(64.5% 0.246 16.439) 10%, transparent);
-    @supports (color: color-mix(in lab, red, red)) {
-      background-color: color-mix(in oklab, var(--color-rose-500) 10%, transparent);
-    }
+  .bg-rose-500 {
+    background-color: var(--color-rose-500);
   }
   .bg-sky-500\/20 {
     background-color: color-mix(in srgb, oklch(68.5% 0.169 237.323) 20%, transparent);
@@ -3455,14 +3440,6 @@
     .hover\:bg-cyan-500:hover {
       background-color: var(--color-cyan-500);
     }
-    .hover\:bg-cyan-500\/20:hover {
-      background-color: color-mix(in srgb, oklch(71.5% 0.143 215.221) 20%, transparent);
-    }
-    @supports (color: color-mix(in lab, red, red)) {
-      .hover\:bg-cyan-500\/20:hover {
-        background-color: color-mix(in oklab, var(--color-cyan-500) 20%, transparent);
-      }
-    }
     .hover\:bg-emerald-300:hover {
       background-color: var(--color-emerald-300);
     }
@@ -3552,13 +3529,8 @@
         background-color: color-mix(in oklab, var(--color-red-900) 30%, transparent);
       }
     }
-    .hover\:bg-rose-500\/20:hover {
-      background-color: color-mix(in srgb, oklch(64.5% 0.246 16.439) 20%, transparent);
-    }
-    @supports (color: color-mix(in lab, red, red)) {
-      .hover\:bg-rose-500\/20:hover {
-        background-color: color-mix(in oklab, var(--color-rose-500) 20%, transparent);
-      }
+    .hover\:bg-rose-400:hover {
+      background-color: var(--color-rose-400);
     }
     .hover\:bg-white\/5:hover {
       background-color: color-mix(in srgb, #fff 5%, transparent);
@@ -3648,9 +3620,6 @@
     }
     .hover\:text-red-700:hover {
       color: var(--color-red-700);
-    }
-    .hover\:text-rose-300:hover {
-      color: var(--color-rose-300);
     }
     .hover\:text-rose-400:hover {
       color: var(--color-rose-400);

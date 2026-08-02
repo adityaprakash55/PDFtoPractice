@@ -831,10 +831,10 @@ async function detectExerciseHeadersFromPage(page, viewport) {
 // DRAG & DROP
 // =============================================================
 dropZone.addEventListener('dragenter', e => { e.preventDefault(); });
-dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('','bg-blue-50'); });
-dropZone.addEventListener('dragleave',e => { e.preventDefault(); dropZone.classList.remove('','bg-blue-50'); });
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('bg-blue-50'); });
+dropZone.addEventListener('dragleave',e => { e.preventDefault(); dropZone.classList.remove('bg-blue-50'); });
 dropZone.addEventListener('drop', e => {
-    e.preventDefault(); dropZone.classList.remove('','bg-blue-50');
+    e.preventDefault(); dropZone.classList.remove('bg-blue-50');
     if (e.dataTransfer.files.length) loadPDF(e.dataTransfer.files[0]);
 });
 fileInput.addEventListener('change', e => { if (e.target.files.length) loadPDF(e.target.files[0]); });
@@ -3862,21 +3862,38 @@ function showResultsDashboard() {
         document.querySelectorAll('.lrd-nav').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.lrd-nav').forEach(b => {
-                    b.classList.remove('bg-white/10', '');
-                    b.classList.add('');
+                    b.style.backgroundColor = '';
+                    b.style.color = '';
                 });
-                btn.classList.add('bg-white/10', '');
-                btn.classList.remove('');
+                btn.style.backgroundColor = '#FFE600';
+                btn.style.color = '#000000';
                 document.querySelectorAll('.lrd-panel').forEach(p => p.classList.add('hidden'));
                 const panel = document.getElementById('lrd' + btn.dataset.panel);
                 if (panel) panel.classList.remove('hidden');
             });
         });
-        const overviewBtn = document.querySelector('.lrd-nav[data-panel="Overview"]');
-        if (overviewBtn) { overviewBtn.classList.add('bg-white/10', ''); overviewBtn.classList.remove(''); }
 
         const exitBtn = document.getElementById('lrdExitBtn');
-        if (exitBtn) exitBtn.addEventListener('click', () => { window.location.reload(); });
+        if (exitBtn) {
+            exitBtn.onclick = () => {
+                const dash = document.getElementById('liveResultsDashboard');
+                if (dash) dash.classList.add('hidden');
+            };
+        }
+    }
+
+    // Always reset to Overview panel on open
+    document.querySelectorAll('.lrd-nav').forEach(b => {
+        b.style.backgroundColor = '';
+        b.style.color = '';
+    });
+    document.querySelectorAll('.lrd-panel').forEach(p => p.classList.add('hidden'));
+    const overviewPanel = document.getElementById('lrdOverview');
+    if (overviewPanel) overviewPanel.classList.remove('hidden');
+    const overviewBtn = document.querySelector('.lrd-nav[data-panel="Overview"]');
+    if (overviewBtn) {
+        overviewBtn.style.backgroundColor = '#FFE600';
+        overviewBtn.style.color = '#000000';
     }
 
     // Populate all panels
