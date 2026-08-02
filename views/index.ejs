@@ -1533,21 +1533,187 @@
                 </div>
 
                 <!-- SCORE PROGRESS PANEL -->
-                <div id="lrdScoreProgress" class="lrd-panel hidden p-6 md:p-8 max-w-6xl mx-auto">
-                    <h1 class="text-3xl font-bold mb-1">Score Progress</h1>
-                    <p class="text-base mb-6">Cumulative score built up question by question throughout your exam</p>
-                    <div class="brutal-card rounded-none p-5 mb-4">
-                        <div class="font-semibold mb-1">Score Curve</div>
-                        <p class="text-sm mb-1">X-axis: Question number · Y-axis: Cumulative marks (running total)</p>
-                        <p class="text-sm mb-4">A rising line = gaining marks · flat/dipping = incorrect or skipped</p>
-                        <div style="position:relative; height:160px;"><canvas id="lrdScoreCurveQ"></canvas></div>
-                        <div class="flex justify-between text-sm mt-2"><span>← Start (Q1)</span><span>End →</span></div>
+                <div id="lrdScoreProgress" class="lrd-panel hidden p-6 md:p-8 max-w-6xl mx-auto space-y-6">
+                    <!-- Title & Header Badge -->
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-700/60 pb-4">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="px-2.5 py-0.5 bg-yellow-400 text-black font-black uppercase text-[10px] tracking-wider border border-black shadow-[2px_2px_0px_0px_#000]">
+                                    📈 Score Analytics Hub
+                                </span>
+                            </div>
+                            <h1 class="text-3xl sm:text-4xl font-black uppercase tracking-tight" style="color: var(--text-primary);">Score Progress & Momentum</h1>
+                            <p class="text-sm opacity-80 mt-1">Real-time cumulative score trajectory, negative marking penalties, and pace insights</p>
+                        </div>
+                        <div class="flex items-center gap-2 self-start md:self-auto">
+                            <button id="spTabByQ" class="sp-view-tab active brutal-card px-3.5 py-1.5 text-xs font-black uppercase bg-cyan-400 text-black border-2 border-black transition-all cursor-pointer">
+                                By Question
+                            </button>
+                            <button id="spTabByT" class="sp-view-tab brutal-card px-3.5 py-1.5 text-xs font-black uppercase bg-gray-700 text-white border-2 border-black transition-all cursor-pointer opacity-70 hover:opacity-100">
+                                By Time
+                            </button>
+                        </div>
                     </div>
+
+                    <!-- 1. Top Key Highlights Stat Cards -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <!-- Peak Marks -->
+                        <div class="brutal-card rounded-none p-4 relative overflow-hidden">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-bold uppercase tracking-wider opacity-70">Peak Score Reached</span>
+                                <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                            </div>
+                            <div id="spPeakScoreVal" class="text-3xl font-black text-emerald-400">0</div>
+                            <div id="spPeakScoreNote" class="text-xs opacity-75 mt-1">Achieved at Q0 (0m)</div>
+                        </div>
+
+                        <!-- Momentum Velocity -->
+                        <div class="brutal-card rounded-none p-4 relative overflow-hidden">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-bold uppercase tracking-wider opacity-70">Exam Momentum</span>
+                                <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                            </div>
+                            <div id="spMomentumVal" class="text-xl font-black text-cyan-400">Steady</div>
+                            <div id="spMomentumNote" class="text-xs opacity-75 mt-1">Based on late Q trajectory</div>
+                        </div>
+
+                        <!-- Negative Penalty Impact -->
+                        <div class="brutal-card rounded-none p-4 relative overflow-hidden">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-bold uppercase tracking-wider opacity-70">Penalty Drag</span>
+                                <svg class="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                            </div>
+                            <div id="spPenaltyDragVal" class="text-3xl font-black text-rose-400">-0 pts</div>
+                            <div id="spPenaltyDragNote" class="text-xs opacity-75 mt-1">0% lost to wrong answers</div>
+                        </div>
+
+                        <!-- Mark Retention Efficiency -->
+                        <div class="brutal-card rounded-none p-4 relative overflow-hidden">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-bold uppercase tracking-wider opacity-70">Gross-to-Net Retention</span>
+                                <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </div>
+                            <div id="spEfficiencyVal" class="text-3xl font-black text-amber-400">100%</div>
+                            <div id="spEfficiencyNote" class="text-xs opacity-75 mt-1">Marks retained after penalty</div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Main Interactive Chart Box with Subject Filter Pills -->
+                    <div class="brutal-card rounded-none p-5 relative">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                            <div>
+                                <div class="font-black uppercase text-base tracking-wide flex items-center gap-2">
+                                    <span>Cumulative Score Curve</span>
+                                    <span id="spActiveSubjectTag" class="text-[10px] px-2 py-0.5 bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 uppercase font-mono">All Subjects</span>
+                                </div>
+                                <p id="spChartSubText" class="text-xs opacity-75 mt-0.5">Rising slope = marks gained · Flat = skipped · Dip = incorrect attempt penalty</p>
+                            </div>
+                            <!-- Subject Filter Pills -->
+                            <div id="spSubjectPills" class="flex flex-wrap items-center gap-1.5">
+                                <!-- Dynamically populated -->
+                            </div>
+                        </div>
+
+                        <!-- Canvas Wrappers -->
+                        <div id="spChartContainerQ" class="w-full relative" style="height:260px;">
+                            <canvas id="lrdScoreCurveQ"></canvas>
+                        </div>
+                        <div id="spChartContainerT" class="w-full relative hidden" style="height:260px;">
+                            <canvas id="lrdScoreCurveT"></canvas>
+                        </div>
+
+                        <div class="flex justify-between text-xs opacity-60 mt-3 pt-2 border-t border-gray-700/50">
+                            <span id="spAxisStartLabel">← Exam Start (Q1)</span>
+                            <span id="spAxisEndLabel">Final Question →</span>
+                        </div>
+                    </div>
+
+                    <!-- 3. Feature Section: Penalty Breakdown & Question Micro-Flow -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Penalty Breakdown Bar -->
+                        <div class="brutal-card rounded-none p-5 flex flex-col justify-between">
+                            <div>
+                                <div class="font-black uppercase text-sm mb-1 flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                                    <span>Gross vs. Net Score Analysis</span>
+                                </div>
+                                <p class="text-xs opacity-75 mb-4">Comparison between your earned correct marks and your final score after negative deduction.</p>
+                                
+                                <div class="space-y-4">
+                                    <div>
+                                        <div class="flex justify-between text-xs font-bold mb-1">
+                                            <span>Gross Earned Score (Correct Qs)</span>
+                                            <span id="spGrossScoreText" class="text-emerald-400">+0 pts</span>
+                                        </div>
+                                        <div class="h-3 bg-gray-800 rounded-none overflow-hidden border border-black">
+                                            <div id="spGrossBar" class="h-full bg-emerald-400 transition-all duration-500" style="width:0%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-xs font-bold mb-1">
+                                            <span>Negative Penalty Deducted</span>
+                                            <span id="spPenaltyText" class="text-rose-400">-0 pts</span>
+                                        </div>
+                                        <div class="h-3 bg-gray-800 rounded-none overflow-hidden border border-black">
+                                            <div id="spPenaltyBar" class="h-full bg-rose-500 transition-all duration-500" style="width:0%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-xs font-bold mb-1">
+                                            <span>Net Score Achieved</span>
+                                            <span id="spNetScoreText" class="text-cyan-400">0 pts</span>
+                                        </div>
+                                        <div class="h-3 bg-gray-800 rounded-none overflow-hidden border border-black">
+                                            <div id="spNetBar" class="h-full bg-cyan-400 transition-all duration-500" style="width:0%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="spPenaltyTip" class="mt-4 pt-3 border-t border-gray-700/50 text-xs font-semibold text-amber-300">
+                                💡 Tip: Minimizing negative marks retains your peak score!
+                            </div>
+                        </div>
+
+                        <!-- Strategic AI Insights & Recommendations Card -->
+                        <div class="brutal-card rounded-none p-5 flex flex-col justify-between">
+                            <div>
+                                <div class="font-black uppercase text-sm mb-1 flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    <span>Score Curve Takeaways & Strategy</span>
+                                </div>
+                                <p class="text-xs opacity-75 mb-3">Key takeaways derived from your test trajectory to optimize score in upcoming tests.</p>
+
+                                <div id="spStrategyList" class="space-y-2 text-xs">
+                                    <!-- Populated dynamically in app.js -->
+                                </div>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-gray-700/50 flex items-center justify-between text-xs font-bold">
+                                <span class="opacity-75">Target Trajectory:</span>
+                                <span class="text-emerald-400 flex items-center gap-1">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Monotonic Growth (No Dips)
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. Question-by-Question Micro-Flow Tape -->
                     <div class="brutal-card rounded-none p-5">
-                        <div class="font-semibold mb-1">Score Curve (Time)</div>
-                        <p class="text-sm mb-1">X-axis: Elapsed time · Y-axis: Cumulative marks (running total)</p>
-                        <p class="text-sm mb-4">A rising line = gaining marks · flat/dipping = incorrect or skipped</p>
-                        <div style="position:relative; height:160px;"><canvas id="lrdScoreCurveT"></canvas></div>
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="font-black uppercase text-sm flex items-center gap-2">
+                                <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+                                <span>Question-by-Question Score Flow</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-[11px] font-bold">
+                                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 bg-emerald-400 border border-black inline-block"></span> Correct (+4)</span>
+                                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 bg-rose-500 border border-black inline-block"></span> Wrong (-1)</span>
+                                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 bg-gray-600 border border-black inline-block"></span> Skipped (0)</span>
+                            </div>
+                        </div>
+                        <p class="text-xs opacity-75 mb-3">Hover over any question tile to see mark delta, subject, and running score.</p>
+                        
+                        <div id="spQuestionTape" class="flex items-center gap-1.5 overflow-x-auto pb-2 pt-1 hide-scrollbar">
+                            <!-- Populated dynamically in app.js -->
+                        </div>
                     </div>
                 </div>
 

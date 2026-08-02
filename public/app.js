@@ -4241,59 +4241,441 @@ function _lrdFillScoreProgress(s) {
     const { scorePerQ, hasNeg, maxScore } = s;
     const el = id => document.getElementById(id);
 
-    // Build cumulative score arrays
+    const activeIndices = practiceState.activeIndices || [];
+    if (activeIndices.length === 0) return;
+
+    // Detailed question data tracking
+    const qDetails = [];
     const scoreByQ = [0];
     const scoreByTime = [{ x: 0, y: 0 }];
-    let cumScore = 0, cumTime = 0;
+    let cumScore = 0;
+    let cumTime = 0;
+    let grossScore = 0;
+    let penaltyLoss = 0;
+    let peakScore = 0;
+    let peakIndex = 0;
+    let peakTime = 0;
 
-    (practiceState.activeIndices || []).forEach(ri => {
-        const stat = practiceState.stats[ri];
-        if (!stat) { scoreByQ.push(cumScore); return; }
-        const t = stat.timeSpent || 0;
-        if (stat.evaluation === 'correct') cumScore += scorePerQ;
-        else if (stat.evaluation === 'incorrect' && hasNeg) cumScore -= 1;
-        cumTime += t;
+    const subjectsSet = new Set();
+
+    activeIndices.forEach((ri, i) => {
+        const stat = practiceState.stats[ri] || {};
+        const subj = stat.exercise || 'Overall';
+        subjectsSet.add(subj);
+
+        const timeSpent = stat.timeSpent || 0;
+        let delta = 0;
+        let status = 'unanswered';
+
+        if (stat.evaluation === 'correct') {
+            delta = scorePerQ;
+            grossScore += scorePerQ;
+            status = 'correct';
+        } else if (stat.evaluation === 'incorrect' && hasNeg) {
+            delta = -1;
+            penaltyLoss += 1;
+            status = 'incorrect';
+        } else if (stat.evaluation === 'incorrect') {
+            status = 'incorrect';
+        }
+
+        cumScore += delta;
+        cumTime += timeSpent;
+
+        if (cumScore >= peakScore) {
+            peakScore = cumScore;
+            peakIndex = i + 1;
+            peakTime = cumTime;
+        }
+
+        qDetails.push({
+            qNum: i + 1,
+            subject: subj,
+            status,
+            delta,
+            timeSpent,
+            cumScore,
+            cumTime
+        });
+
         scoreByQ.push(cumScore);
         scoreByTime.push({ x: Math.round(cumTime), y: cumScore });
     });
 
-    if (typeof Chart === 'undefined') return;
+    const netScore = cumScore;
+    const efficiencyPct = grossScore > 0 ? Math.max(0, Math.round((netScore / grossScore) * 100)) : 100;
+    const penaltyPct = grossScore > 0 ? Math.round((penaltyLoss / grossScore) * 100) : 0;
 
-    const chartDefaults = {
-        type: 'line',
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                x: { ticks: { color: '#6b7280', maxTicksLimit: 10, font: { size: 9 } }, grid: { color: '#1f2937' } },
-                y: { ticks: { color: '#6b7280', font: { size: 9 } }, grid: { color: '#1f2937' }, suggestedMin: Math.min(...scoreByQ) - 5, suggestedMax: maxScore + 10 }
-            }
+    // 1. STAT CARDS UPDATES
+    if (el('spPeakScoreVal')) el('spPeakScoreVal').textContent = peakScore;
+    if (el('spPeakScoreNote')) el('spPeakScoreNote').textContent = `Peak reached at Q${peakIndex || 1} (${Math.floor(peakTime / 60)}m ${peakTime % 60}s)`;
+
+    // Momentum Calculation
+    const totalQ = qDetails.length;
+    const half = Math.floor(totalQ / 2);
+    const firstHalfScore = scoreByQ[half] || 0;
+    const secondHalfScore = cumScore - firstHalfScore;
+    let momentumText = "⚡ Steady Pace";
+    let momentumNote = "Balanced performance across both halves";
+    let momentumColor = "#00E5FF";
+
+    if (totalQ >= 4) {
+        if (secondHalfScore > firstHalfScore + 2) {
+            momentumText = "🚀 Strong Finish";
+            momentumNote = `Second half score (+${secondHalfScore}) outpaced first half (+${firstHalfScore})`;
+            momentumColor = "#10B981";
+        } else if (secondHalfScore < firstHalfScore - 2) {
+            momentumText = "⚠️ Fatigue Dip";
+            momentumNote = `Second half (+${secondHalfScore}) dipped vs first half (+${firstHalfScore})`;
+            momentumColor = "#F43F5E";
         }
-    };
+    }
 
-    const ctxQ = el('lrdScoreCurveQ');
-    if (ctxQ) {
-        if (_lrdChartScoreQ) { _lrdChartScoreQ.destroy(); _lrdChartScoreQ = null; }
-        _lrdChartScoreQ = new Chart(ctxQ, {
-            ...chartDefaults,
-            data: {
-                labels: scoreByQ.map((_, i) => i === 0 ? 'Start' : i),
-                datasets: [{ data: scoreByQ, Color: '#ef4444', backgroundColor: 'rgba(239,68,68,0.05)', Width: 2, pointRadius: 0, fill: true, tension: 0.3 }]
+    if (el('spMomentumVal')) {
+        el('spMomentumVal').textContent = momentumText;
+        el('spMomentumVal').style.color = momentumColor;
+    }
+    if (el('spMomentumNote')) el('spMomentumNote').textContent = momentumNote;
+
+    if (el('spPenaltyDragVal')) el('spPenaltyDragVal').textContent = penaltyLoss > 0 ? `-${penaltyLoss} pts` : `0 pts`;
+    if (el('spPenaltyDragNote')) el('spPenaltyDragNote').textContent = penaltyLoss > 0 ? `${penaltyPct}% of gross marks negated by wrong answers` : `0 negative marking penalties incurred!`;
+
+    if (el('spEfficiencyVal')) el('spEfficiencyVal').textContent = `${efficiencyPct}%`;
+    if (el('spEfficiencyNote')) el('spEfficiencyNote').textContent = `${netScore} net score retained from ${grossScore} gross score`;
+
+    // 2. GROSS VS NET ANALYSIS BARS
+    if (el('spGrossScoreText')) el('spGrossScoreText').textContent = `+${grossScore} pts`;
+    if (el('spPenaltyText')) el('spPenaltyText').textContent = `-${penaltyLoss} pts`;
+    if (el('spNetScoreText')) el('spNetScoreText').textContent = `${netScore} pts`;
+
+    if (el('spGrossBar')) el('spGrossBar').style.width = `100%`;
+    if (el('spPenaltyBar')) el('spPenaltyBar').style.width = `${grossScore > 0 ? Math.min(100, Math.round((penaltyLoss / grossScore) * 100)) : 0}%`;
+    if (el('spNetBar')) el('spNetBar').style.width = `${grossScore > 0 ? Math.max(0, Math.round((netScore / grossScore) * 100)) : 0}%`;
+
+    if (el('spPenaltyTip')) {
+        if (penaltyLoss === 0) {
+            el('spPenaltyTip').innerHTML = `🌟 <b>Flawless Accuracy!</b> Zero penalty points lost to incorrect attempts.`;
+        } else if (penaltyLoss >= 5) {
+            el('spPenaltyTip').innerHTML = `⚠️ <b>High Negative Marking Drag:</b> You lost <b>${penaltyLoss} marks</b> to uncalculated guesses. Skipping high-risk questions would boost your final rank.`;
+        } else {
+            el('spPenaltyTip').innerHTML = `💡 <b>Minor Penalty Impact:</b> Only ${penaltyLoss} marks lost to wrong answers. Keep refining option elimination!`;
+        }
+    }
+
+    // 3. STRATEGIC TAKEAWAYS
+    const strategyList = el('spStrategyList');
+    if (strategyList) {
+        strategyList.innerHTML = '';
+        const tips = [];
+
+        if (peakScore > cumScore) {
+            const drop = peakScore - cumScore;
+            tips.push({
+                icon: '📉',
+                title: 'Peak Score Safeguard',
+                desc: `Your peak score was <b>+${peakScore}</b> at Q${peakIndex}, but dipped by <b>-${drop} pts</b> in later questions. Stop guessing when tired.`
+            });
+        } else {
+            tips.push({
+                icon: '🎯',
+                title: 'Monotonic Peak Retention',
+                desc: `You ended at your highest peak score (<b>+${cumScore} pts</b>). Excellent test discipline and decision-making.`
+            });
+        }
+
+        if (momentumText.includes('Fatigue')) {
+            tips.push({
+                icon: '⏳',
+                title: 'Pacing & Endurance',
+                desc: `Performance slowed down in the second half of the exam. Practice 3-hour mock sessions to build stamina.`
+            });
+        } else if (momentumText.includes('Strong')) {
+            tips.push({
+                icon: '🔥',
+                title: 'High End-Game Focus',
+                desc: `Your accuracy accelerated in the latter half of the test. Great focus and exam composure.`
+            });
+        }
+
+        // Subject specific insight
+        const subjStats = {};
+        qDetails.forEach(q => {
+            if (!subjStats[q.subject]) subjStats[q.subject] = { correct: 0, total: 0, delta: 0 };
+            subjStats[q.subject].total++;
+            if (q.status === 'correct') subjStats[q.subject].correct++;
+            subjStats[q.subject].delta += q.delta;
+        });
+
+        let bestSubj = null;
+        let maxDelta = -999;
+        Object.entries(subjStats).forEach(([sName, sData]) => {
+            if (sData.delta > maxDelta) {
+                maxDelta = sData.delta;
+                bestSubj = sName;
             }
+        });
+
+        if (bestSubj && maxDelta > 0) {
+            tips.push({
+                icon: '🏆',
+                title: 'Top Subject Driver',
+                desc: `<b>${bestSubj}</b> was your strongest score driver, generating <b>+${maxDelta} marks</b> for your curve.`
+            });
+        }
+
+        tips.forEach(t => {
+            const div = document.createElement('div');
+            div.className = 'p-2 bg-gray-800/60 border border-gray-700/60 flex items-start gap-2';
+            div.innerHTML = `<span class="text-sm shrink-0">${t.icon}</span><div><div class="font-bold">${t.title}</div><div class="opacity-80">${t.desc}</div></div>`;
+            strategyList.appendChild(div);
         });
     }
 
-    const ctxT = el('lrdScoreCurveT');
-    if (ctxT) {
-        if (_lrdChartScoreT) { _lrdChartScoreT.destroy(); _lrdChartScoreT = null; }
-        _lrdChartScoreT = new Chart(ctxT, {
-            ...chartDefaults,
-            data: {
-                labels: scoreByTime.map(d => d.x === 0 ? 'Start' : Math.floor(d.x/60) + 'm'),
-                datasets: [{ data: scoreByTime.map(d => d.y), Color: '#ef4444', backgroundColor: 'rgba(239,68,68,0.05)', Width: 2, pointRadius: 0, fill: true, tension: 0.3 }]
+    // 4. QUESTION MICRO-FLOW TAPE
+    const qTape = el('spQuestionTape');
+    if (qTape) {
+        qTape.innerHTML = '';
+        qDetails.forEach(q => {
+            const tile = document.createElement('div');
+            let bg = 'bg-gray-700 text-gray-300 border-gray-600';
+            let symbol = '0';
+            if (q.status === 'correct') {
+                bg = 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50 hover:bg-emerald-500/30';
+                symbol = `+${scorePerQ}`;
+            } else if (q.status === 'incorrect') {
+                bg = 'bg-rose-500/20 text-rose-400 border-rose-500/50 hover:bg-rose-500/30';
+                symbol = hasNeg ? '-1' : '0';
+            } else {
+                bg = 'bg-gray-800 text-gray-400 border-gray-700 hover:bg-gray-700';
             }
+
+            tile.className = `shrink-0 px-2 py-1.5 border brutal-card text-center cursor-pointer transition-all hover:scale-105 ${bg}`;
+            tile.title = `Q${q.qNum} (${q.subject})\nStatus: ${q.status.toUpperCase()}\nDelta: ${q.delta >= 0 ? '+' : ''}${q.delta} pts\nRunning Score: ${q.cumScore} pts\nTime: ${q.timeSpent}s`;
+            tile.innerHTML = `
+                <div class="text-[9px] opacity-75 font-mono">Q${q.qNum}</div>
+                <div class="text-xs font-black">${symbol}</div>
+            `;
+            qTape.appendChild(tile);
         });
     }
+
+    // 5. SUBJECT FILTER PILLS SETUP
+    const pillsContainer = el('spSubjectPills');
+    let currentFilteredSubject = 'ALL';
+
+    if (pillsContainer) {
+        pillsContainer.innerHTML = '';
+        const subjects = ['ALL', ...Array.from(subjectsSet)];
+        
+        subjects.forEach(subj => {
+            const btn = document.createElement('button');
+            const isActive = subj === 'ALL';
+            btn.className = `sp-subj-pill px-2.5 py-1 text-[11px] font-black uppercase border border-black shadow-[1.5px_1.5px_0px_0px_#000] transition-all cursor-pointer ${isActive ? 'bg-cyan-400 text-black' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`;
+            btn.textContent = subj;
+            btn.addEventListener('click', () => {
+                currentFilteredSubject = subj;
+                document.querySelectorAll('.sp-subj-pill').forEach(p => {
+                    p.className = 'sp-subj-pill px-2.5 py-1 text-[11px] font-black uppercase border border-black shadow-[1.5px_1.5px_0px_0px_#000] transition-all cursor-pointer bg-gray-800 text-gray-300 hover:bg-gray-700';
+                });
+                btn.className = 'sp-subj-pill px-2.5 py-1 text-[11px] font-black uppercase border border-black shadow-[1.5px_1.5px_0px_0px_#000] transition-all cursor-pointer bg-cyan-400 text-black';
+                
+                if (el('spActiveSubjectTag')) el('spActiveSubjectTag').textContent = subj === 'ALL' ? 'All Subjects' : subj;
+                renderCharts(subj);
+            });
+            pillsContainer.appendChild(btn);
+        });
+    }
+
+    // 6. TAB SWITCHING LOGIC (BY QUESTION vs BY TIME)
+    const tabByQ = el('spTabByQ');
+    const tabByT = el('spTabByT');
+    const containerQ = el('spChartContainerQ');
+    const containerT = el('spChartContainerT');
+
+    if (tabByQ && tabByT) {
+        tabByQ.onclick = () => {
+            tabByQ.className = 'sp-view-tab active brutal-card px-3.5 py-1.5 text-xs font-black uppercase bg-cyan-400 text-black border-2 border-black transition-all cursor-pointer';
+            tabByT.className = 'sp-view-tab brutal-card px-3.5 py-1.5 text-xs font-black uppercase bg-gray-700 text-white border-2 border-black transition-all cursor-pointer opacity-70 hover:opacity-100';
+            if (containerQ) containerQ.classList.remove('hidden');
+            if (containerT) containerT.classList.add('hidden');
+        };
+        tabByT.onclick = () => {
+            tabByT.className = 'sp-view-tab active brutal-card px-3.5 py-1.5 text-xs font-black uppercase bg-cyan-400 text-black border-2 border-black transition-all cursor-pointer';
+            tabByQ.className = 'sp-view-tab brutal-card px-3.5 py-1.5 text-xs font-black uppercase bg-gray-700 text-white border-2 border-black transition-all cursor-pointer opacity-70 hover:opacity-100';
+            if (containerT) containerT.classList.remove('hidden');
+            if (containerQ) containerQ.classList.add('hidden');
+        };
+    }
+
+    // 7. CHART RENDERING FUNCTION
+    function renderCharts(subjFilter = 'ALL') {
+        if (typeof Chart === 'undefined') return;
+
+        let filteredByQ = [0];
+        let filteredByTime = [{ x: 0, y: 0 }];
+        let fScore = 0;
+        let fTime = 0;
+
+        qDetails.forEach(q => {
+            if (subjFilter === 'ALL' || q.subject === subjFilter) {
+                fScore += q.delta;
+                fTime += q.timeSpent;
+                filteredByQ.push(fScore);
+                filteredByTime.push({ x: Math.round(fTime), y: fScore });
+            } else {
+                filteredByQ.push(fScore);
+                filteredByTime.push({ x: Math.round(fTime), y: fScore });
+            }
+        });
+
+        const minVal = Math.min(0, ...filteredByQ) - 2;
+        const maxVal = Math.max(maxScore || 10, ...filteredByQ) + 5;
+
+        // Custom Gradient
+        const ctxQ = el('lrdScoreCurveQ');
+        if (ctxQ) {
+            if (_lrdChartScoreQ) { _lrdChartScoreQ.destroy(); _lrdChartScoreQ = null; }
+            const canvasCtx = ctxQ.getContext('2d');
+            const gradient = canvasCtx.createLinearGradient(0, 0, 0, 260);
+            gradient.addColorStop(0, 'rgba(0, 229, 255, 0.35)');
+            gradient.addColorStop(1, 'rgba(0, 229, 255, 0.01)');
+
+            _lrdChartScoreQ = new Chart(ctxQ, {
+                type: 'line',
+                data: {
+                    labels: filteredByQ.map((_, i) => i === 0 ? 'Start' : `Q${i}`),
+                    datasets: [{
+                        label: 'Cumulative Score',
+                        data: filteredByQ,
+                        borderColor: '#00E5FF',
+                        borderWidth: 2.5,
+                        backgroundColor: gradient,
+                        fill: true,
+                        tension: 0.2,
+                        pointRadius: 2,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#00E5FF',
+                        pointBorderColor: '#000000',
+                        pointBorderWidth: 1.5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#0F172A',
+                            titleColor: '#00E5FF',
+                            bodyColor: '#FFFFFF',
+                            borderColor: '#334155',
+                            borderWidth: 1,
+                            padding: 10,
+                            displayColors: false,
+                            callbacks: {
+                                title: (items) => {
+                                    const idx = items[0].dataIndex;
+                                    if (idx === 0) return 'Start of Test';
+                                    const q = qDetails[idx - 1];
+                                    return `Question ${idx} (${q ? q.subject : 'Item'})`;
+                                },
+                                label: (item) => {
+                                    const idx = item.dataIndex;
+                                    if (idx === 0) return 'Score: 0 pts';
+                                    const q = qDetails[idx - 1];
+                                    const statusStr = q.status.toUpperCase();
+                                    const deltaStr = q.delta >= 0 ? `+${q.delta}` : `${q.delta}`;
+                                    return [
+                                        `Status: ${statusStr} (${deltaStr} pts)`,
+                                        `Cumulative Total: ${item.formattedValue} pts`,
+                                        `Time Spent: ${q.timeSpent}s`
+                                    ];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#94A3B8', maxTicksLimit: 12, font: { size: 10, weight: 'bold' } },
+                            grid: { color: 'rgba(51, 65, 85, 0.4)' }
+                        },
+                        y: {
+                            ticks: { color: '#94A3B8', font: { size: 10, weight: 'bold' } },
+                            grid: { color: (ctx) => ctx.tick.value === 0 ? '#EF4444' : 'rgba(51, 65, 85, 0.4)', lineWidth: (ctx) => ctx.tick.value === 0 ? 1.5 : 1 },
+                            suggestedMin: minVal,
+                            suggestedMax: maxVal
+                        }
+                    }
+                }
+            });
+        }
+
+        const ctxT = el('lrdScoreCurveT');
+        if (ctxT) {
+            if (_lrdChartScoreT) { _lrdChartScoreT.destroy(); _lrdChartScoreT = null; }
+            const canvasCtx = ctxT.getContext('2d');
+            const gradient = canvasCtx.createLinearGradient(0, 0, 0, 260);
+            gradient.addColorStop(0, 'rgba(16, 185, 129, 0.35)');
+            gradient.addColorStop(1, 'rgba(16, 185, 129, 0.01)');
+
+            _lrdChartScoreT = new Chart(ctxT, {
+                type: 'line',
+                data: {
+                    labels: filteredByTime.map(d => d.x === 0 ? 'Start' : `${Math.floor(d.x / 60)}m ${d.x % 60}s`),
+                    datasets: [{
+                        label: 'Cumulative Score',
+                        data: filteredByTime.map(d => d.y),
+                        borderColor: '#10B981',
+                        borderWidth: 2.5,
+                        backgroundColor: gradient,
+                        fill: true,
+                        tension: 0.2,
+                        pointRadius: 2,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#10B981',
+                        pointBorderColor: '#000000',
+                        pointBorderWidth: 1.5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#0F172A',
+                            titleColor: '#10B981',
+                            bodyColor: '#FFFFFF',
+                            borderColor: '#334155',
+                            borderWidth: 1,
+                            padding: 10,
+                            displayColors: false,
+                            callbacks: {
+                                title: (items) => `Time: ${items[0].label}`,
+                                label: (item) => `Cumulative Total: ${item.formattedValue} pts`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#94A3B8', maxTicksLimit: 12, font: { size: 10, weight: 'bold' } },
+                            grid: { color: 'rgba(51, 65, 85, 0.4)' }
+                        },
+                        y: {
+                            ticks: { color: '#94A3B8', font: { size: 10, weight: 'bold' } },
+                            grid: { color: (ctx) => ctx.tick.value === 0 ? '#EF4444' : 'rgba(51, 65, 85, 0.4)', lineWidth: (ctx) => ctx.tick.value === 0 ? 1.5 : 1 },
+                            suggestedMin: minVal,
+                            suggestedMax: maxVal
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    renderCharts('ALL');
 }
 
 function _lrdFillLeaderboard() {
