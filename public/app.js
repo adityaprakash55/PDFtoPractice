@@ -2402,29 +2402,29 @@ async function renderHistory() {
                 
                 <div class="flex items-center justify-end gap-2.5 shrink-0">
                     <!-- Rename: yellow accent -->
-                    <button class="brutal-btn rename-session-btn p-2 transition-all" style="background-color: #FFE600 !important; color: #000000 !important;" data-id="${session.id}" title="Rename Test">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                    <button class="brutal-btn rename-session-btn btn-action-rename p-2 transition-all" style="background-color: #FFE600 !important; color: #000000 !important;" data-id="${session.id}" title="Rename Test">
+                        <svg class="w-4 h-4" fill="none" stroke="#000000" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                     </button>
                     <!-- Delete: red accent -->
-                    <button class="brutal-btn delete-session-btn p-2 transition-all" style="background-color: #FF4D4D !important; color: #ffffff !important;" data-id="${session.id}" title="Delete Test">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    <button class="brutal-btn delete-session-btn btn-action-delete p-2 transition-all" style="background-color: #FF4D4D !important; color: #ffffff !important;" data-id="${session.id}" title="Delete Test">
+                        <svg class="w-4 h-4" fill="none" stroke="#ffffff" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                     </button>
                     <!-- View Analysis: green accent -->
-                    <button class="brutal-btn view-session-btn p-2 transition-all" style="background-color: #00E5FF !important; color: #000000 !important;" data-id="${session.id}" title="View Analysis">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    <button class="brutal-btn view-session-btn btn-action-analysis p-2 transition-all" style="background-color: #00E5FF !important; color: #000000 !important;" data-id="${session.id}" title="View Analysis">
+                        <svg class="w-4 h-4" fill="none" stroke="#000000" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                     </button>
                     <!-- Share: blue accent -->
-                    <button class="brutal-btn share-session-btn p-2 transition-all" style="background-color: #A855F7 !important; color: #ffffff !important;" data-id="${session.id}" title="Share Test">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
+                    <button class="brutal-btn share-session-btn btn-action-share p-2 transition-all" style="background-color: #3B82F6 !important; color: #ffffff !important;" data-id="${session.id}" title="Share Test">
+                        <svg class="w-4 h-4" fill="none" stroke="#ffffff" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
                     </button>
                     <!-- Host: purple accent -->
-                    <button class="brutal-btn share-session-btn p-2 transition-all" style="background-color: #A855F7 !important; color: #ffffff !important;" data-id="${session.id}" title="Host Live Test">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path></svg>
+                    <button class="brutal-btn share-session-btn btn-action-host p-2 transition-all" style="background-color: #A855F7 !important; color: #ffffff !important;" data-id="${session.id}" title="Host Live Test">
+                        <svg class="w-4 h-4" fill="none" stroke="#ffffff" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path></svg>
                     </button>
                     <!-- Take Test: yellow pill -->
-                    <button class="brutal-btn take-test-modal-btn text-xs font-black uppercase py-2.5 px-4 flex items-center gap-2 transition-all shrink-0 ml-1" style="background-color: #FFE600 !important; color: #000000 !important;" data-id="${session.id}" data-type="all">
-                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
-                        <span>Take Test</span>
+                    <button class="brutal-btn take-test-modal-btn btn-action-taketest text-xs font-black uppercase py-2.5 px-4 flex items-center gap-2 transition-all shrink-0 ml-1" style="background-color: #FFE600 !important; color: #000000 !important;" data-id="${session.id}" data-type="all">
+                        <svg class="w-3.5 h-3.5" fill="#000000" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
+                        <span style="color: #000000 !important;">Take Test</span>
                     </button>
                 </div>
             `;
@@ -4605,29 +4605,29 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     <div class="flex items-center justify-end gap-2.5 shrink-0">
                         <!-- Rename: yellow -->
-                        <button class="brutal-btn rename-session-btn p-2 transition-all" style="background-color: #FFE600 !important; color: #000000 !important;" data-id="${s.id}" title="Rename Test">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                        <button class="brutal-btn rename-session-btn btn-action-rename p-2 transition-all" style="background-color: #FFE600 !important; color: #000000 !important;" data-id="${s.id}" title="Rename Test">
+                            <svg class="w-4 h-4" fill="none" stroke="#000000" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                         </button>
                         <!-- Delete: red -->
-                        <button class="brutal-btn delete-session-btn p-2 transition-all" style="background-color: #FF4D4D !important; color: #ffffff !important;" data-id="${s.id}" title="Delete Test">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        <button class="brutal-btn delete-session-btn btn-action-delete p-2 transition-all" style="background-color: #FF4D4D !important; color: #ffffff !important;" data-id="${s.id}" title="Delete Test">
+                            <svg class="w-4 h-4" fill="none" stroke="#ffffff" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                         </button>
                         <!-- View Analysis: green -->
-                        <button class="brutal-btn view-session-btn p-2 transition-all" style="background-color: #00E5FF !important; color: #000000 !important;" data-id="${s.id}" title="View Analysis">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                        <button class="brutal-btn view-session-btn btn-action-analysis p-2 transition-all" style="background-color: #00E5FF !important; color: #000000 !important;" data-id="${s.id}" title="View Analysis">
+                            <svg class="w-4 h-4" fill="none" stroke="#000000" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                         </button>
                         <!-- Share: blue -->
-                        <button class="brutal-btn share-session-btn p-2 transition-all" style="background-color: #A855F7 !important; color: #ffffff !important;" data-id="${s.id}" title="Share Test">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
+                        <button class="brutal-btn share-session-btn btn-action-share p-2 transition-all" style="background-color: #3B82F6 !important; color: #ffffff !important;" data-id="${s.id}" title="Share Test">
+                            <svg class="w-4 h-4" fill="none" stroke="#ffffff" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
                         </button>
                         <!-- Host: purple -->
-                        <button class="brutal-btn share-session-btn p-2 transition-all" style="background-color: #A855F7 !important; color: #ffffff !important;" data-id="${s.id}" title="Host Live Test">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path></svg>
+                        <button class="brutal-btn share-session-btn btn-action-host p-2 transition-all" style="background-color: #A855F7 !important; color: #ffffff !important;" data-id="${s.id}" title="Host Live Test">
+                            <svg class="w-4 h-4" fill="none" stroke="#ffffff" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path></svg>
                         </button>
                         
-                        <button class="brutal-btn take-test-modal-btn text-xs font-black uppercase py-2.5 px-4 flex items-center gap-2 transition-all shrink-0 ml-1" style="background-color: #FFE600 !important; color: #000000 !important;" data-id="${s.id}" data-type="all">
-                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
-                            <span>Take Test</span>
+                        <button class="brutal-btn take-test-modal-btn btn-action-taketest text-xs font-black uppercase py-2.5 px-4 flex items-center gap-2 transition-all shrink-0 ml-1" style="background-color: #FFE600 !important; color: #000000 !important;" data-id="${s.id}" data-type="all">
+                            <svg class="w-3.5 h-3.5" fill="#000000" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
+                            <span style="color: #000000 !important;">Take Test</span>
                         </button>
                     </div>
                 `;
