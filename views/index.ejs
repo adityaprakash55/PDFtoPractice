@@ -380,56 +380,43 @@
 
         <!-- Combine Tests Page View -->
         <div id="combineViewContainer" class="dash-view combineView hidden max-w-5xl mx-auto mt-16 px-4">
-            <!-- Header -->
-            <div class="flex flex-col gap-2 mb-6 text-left">
-                <span class="self-start inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Combine Tool</span>
-                <h2 class="text-3xl font-extrabold text-white tracking-tight">Combine & Start Tests</h2>
-                <p class="text-sm text-slate-400">Merge multiple mocks from your vault and launch a combined test immediately.</p>
-            </div>
-
-            <!-- Two Column Layout to prevent vertical scrolling -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                <!-- Left: Scrollable checklist of tests -->
-                <div class="lg:col-span-7 bg-[#090b10] border border-gray-800/80 rounded-2xl p-5 shadow-2xl flex flex-col h-[55vh]">
-                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 text-left">Step 1: Select Tests to Combine</h3>
-                    <div id="combineTestsPageList" class="space-y-2.5 overflow-y-auto pr-1 flex-1 custom-scrollbar">
-                        <!-- Dynamically populated checklist -->
-                    </div>
+            <!-- Header & Inline Options (Side by Side) -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6 text-left bg-[#090b10] border border-gray-800/80 rounded-2xl p-5 shadow-2xl">
+                <!-- Left: Header info -->
+                <div class="flex-1 min-w-0">
+                    <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mb-2">Combine Tool</span>
+                    <h2 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight leading-none mb-2">Combine & Start Tests</h2>
+                    <p class="text-xs text-slate-400">Select multiple mocks below, name your merged exam, and click combine & start.</p>
                 </div>
-
-                <!-- Right: Settings and Action Button -->
-                <div class="lg:col-span-5 flex flex-col gap-4">
-                    <!-- Action Button Container at the top of controls so it's instantly reachable -->
-                    <button id="confirmCombinePageTestsBtn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold py-3.5 px-6 rounded-2xl shadow-lg shadow-emerald-600/20 hover:shadow-emerald-600/30 transition-all active:scale-95 flex items-center justify-center gap-3">
-                        <svg class="w-5 h-5 text-white animate-pulse" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
-                        <span class="text-base uppercase tracking-wider">Combine & Start Exam</span>
+                
+                <!-- Right: Inline Config & Button -->
+                <div class="flex flex-wrap items-center gap-4 shrink-0">
+                    <div class="flex flex-col gap-1 w-52">
+                        <label for="combinedPageTestNameInput" class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Test Name:</label>
+                        <input type="text" id="combinedPageTestNameInput" class="w-full bg-[#06080c] border border-gray-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500 font-semibold transition-colors" placeholder="Combined Test Name" />
+                    </div>
+                    <div class="flex flex-col gap-1 w-24 text-center bg-[#06080c] p-2 rounded-xl border border-gray-800/80 justify-center">
+                        <span class="text-[9px] font-bold text-gray-500 uppercase leading-none">Stats</span>
+                        <span class="text-xs font-bold text-white leading-none mt-1">
+                            <span id="combinePageSelectedCount" class="text-emerald-400 font-black">0</span> tests
+                        </span>
+                        <span class="text-[9px] text-gray-500 block font-medium mt-0.5">
+                            <span id="combinePageTotalQuestionsCount" class="text-blue-400 font-bold">0</span> Qs
+                        </span>
+                    </div>
+                    <button id="confirmCombinePageTestsBtn" class="bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold py-3 px-5 rounded-xl shadow-lg shadow-emerald-600/20 hover:shadow-emerald-600/30 transition-all active:scale-95 flex items-center gap-2 text-xs uppercase tracking-wider h-[38px] mt-4 md:mt-0">
+                        <svg class="w-4 h-4 text-white animate-pulse" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
+                        <span>Combine & Start</span>
                     </button>
-
-                    <!-- Config Panel -->
-                    <div class="bg-[#090b10] border border-gray-800/80 rounded-2xl p-5 shadow-2xl text-left space-y-4">
-                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest">Test Configuration</h3>
-                        
-                        <div class="space-y-1.5">
-                            <label for="combinedPageTestNameInput" class="block text-[11px] font-bold text-slate-400 uppercase tracking-wide">Combined Test Name:</label>
-                            <input type="text" id="combinedPageTestNameInput" class="w-full bg-[#06080c] border border-gray-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 font-semibold transition-colors" placeholder="e.g. Mega Combined CBT Test" />
-                        </div>
-
-                        <!-- Stats Display -->
-                        <div class="grid grid-cols-2 gap-3 pt-1">
-                            <div class="bg-[#06080c] p-2.5 rounded-xl border border-gray-800/80 text-center">
-                                <span class="block text-[10px] font-bold text-gray-500 uppercase">Selected</span>
-                                <span id="combinePageSelectedCount" class="text-lg font-black text-emerald-400">0</span>
-                                <span class="text-[9px] text-gray-500 block font-medium">Tests</span>
-                            </div>
-                            <div class="bg-[#06080c] p-2.5 rounded-xl border border-gray-800/80 text-center">
-                                <span class="block text-[10px] font-bold text-gray-500 uppercase">Total Qs</span>
-                                <span id="combinePageTotalQuestionsCount" class="text-lg font-black text-blue-400">0</span>
-                                <span class="text-[9px] text-gray-500 block font-medium">Questions</span>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
+
+            <!-- List of available tests taking full width -->
+            <div class="bg-[#090b10] border border-gray-800/80 rounded-2xl p-5 shadow-2xl flex flex-col h-[60vh]">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 text-left">Select Tests to Combine</h3>
+                <div id="combineTestsPageList" class="space-y-2.5 overflow-y-auto pr-1 flex-1 custom-scrollbar">
+                    <!-- Dynamically populated checklist -->
+                </div>
         </div>
 
         <!-- Practice History & External Sources Section -->
