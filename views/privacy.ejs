@@ -37,9 +37,10 @@
 <body class="dark: font-sans min-h-screen">
     <header class="sticky top-0 z-40 bg-white/70 dark:bg-slate-900/70 shadow-sm">
         <div class="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-            <a href="/" class="flex items-center space-x-2 text-blue-600 hover:text-blue-700 font-semibold">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                <span>Back to Home</span>
+            <a href="/" class="flex items-center space-x-2 text-blue-600 hover:text-blue-700 font-semibold group cursor-pointer" title="PDF to PRACTICE - Home">
+                <img src="/logo-light.png" alt="Logo" class="w-7 h-7 rounded-none dark:hidden">
+                <img src="/logo-dark.png" alt="Logo" class="w-7 h-7 rounded-none hidden dark:block">
+                <span class="font-bold text-lg dark:text-white" style="color: var(--text-primary);">PDF to PRACTICE</span>
             </a>
             <div class="flex items-center space-x-3 text-sm font-semibold">
                 <a href="https://t.me/PDFtoPractice" target="_blank" rel="noopener" class="text-[#229ED9] hover:underline flex items-center gap-1">
