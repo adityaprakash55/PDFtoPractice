@@ -3331,6 +3331,12 @@ function renderNtaQuestion(index) {
     });
 
     
+    // Setup question-specific scratchpad note
+    if (!practiceState.scratchpadNotes) practiceState.scratchpadNotes = {};
+    if (ntaScratchpadInput) {
+        ntaScratchpadInput.value = practiceState.scratchpadNotes[realIndex] || '';
+    }
+
     practiceState.qSecondsSpent = stat.timeSpent;
     practiceState.isAnswerRevealed = stat.attempted;
     
