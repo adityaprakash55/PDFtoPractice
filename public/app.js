@@ -2721,7 +2721,7 @@ async function renderNotedQuestions() {
         
         if (currentNotedQuestions.length === 0) {
             notedQsList.innerHTML = `
-                <div class="col-span-1 sm:col-span-2 lg:col-span-3 bg-white dark:bg-[#1C212E] p-8 rounded-2xl border border-gray-200 dark:border-gray-800 border-dashed flex flex-col items-center justify-center text-center opacity-70">
+                <div class="col-span-1 sm:col-span-2 lg:col-span-3 bg-[#090b10] p-8 rounded-2xl border border-gray-800 border-dashed flex flex-col items-center justify-center text-center opacity-70">
                     <div class="bg-yellow-500/10 p-4 rounded-full text-yellow-500 mb-4">
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                     </div>
@@ -2733,7 +2733,7 @@ async function renderNotedQuestions() {
         }
         
         const card = document.createElement('div');
-        card.className = 'bg-white dark:bg-[#1C212E] p-5 rounded-2xl flex flex-col justify-between border border-gray-200 dark:border-gray-800 shadow-xl relative z-10 hover:z-20 transition-all hover:border-yellow-500/50 hover:shadow-[0_0_15px_rgba(234,179,8,0.2)] cursor-pointer group';
+        card.className = 'bg-[#090b10] p-5 rounded-2xl flex flex-col justify-between border border-gray-800 shadow-xl relative z-10 hover:z-20 transition-all hover:border-yellow-500/50 hover:shadow-[0_0_15px_rgba(234,179,8,0.2)] cursor-pointer group';
         card.innerHTML = `
             <div class="flex items-start justify-between mb-4">
                 <div class="flex items-center gap-3">
@@ -2898,7 +2898,7 @@ async function renderBookmarks() {
 
         if (groups.length === 0) {
             bookmarksList.innerHTML = `
-                <div class="col-span-1 sm:col-span-2 lg:col-span-3 bg-white dark:bg-[#1C212E] p-8 rounded-2xl border border-gray-200 dark:border-gray-800 border-dashed flex flex-col items-center justify-center text-center opacity-70">
+                <div class="col-span-1 sm:col-span-2 lg:col-span-3 bg-[#090b10] p-8 rounded-2xl border border-gray-800 border-dashed flex flex-col items-center justify-center text-center opacity-70">
                     <div class="bg-gray-100 dark:bg-white/5 p-4 rounded-full text-gray-500 mb-4">
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
                     </div>
@@ -2911,7 +2911,7 @@ async function renderBookmarks() {
         
         groups.forEach(g => {
             const card = document.createElement('div');
-            card.className = 'bg-white dark:bg-[#1C212E] p-5 rounded-2xl flex flex-col justify-between border border-gray-200 dark:border-gray-800 shadow-xl relative z-10 hover:z-20 transition-all hover:border-blue-500/50 hover:shadow-[0_0_15px_rgba(59,130,246,0.2)] cursor-pointer group';
+            card.className = 'bg-[#090b10] p-5 rounded-2xl flex flex-col justify-between border border-gray-800 shadow-xl relative z-10 hover:z-20 transition-all hover:border-blue-500/50 hover:shadow-[0_0_15px_rgba(59,130,246,0.2)] cursor-pointer group';
             
             card.innerHTML = `
                 <div class="flex items-start justify-between mb-4">

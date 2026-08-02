@@ -169,11 +169,11 @@
     --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     --default-font-family: var(--font-sans);
     --default-mono-font-family: var(--font-mono);
-    --color-navy-600: #486581;
-    --color-navy-700: #334e68;
-    --color-navy-800: #243b53;
-    --color-navy-900: #102a43;
-    --color-navy-950: #0a192f;
+    --color-navy-600: #1b2230;
+    --color-navy-700: #1f2937;
+    --color-navy-800: #1f2937;
+    --color-navy-900: #090b10;
+    --color-navy-950: #06080c;
   }
 }
 @layer base {
