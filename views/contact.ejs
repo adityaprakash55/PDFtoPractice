@@ -48,29 +48,29 @@
         }
         
         .brutal-card {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            background: #ffffff;
+            color: #0f172a;
             border: 3px solid #000;
             box-shadow: 5px 5px 0px 0px #000;
         }
         .dark .brutal-card {
-            background: rgba(15, 23, 42, 0.85);
+            background: #1e293b;
+            color: #f8fafc;
             border: 3px solid #000;
             box-shadow: 5px 5px 0px 0px #000;
         }
         .brutal-btn {
-            border: 2.5px solid #000;
-            box-shadow: 3px 3px 0px 0px #000;
+            border: 2.5px solid #000 !important;
+            box-shadow: 3px 3px 0px 0px #000 !important;
             transition: all 0.15s ease;
         }
         .brutal-btn:hover {
-            transform: translate(-2px, -2px);
-            box-shadow: 5px 5px 0px 0px #000;
+            transform: translate(-2px, -2px) !important;
+            box-shadow: 5px 5px 0px 0px #000 !important;
         }
         .brutal-btn:active {
-            transform: translate(1px, 1px);
-            box-shadow: 1px 1px 0px 0px #000;
+            transform: translate(1px, 1px) !important;
+            box-shadow: 1px 1px 0px 0px #000 !important;
         }
     </style>
     <link rel="preload" href="logo.png" as="image">
@@ -214,25 +214,25 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-black uppercase mb-1" style="color: var(--text-primary);">Your Name</label>
-                        <input type="text" id="contactName" required placeholder="Aspirant Name" class="w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border-2 border-black font-bold text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400" style="color: var(--text-primary);" />
+                        <input type="text" id="contactName" required placeholder="Aspirant Name" class="w-full px-3.5 py-2.5 bg-slate-100 dark:bg-slate-900 border-2 border-black font-bold text-sm text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400" />
                     </div>
                     <div>
                         <label class="block text-xs font-black uppercase mb-1" style="color: var(--text-primary);">Category</label>
-                        <select id="contactCategory" class="w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border-2 border-black font-bold text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400" style="color: var(--text-primary);">
-                            <option value="Bug Report">🐛 Bug Report</option>
-                            <option value="Feature Request">💡 Feature Request</option>
-                            <option value="General Support">❓ General Support</option>
-                            <option value="Other Feedback">❤️ Other Feedback</option>
+                        <select id="contactCategory" class="w-full px-3.5 py-2.5 bg-slate-100 dark:bg-slate-900 border-2 border-black font-bold text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-cyan-400">
+                            <option value="Bug Report" class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-bold">🐛 Bug Report</option>
+                            <option value="Feature Request" class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-bold">💡 Feature Request</option>
+                            <option value="General Support" class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-bold">❓ General Support</option>
+                            <option value="Other Feedback" class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-bold">❤️ Other Feedback</option>
                         </select>
                     </div>
                 </div>
                 <div>
                     <label class="block text-xs font-black uppercase mb-1" style="color: var(--text-primary);">Your Message</label>
-                    <textarea id="contactMessage" rows="4" required placeholder="Type your message or details here..." class="w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border-2 border-black font-bold text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400" style="color: var(--text-primary);"></textarea>
+                    <textarea id="contactMessage" rows="4" required placeholder="Type your message or details here..." class="w-full px-3.5 py-2.5 bg-slate-100 dark:bg-slate-900 border-2 border-black font-bold text-sm text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400"></textarea>
                 </div>
-                <button type="submit" class="brutal-btn w-full py-3.5 bg-emerald-400 hover:bg-emerald-300 text-black font-black uppercase text-sm flex items-center justify-center gap-2 cursor-pointer">
+                <button type="submit" class="brutal-btn w-full py-3.5 !bg-emerald-400 hover:!bg-emerald-300 !text-black font-black uppercase text-sm flex items-center justify-center gap-2 cursor-pointer border-2 border-black shadow-[4px_4px_0px_0px_#000]">
                     <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
-                    <span>Compose Email via Client</span>
+                    <span class="font-black text-black">Compose Email via Client</span>
                 </button>
             </form>
         </div>
