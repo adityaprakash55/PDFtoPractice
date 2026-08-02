@@ -1219,24 +1219,26 @@
         <!-- =========================================================== -->
         <div id="liveResultsDashboard" class="hidden fixed inset-0 brutal-card flex flex-col md:flex-row font-sans overflow-hidden" style="z-index: 9999;">
             <!-- Mobile Header & Navigation Tabs / Desktop Sidebar -->
-            <aside class="w-full md:w-64 brutal-card border-b md:border-b-0 md:border-r border-gray-800 flex flex-col shrink-0">
-                <!-- Header with Title & Exit Button -->
-                <div class="p-4 border-b border-gray-800/80 bg-[#0b0e14] flex items-center justify-between gap-3">
-                    <div class="min-w-0 flex-1">
-                        <h2 class="font-extrabold text-base md:text-lg tracking-tight leading-tight">Test Report</h2>
-                        <span id="lrdRoleBadge" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 mt-1 whitespace-nowrap">
-                            Solo Practice
-                        </span>
-                    </div>
-                    <div class="flex items-center gap-2 shrink-0">
-                        <button id="lrdDownloadPdfBtn" class="brutal-btn flex items-center gap-1.5 px-3 py-1.5 text-xs text-black font-extrabold bg-cyan-400 hover:bg-cyan-300 transition-all shadow-sm active:scale-95 cursor-pointer" onclick="window.print()" title="Export PDF Report">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="#000000" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                            <span>PDF</span>
-                        </button>
-                        <button id="lrdExitBtn" class="brutal-btn flex items-center gap-1.5 px-3 py-1.5 text-xs text-white font-extrabold bg-rose-500 hover:bg-rose-400 transition-all shadow-sm active:scale-95 cursor-pointer" title="Exit Report">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="#ffffff" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-                            <span>Exit</span>
-                        </button>
+            <aside class="w-full md:w-64 brutal-card border-b md:border-b-0 md:border-r border-black flex flex-col shrink-0">
+                <!-- Header with Title & Action Buttons -->
+                <div class="p-3 sm:p-4 border-b border-black brutal-card flex flex-col gap-2">
+                    <div class="flex items-center justify-between gap-2">
+                        <div>
+                            <h2 class="font-extrabold text-base sm:text-lg tracking-tight leading-none" style="color: var(--text-primary);">Test Report</h2>
+                            <span id="lrdRoleBadge" class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-yellow-400 text-black border border-black mt-1.5 whitespace-nowrap">
+                                Solo Practice
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <button id="lrdDownloadPdfBtn" class="brutal-btn flex items-center gap-1.5 px-3 py-1.5 text-xs font-black uppercase transition-all active:scale-95 cursor-pointer" style="background-color: #00E5FF !important; color: #000000 !important;" onclick="window.print()" title="Export PDF Report">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="#000000" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                <span style="color: #000000 !important;">PDF</span>
+                            </button>
+                            <button id="lrdExitBtn" class="brutal-btn flex items-center gap-1.5 px-3 py-1.5 text-xs font-black uppercase transition-all active:scale-95 cursor-pointer" style="background-color: #FF4D4D !important; color: #ffffff !important;" title="Exit Report">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="#ffffff" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                                <span style="color: #ffffff !important;">Exit</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 
@@ -2259,7 +2261,7 @@
     </div>
     
 
-    <script defer src="app.js?v=115"></script>
+    <script defer src="app.js?v=120"></script>
     <script defer src="/liveRoom.js"></script>
 </body>
 </html>

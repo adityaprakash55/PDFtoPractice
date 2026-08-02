@@ -83,7 +83,6 @@
     --color-pink-500: oklch(65.6% 0.241 354.308);
     --color-pink-600: oklch(59.2% 0.249 0.584);
     --color-pink-900: oklch(40.8% 0.153 2.432);
-    --color-rose-300: oklch(81% 0.117 11.638);
     --color-rose-400: oklch(71.2% 0.194 13.428);
     --color-rose-500: oklch(64.5% 0.246 16.439);
     --color-slate-50: oklch(98.4% 0.003 247.858);
@@ -1701,9 +1700,6 @@
   .bg-\[\#0a0c10\] {
     background-color: #0a0c10;
   }
-  .bg-\[\#0b0e14\] {
-    background-color: #0b0e14;
-  }
   .bg-\[\#0d1117\] {
     background-color: #0d1117;
   }
@@ -2177,9 +2173,6 @@
   }
   .bg-red-600 {
     background-color: var(--color-red-600);
-  }
-  .bg-rose-500 {
-    background-color: var(--color-rose-500);
   }
   .bg-sky-500\/20 {
     background-color: color-mix(in srgb, oklch(68.5% 0.169 237.323) 20%, transparent);
@@ -3529,9 +3522,6 @@
         background-color: color-mix(in oklab, var(--color-red-900) 30%, transparent);
       }
     }
-    .hover\:bg-rose-400:hover {
-      background-color: var(--color-rose-400);
-    }
     .hover\:bg-white\/5:hover {
       background-color: color-mix(in srgb, #fff 5%, transparent);
     }
@@ -3833,6 +3823,10 @@
     .sm\:text-base {
       font-size: var(--text-base);
       line-height: var(--tw-leading, var(--text-base--line-height));
+    }
+    .sm\:text-lg {
+      font-size: var(--text-lg);
+      line-height: var(--tw-leading, var(--text-lg--line-height));
     }
     .sm\:text-sm {
       font-size: var(--text-sm);
