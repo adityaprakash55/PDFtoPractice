@@ -110,7 +110,8 @@
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
         /* NTA Palette Shapes and Colors */
-        .nta-not-visited { background-color: #e5e7eb; border-color: #d1d5db; color: #374151; }
+        .nta-not-visited { background-color: #e5e7eb; border: 2px solid #d1d5db; color: #1f2937; }
+        .dark .nta-not-visited { background-color: #374151; border: 2px solid #4b5563; color: #ffffff; }
         .nta-not-answered { background-color: #F28C28; border-color: #d97a22; color: white; border-radius: 0 0 10px 10px; }
         .nta-answered { background-color: #22c55e; border-color: #16a34a; color: white; border-radius: 10px 10px 0 0; }
         .nta-marked { background-color: #9333ea; border-color: #7e22ce; color: white; border-radius: 50%; }
@@ -1046,48 +1047,47 @@
                 <button id="endPracticeBtn" class="text-red-500 hover:text-red-700 text-sm font-medium underline">End Practice & Show Summary</button>
             </div>
         </div>
-            
-        <!-- 6. NTA (JEE Main) Interface -->
-                <div id="ntaInterfaceContainer" class="hidden w-full h-[100dvh] fixed inset-0 bg-[#e7f1f8]  z-50 flex flex-col overflow-hidden font-sans">
+            <!-- 6. NTA (JEE Main) Interface -->
+        <div id="ntaInterfaceContainer" class="hidden w-full h-[100dvh] fixed inset-0 z-50 flex flex-col overflow-hidden font-sans" style="background-color: var(--bg-page); color: var(--text-primary);">
             <!-- NTA Header -->
-            <div class="bg-[#286090] flex items-center shadow-md z-10" style="height: 48px;">
-                <div class="px-4 font-bold text-lg tracking-wider truncate flex-1 border-r border-[#1e4b72] h-full flex items-center gap-2">
+            <div class="flex items-center shadow-md z-10 border-b-2 border-black" style="height: 48px; background-color: #1E293B; color: #ffffff;">
+                <div class="px-4 font-black text-lg tracking-wider truncate flex-1 border-r-2 border-slate-700 h-full flex items-center gap-2 text-white">
                     <span id="ntaHeaderTitle">Practice Test</span>
-                    <button class="brutal-btn bg-blue-400/30 hover:bg-blue-400/50 w-5 h-5 flex items-center justify-center text-xs font-serif italic" title="Information">i</button>
+                    <button class="brutal-btn bg-amber-400 text-black w-5 h-5 flex items-center justify-center text-xs font-black border border-black" title="Information">i</button>
                 </div>
                 <div class="flex-none px-4 flex items-center h-full">
-                    <button id="ntaBookmarkBtn" aria-label="Bookmark Question" class="p-1.5 bg-white/20 hover:bg-white/30 rounded flex items-center gap-1.5" title="Bookmarks">
+                    <button id="ntaBookmarkBtn" aria-label="Bookmark Question" class="p-1.5 bg-white/20 hover:bg-white/30 rounded flex items-center gap-1.5 text-white" title="Bookmarks">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
                     </button>
 
-                    <button id="ntaThemeToggleBtn" aria-label="Toggle Theme" class="ml-2 p-1.5 bg-white/20 hover:bg-white/30 rounded" title="Toggle Theme">
+                    <button id="ntaThemeToggleBtn" aria-label="Toggle Theme" class="ml-2 p-1.5 bg-white/20 hover:bg-white/30 rounded text-white" title="Toggle Theme">
                         <svg class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
                         <svg class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                     </button>
                     
-                    <button id="ntaFullScreenBtn" aria-label="Toggle Full Screen" class="ml-2 p-1.5 bg-white/20 hover:bg-white/30 rounded" title="Toggle Fullscreen">
+                    <button id="ntaFullScreenBtn" aria-label="Toggle Full Screen" class="ml-2 p-1.5 bg-white/20 hover:bg-white/30 rounded text-white" title="Toggle Fullscreen">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
                     </button>
                     
-                    <button id="ntaToggleSidebarBtn" aria-label="Toggle Sidebar" class="hidden md:block ml-2 p-1.5 bg-white/20 hover:bg-white/30 rounded" title="Toggle Palette">
+                    <button id="ntaToggleSidebarBtn" aria-label="Toggle Sidebar" class="hidden md:block ml-2 p-1.5 bg-white/20 hover:bg-white/30 rounded text-white" title="Toggle Palette">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
                     </button>
 
-                    <button id="ntaMobilePaletteBtn" aria-label="Toggle Question Palette" class="ml-2 md:hidden p-1.5 bg-white/20 hover:bg-white/30 rounded">
+                    <button id="ntaMobilePaletteBtn" aria-label="Toggle Question Palette" class="ml-2 md:hidden p-1.5 bg-white/20 hover:bg-white/30 rounded text-white">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                     </button>
                 </div>
             </div>
 
-            <div class="bg-[var(--bg-input)] flex items-center justify-between shadow-sm z-10 text-sm font-bold border-b border-gray-300 " style="height: 36px;">
-                <div class="px-4 dark: flex-1">Sections</div>
-                <div class="px-4 flex items-center">
-                    <span class="mr-2">Time Left :</span>
-                    <span id="ntaTotalTimer" class="font-bold">00:00:00</span>
+            <div class="flex items-center justify-between shadow-sm z-10 text-sm font-bold border-b-2 border-black" style="height: 38px; background-color: var(--bg-card); color: var(--text-primary);">
+                <div class="px-4 font-black uppercase tracking-wider flex-1">Sections</div>
+                <div class="px-4 flex items-center gap-2">
+                    <span class="font-extrabold text-xs uppercase tracking-wider" style="color: var(--text-muted);">Time Left :</span>
+                    <span id="ntaTotalTimer" class="font-black text-base text-amber-400 tracking-tight">00:00:00</span>
                 </div>
             </div>
             
-            <div id="ntaSubjectTabs" class="flex overflow-x-auto hide-scrollbar bg-[var(--bg-input)] border-b border-[#286090] min-h-[40px] z-10">
+            <div id="ntaSubjectTabs" class="flex overflow-x-auto hide-scrollbar border-b-2 border-black min-h-[40px] z-10" style="background-color: var(--bg-card);">
                 <!-- Subject tabs injected here -->
             </div>
 
@@ -1096,30 +1096,29 @@
                 <div id="ntaPaletteOverlay" class="hidden absolute inset-0 bg-black/50 z-30 md:hidden"></div>
                 
                 <!-- Left Panel: Question -->
-                <div class="flex-1 flex flex-col border-r border-gray-300  bg-[var(--bg-input)] relative h-full">
+                <div class="flex-1 flex flex-col border-r-2 border-black relative h-full" style="background-color: var(--bg-page);">
                     
-                    <div class="px-4 py-1.5 border-b  text-xs dark: flex justify-between items-center bg-gray-50 /50">
-                        <span>Question Type: Single Correct</span>
-                        <span>Marks for correct answer: <span class="text-green-600 font-bold">4</span> | Negative Marks: <span class="text-red-600 font-bold">-1</span></span>
+                    <div class="px-4 py-2 border-b-2 border-black text-xs font-extrabold flex justify-between items-center" style="background-color: var(--bg-card); color: var(--text-primary);">
+                        <span class="font-black tracking-wide" style="color: var(--text-muted);">Question Type: <span style="color: var(--text-primary);">Single Correct</span></span>
+                        <span>Marks for correct answer: <span class="text-emerald-400 font-black">+4</span> | Negative Marks: <span class="text-rose-400 font-black">-1</span></span>
                     </div>
                     
-                    <div class="p-3 border-b border-gray-300  font-bold text-sm dark: flex justify-between items-center relative">
+                    <div class="p-3 border-b-2 border-black font-extrabold text-sm flex justify-between items-center relative" style="background-color: var(--bg-card); color: var(--text-primary);">
                         <div class="flex items-center gap-2">
-                            <span id="ntaQuestionLabel" class="text-base">Question No. 1</span>
-                            
+                            <span id="ntaQuestionLabel" class="text-lg font-black uppercase">Question No. 1</span>
                         </div>
-                        <div class="flex items-center space-x-2 text-xs font-normal pr-10">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            <span id="ntaQuestionStopwatch">00:00</span>
+                        <div class="flex items-center space-x-2 text-xs font-bold pr-10" style="color: var(--text-muted);">
+                            <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <span id="ntaQuestionStopwatch" class="font-mono text-sm text-amber-400 font-bold">00:00</span>
                         </div>
-                        <button class="brutal-btn absolute right-4 w-6 h-6 bg-[#337ab7]  flex items-center justify-center hover:bg-blue-700">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        <button class="brutal-btn absolute right-4 w-7 h-7 bg-blue-600 text-white border border-black flex items-center justify-center hover:bg-blue-500">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                     </div>
 
-                    <div id="ntaContentContainer" class="flex-1 overflow-y-auto p-4 sm:p-6 pb-64 sm:pb-48 md:pb-24 relative bg-[var(--bg-input)]">
+                    <div id="ntaContentContainer" class="flex-1 overflow-y-auto p-4 sm:p-6 pb-64 sm:pb-48 md:pb-24 relative" style="background-color: var(--bg-page); color: var(--text-primary);">
                         <!-- Scratchpad Drawer (Hidden by default) -->
-                        <div id="ntaScratchpad" class="absolute right-0 top-0 w-64 md:w-80 h-full bg-yellow-50 dark:bg-[#1e2330] border-l border-yellow-200 dark: transform translate-x-full transition-transform duration-300 z-[60] p-4 shadow-2xl hidden">
+                        <div id="ntaScratchpad" class="absolute right-0 top-0 w-64 md:w-80 h-full bg-yellow-50 dark:bg-[#1e2330] border-l-2 border-black transform translate-x-full transition-transform duration-300 z-[60] p-4 shadow-2xl hidden">
                             <h4 class="font-bold dark: mb-2 flex justify-between items-center text-sm border-b dark: pb-2">
                                 Scratchpad Notes
                                 <button id="ntaCloseScratchpadBtn" aria-label="Close Scratchpad" class="hover:text-red-500 transition-colors">&times;</button>
@@ -1129,29 +1128,27 @@
                     
                         <img id="ntaQImage" src="" alt="Question" class="max-w-full h-auto block mx-auto dark:bg-white relative z-0" />
                         
-                        
-                        
-                        <div class="mt-8 pt-6 border-t ">
-                            <button id="ntaCheckAnswerBtn" class="bg-gray-100  hover:bg-gray-200 dark:hover:bg-navy-700 border border-gray-300  dark: font-bold py-2 px-6 rounded shadow-sm transition-colors">
+                        <div class="mt-8 pt-6 border-t-2 border-black">
+                            <button id="ntaCheckAnswerBtn" class="brutal-btn font-black uppercase py-2.5 px-6 border-2 border-black shadow-[3px_3px_0px_0px_#000] transition-all cursor-pointer" style="background-color: #06B6D4 !important; color: #000000 !important;">
                                 View Solution
                             </button>
                             
                             <div id="ntaAnswerArea" class="hidden mt-6">
-                                <div id="ntaAImageContainer" class="w-full max-h-[60vh] overflow-y-auto border border-green-200 dark:border-green-800 rounded relative custom-scrollbar brutal-card mb-4">
+                                <div id="ntaAImageContainer" class="w-full max-h-[60vh] overflow-y-auto border-2 border-black rounded-none relative custom-scrollbar brutal-card mb-4">
                                     <img id="ntaAImage" src="" alt="Answer" class="max-w-full h-auto block mx-auto dark:bg-white" />
                                 </div>
                                 <div class="text-center mb-6">
-                                    <button id="ntaViewFullAnswerKeyBtn" class="text-blue-600 dark:text-blue-400 hover:underline text-sm font-semibold inline-flex items-center gap-1">
+                                    <button id="ntaViewFullAnswerKeyBtn" class="text-cyan-400 hover:underline text-sm font-black uppercase inline-flex items-center gap-1">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                                         View Full Answer Key
                                     </button>
                                 </div>
                                 
-                                <div class="bg-blue-50  border border-blue-100  p-4 rounded-none">
-                                    <p class="font-bold text-blue-900 dark:text-blue-100 mb-3 text-sm">Self-Evaluation: Did you get it right?</p>
+                                <div class="brutal-card p-4 border-2 border-black">
+                                    <p class="font-black uppercase text-sm mb-3" style="color: var(--text-primary);">Self-Evaluation: Did you get it right?</p>
                                     <div class="flex space-x-3">
-                                        <button id="ntaCorrectBtn" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded font-semibold text-sm">Yes, Correct</button>
-                                        <button id="ntaIncorrectBtn" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded font-semibold text-sm">No, Incorrect</button>
+                                        <button id="ntaCorrectBtn" class="brutal-btn bg-emerald-500 hover:bg-emerald-400 text-black font-black uppercase px-4 py-2 border-2 border-black" style="background-color: #10B981 !important; color: #000000 !important;">Yes, Correct</button>
+                                        <button id="ntaIncorrectBtn" class="brutal-btn bg-rose-500 hover:bg-rose-400 text-white font-black uppercase px-4 py-2 border-2 border-black" style="background-color: #F43F5E !important; color: #ffffff !important;">No, Incorrect</button>
                                     </div>
                                 </div>
                             </div>
@@ -1159,63 +1156,63 @@
                     </div>
 
                     <!-- NTA Bottom Action Bar -->
-                    <div class="absolute bottom-0 w-full brutal-card border-t border-gray-300  p-2 sm:p-3 flex flex-wrap gap-2 items-center text-[11px] z-50">
-                        <button id="ntaClearBtn" class="bg-white  border border-gray-300 hover:bg-gray-50 py-1.5 px-3 rounded shadow-sm font-semibold border-gray-300 hover:border-gray-400">Clear Response</button>
-                        <button id="ntaMarkReviewBtn" class="bg-white  border border-[#337ab7] text-[#337ab7] hover:bg-blue-50 font-semibold py-1.5 px-3 rounded shadow-sm">Mark for Review & Next</button>
+                    <div class="absolute bottom-0 w-full brutal-card border-t-3 border-black p-2.5 sm:p-3 flex flex-wrap gap-2 items-center text-xs z-50" style="background-color: var(--bg-card);">
+                        <button id="ntaClearBtn" class="brutal-btn py-2 px-3 text-xs font-black uppercase border-2 border-black cursor-pointer" style="background-color: #E2E8F0 !important; color: #000000 !important;">Clear Response</button>
+                        <button id="ntaMarkReviewBtn" class="brutal-btn py-2 px-3 text-xs font-black uppercase border-2 border-black cursor-pointer" style="background-color: #A855F7 !important; color: #ffffff !important;">Mark for Review & Next</button>
                         <div class="flex-1"></div>
-                        <button id="ntaToggleScratchpadBtn" class="bg-yellow-100 text-yellow-800 hover:bg-yellow-200 font-bold py-1.5 px-3 rounded mr-2 transition-colors">📝 NOTES</button>
-                        <button id="ntaBackBtn" class="bg-white border border-gray-300 hover:bg-gray-50 py-1.5 px-4 rounded shadow-sm font-semibold">Previous</button>
-                        <button id="ntaSaveNextBtn" class="bg-white border border-gray-300 hover:bg-gray-50 py-1.5 px-4 rounded shadow-sm font-semibold">Save & Next</button>
+                        <button id="ntaToggleScratchpadBtn" class="brutal-btn py-2 px-3 text-xs font-black uppercase border-2 border-black cursor-pointer" style="background-color: #FFE600 !important; color: #000000 !important;">📝 NOTES</button>
+                        <button id="ntaBackBtn" class="brutal-btn py-2 px-4 text-xs font-black uppercase border-2 border-black cursor-pointer" style="background-color: #0EA5E9 !important; color: #ffffff !important;">Previous</button>
+                        <button id="ntaSaveNextBtn" class="brutal-btn py-2 px-4 text-xs font-black uppercase border-2 border-black cursor-pointer" style="background-color: #10B981 !important; color: #000000 !important;">Save & Next</button>
                     </div>
                 </div>
 
                 <!-- Right Panel: Palette -->
-                <div id="ntaPaletteDrawer" class="w-80 flex flex-col bg-[#e7f1f8]  absolute md:relative right-0 top-0 bottom-0 z-40 transform translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out border-l border-gray-300  shadow-xl md:shadow-none">
+                <div id="ntaPaletteDrawer" class="w-80 flex flex-col absolute md:relative right-0 top-0 bottom-0 z-40 transform translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out border-l-3 border-black shadow-xl md:shadow-none" style="background-color: var(--bg-card); color: var(--text-primary);">
                     
                     <!-- Profile Area -->
-                    <div class="bg-[var(--bg-input)] p-2 flex items-center gap-3 border-b  min-h-[60px]">
-                        <div class="w-12 h-12 bg-gray-200 rounded border border-gray-300 flex items-center justify-center shrink-0">
-                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+                    <div class="p-3 flex items-center gap-3 border-b-2 border-black min-h-[60px]" style="background-color: var(--bg-card);">
+                        <div class="w-10 h-10 bg-blue-600 text-white rounded-none border-2 border-black flex items-center justify-center shrink-0 font-black">
+                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
                         </div>
-                        <div class="font-bold text-sm dark: truncate" id="ntaProfileName">Candidate</div>
-                        <button id="ntaClosePaletteBtn" class="md:hidden ml-auto p-1 hover: dark: dark:hover:" aria-label="Close Palette">
+                        <div class="font-black text-sm uppercase tracking-wide truncate" style="color: var(--text-primary);" id="ntaProfileName">Candidate</div>
+                        <button id="ntaClosePaletteBtn" class="md:hidden ml-auto p-1 text-white" aria-label="Close Palette">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                         </button>
                     </div>
 
                     <!-- Legend Area -->
-                    <div class="bg-[var(--bg-input)] border-b  p-2 text-[10px] dark: flex flex-col gap-2">
+                    <div class="border-b-2 border-black p-3 text-[11px] font-bold flex flex-col gap-2" style="background-color: var(--bg-card); color: var(--text-primary);">
                         <div class="flex justify-between">
-                            <div class="flex items-center w-1/2"><span id="ntaLegendAnswered" class="w-6 h-6 inline-flex items-center justify-center bg-[#5cb85c] rounded-t-md mr-2 nta-answered" style="border-radius: 100% 100% 0 0; clip-path: polygon(50% 0%, 100% 25%, 100% 100%, 0% 100%, 0% 25%);">0</span> Answered</div>
-                            <div class="flex items-center w-1/2"><span id="ntaLegendNotAnswered" class="w-6 h-6 inline-flex items-center justify-center bg-[#d9534f] rounded-b-md mr-2 nta-not-answered" style="clip-path: polygon(0 0, 100% 0, 100% 75%, 50% 100%, 0 75%); border-radius: 0 0 10% 10%;">0</span> Not Answered</div>
+                            <div class="flex items-center w-1/2"><span id="ntaLegendAnswered" class="w-6 h-6 inline-flex items-center justify-center bg-[#22c55e] text-white font-black rounded-t-md mr-2 nta-answered" style="color: #ffffff !important;">0</span> Answered</div>
+                            <div class="flex items-center w-1/2"><span id="ntaLegendNotAnswered" class="w-6 h-6 inline-flex items-center justify-center bg-[#F28C28] text-white font-black rounded-b-md mr-2 nta-not-answered" style="color: #ffffff !important;">0</span> Not Answered</div>
                         </div>
                         <div class="flex justify-between">
-                            <div class="flex items-center w-1/2"><span id="ntaLegendNotVisited" class="w-6 h-6 inline-flex items-center justify-center bg-gray-100 border border-gray-300 shadow-inner rounded mr-2 nta-not-visited">0</span> Not Visited</div>
-                            <div class="flex items-center w-1/2"><span id="ntaLegendMarked" class="w-6 h-6 inline-flex items-center justify-center bg-[#5bc0de] rounded-full mr-2 nta-marked shadow-inner">0</span> Marked for review</div>
+                            <div class="flex items-center w-1/2"><span id="ntaLegendNotVisited" class="w-6 h-6 inline-flex items-center justify-center bg-gray-200 text-black font-black border border-black rounded mr-2 nta-not-visited" style="color: #000000 !important;">0</span> Not Visited</div>
+                            <div class="flex items-center w-1/2"><span id="ntaLegendMarked" class="w-6 h-6 inline-flex items-center justify-center bg-[#9333ea] text-white font-black rounded-full mr-2 nta-marked" style="color: #ffffff !important;">0</span> Marked for review</div>
                         </div>
                         <div class="flex items-start mt-1">
-                            <span id="ntaLegendAnsweredMarked" class="w-6 h-6 shrink-0 inline-flex items-center justify-center bg-[#5bc0de] rounded-full mr-2 relative nta-answered-marked shadow-inner">
-                                <span class="w-2 h-2 bg-[#5cb85c] rounded-full absolute bottom-0 right-0 border border-white"></span>0
+                            <span id="ntaLegendAnsweredMarked" class="w-6 h-6 shrink-0 inline-flex items-center justify-center bg-[#9333ea] text-white font-black rounded-full mr-2 relative nta-answered-marked" style="color: #ffffff !important;">
+                                <span class="w-2 h-2 bg-[#22c55e] rounded-full absolute bottom-0 right-0 border border-white"></span>0
                             </span> 
-                            <span class="text-[10px] leading-tight mt-0.5">Answered and Marked for Review (will also be evaluated)</span>
+                            <span class="text-[10px] font-semibold leading-tight mt-0.5" style="color: var(--text-muted);">Answered & Marked for Review</span>
                         </div>
                     </div>
                     
-                    <div class="bg-[#337ab7] text-xs font-bold p-2 truncate" id="ntaCurrentSubjectPaletteHeader">Subject</div>
-                    <div class="bg-[#e7f1f8]  px-2 py-1 text-xs font-bold dark: border-b">Choose a Question</div>
+                    <div class="bg-blue-600 text-white text-xs font-black uppercase p-2.5 tracking-wider border-b-2 border-black" id="ntaCurrentSubjectPaletteHeader">Subject</div>
+                    <div class="px-3 py-1.5 text-xs font-extrabold uppercase tracking-widest border-b-2 border-black" style="background-color: var(--bg-card); color: var(--text-muted);">Choose a Question</div>
 
-                    <div class="flex-1 overflow-y-auto p-4 bg-[#e7f1f8] /50">
+                    <div class="flex-1 overflow-y-auto p-4" style="background-color: var(--bg-page);">
                         <div id="ntaPaletteGrid" class="flex flex-col gap-4">
                             <!-- Palette grouped by exercise injected here -->
                         </div>
                     </div>
                     
-                    <div class="p-2 border-t border-gray-300  bg-[var(--bg-input)]">
-                        <button id="ntaSubmitBtn" class="w-full bg-[#337ab7] hover:bg-[#286090] font-bold py-2 px-6 rounded shadow-sm">Submit</button>
+                    <div class="p-3 border-t-3 border-black" style="background-color: var(--bg-card);">
+                        <button id="ntaSubmitBtn" class="brutal-btn w-full font-black uppercase text-sm py-3 px-6 text-white border-2 border-black cursor-pointer" style="background-color: #2563EB !important; color: #ffffff !important;">Submit Test</button>
                     </div>
                 </div>
             </div>
-        </div>
+        </div>       </div>
         
 
         <!-- =========================================================== -->
@@ -2281,7 +2278,7 @@
     </div>
     
 
-    <script defer src="app.js?v=160"></script>
+    <script defer src="app.js?v=165"></script>
     <script defer src="/liveRoom.js"></script>
 </body>
 </html>
