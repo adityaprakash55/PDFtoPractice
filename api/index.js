@@ -60,10 +60,19 @@ app.get('/terms', (req, res) => {
     });
 });
 
+app.get('/contact', (req, res) => {
+    res.render('contact', {
+        title: 'Contact Us | PDF to PRACTICE',
+        description: 'Get in touch with PDF to PRACTICE. Join our official Telegram channel https://t.me/PDFtoPractice or send us an email for support and feedback.',
+        canonical: 'https://pdftopractice.in/contact'
+    });
+});
+
 // Redirects for legacy/incorrect paths
 app.get(['/donate.html', '/Donate'], (req, res) => res.redirect(301, '/donate'));
 app.get('/privacy.html', (req, res) => res.redirect(301, '/privacy'));
 app.get('/terms.html', (req, res) => res.redirect(301, '/terms'));
+app.get('/contact.html', (req, res) => res.redirect(301, '/contact'));
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

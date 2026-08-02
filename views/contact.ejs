@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="canonical" href="<%= canonical %>">
+    
+    <!-- Vercel Speed Insights -->
+    <script>
+        window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/speed-insights/script.js"></script>
+
+    <!-- SEO & Meta Tags -->
+    <meta name="description" content="<%= description %>">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Local CSS -->
+    <link rel="stylesheet" href="/styles.css">
+    <script>
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+    <style>
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-blob {
+            animation: blob 7s infinite;
+        }
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+        .animation-delay-4000 {
+            animation-delay: 4s;
+        }
+        
+        .brutal-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 3px solid #000;
+            box-shadow: 5px 5px 0px 0px #000;
+        }
+        .dark .brutal-card {
+            background: rgba(15, 23, 42, 0.85);
+            border: 3px solid #000;
+            box-shadow: 5px 5px 0px 0px #000;
+        }
+        .brutal-btn {
+            border: 2.5px solid #000;
+            box-shadow: 3px 3px 0px 0px #000;
+            transition: all 0.15s ease;
+        }
+        .brutal-btn:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 5px 5px 0px 0px #000;
+        }
+        .brutal-btn:active {
+            transform: translate(1px, 1px);
+            box-shadow: 1px 1px 0px 0px #000;
+        }
+    </style>
+    <link rel="preload" href="logo.png" as="image">
+
+    <!-- Safari & Apple Specific Meta -->
+    <link rel="apple-touch-icon" href="/logo.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#0a192f">
+
+    <!-- Universal Social/Search Cards -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<%= title %>">
+    <meta name="twitter:description" content="<%= description %>">
+    <meta name="twitter:image" content="https://pdftopractice.in/logo-light.png">
+    <meta property="og:image" content="https://pdftopractice.in/logo-light.png">
+
+    <!-- Favicon & Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" href="/favicon.png">
+</head>
+<body class="font-sans transition-colors duration-200 relative min-h-screen flex flex-col justify-between overflow-x-hidden">
+    
+    <!-- Animated Background Mesh -->
+    <div class="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
+        <div class="absolute top-0 -left-4 w-72 h-72 bg-cyan-400/20 dark:bg-cyan-900/30 rounded-full filter blur-3xl opacity-70 animate-blob"></div>
+        <div class="absolute top-0 -right-4 w-72 h-72 bg-emerald-400/20 dark:bg-emerald-900/30 rounded-full filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
+        <div class="absolute -bottom-8 left-20 w-72 h-72 bg-amber-400/20 dark:bg-amber-900/30 rounded-full filter blur-3xl opacity-70 animate-blob animation-delay-4000"></div>
+    </div>
+
+    <!-- Theme Toggle Button -->
+    <button id="themeToggleBtn" aria-label="Toggle Theme" title="Toggle Theme" class="fixed top-4 right-4 z-[100] p-3 brutal-btn bg-white dark:bg-slate-800 text-yellow-500 dark:text-yellow-400 hover:bg-gray-100 dark:hover:bg-slate-700 cursor-pointer">
+        <svg id="themeIconSun" class="w-6 h-6 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+        <svg id="themeIconMoon" class="w-6 h-6 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+    </button>
+
+    <!-- Header Bar -->
+    <header class="header-bar border-b-[3.5px] border-black sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <a href="/" class="flex items-center space-x-3 group">
+                <div class="bg-yellow-400 text-black p-2 border-2 border-black shadow-[2px_2px_0px_0px_#000] group-hover:bg-cyan-400 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                </div>
+                <span class="text-lg sm:text-xl font-black uppercase tracking-tight" style="color: var(--text-primary);">PDF to PRACTICE</span>
+            </a>
+            
+            <div class="flex items-center space-x-3">
+                <a href="https://t.me/PDFtoPractice" target="_blank" rel="noopener" aria-label="Telegram" title="Telegram Channel" class="p-2 brutal-card border-[2.5px] border-black shadow-[3px_3px_0px_0px_#000] hover:bg-sky-100 dark:hover:bg-sky-900/40 transition-all cursor-pointer flex items-center justify-center">
+                    <svg class="w-5 h-5 text-[#229ED9]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.562 8.161c-.18.717-.962 4.084-1.362 5.752-.169.706-.433.943-.684.966-.547.05-1.002-.387-1.533-.735-.83-.544-1.301-.883-2.107-1.413-.93-.614-.327-.951.203-1.503.138-.144 2.535-2.324 2.582-2.523.006-.025.01-.119-.045-.168s-.136-.032-.195-.019c-.083.018-1.408.895-3.974 2.628-.376.258-.717.385-1.022.378-.337-.008-.985-.191-1.467-.348-.592-.192-1.062-.294-1.021-.621.021-.17.256-.345.704-.524 2.766-1.204 4.61-1.998 5.534-2.383 2.637-1.099 3.183-1.29 3.539-1.296.078-.001.253.018.366.11.096.078.123.184.135.258.012.075.027.243.014.408z"/></svg>
+                </a>
+                <a href="mailto:support@pdftopractice.in" aria-label="Email Us" title="Email Support" class="p-2 brutal-card border-[2.5px] border-black shadow-[3px_3px_0px_0px_#000] hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-all cursor-pointer flex items-center justify-center">
+                    <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                </a>
+                <a href="/donate" class="hidden sm:flex px-3.5 py-2 bg-pink-400 hover:bg-pink-300 border-[2.5px] border-black shadow-[3px_3px_0px_0px_#000] font-black uppercase text-xs hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all items-center gap-1">
+                    <svg class="w-4 h-4 text-cyan-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>
+                    <span>Donate</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-1">
+        
+        <!-- Header Banner -->
+        <div class="text-center mb-12">
+            <div class="inline-block px-4 py-1.5 bg-yellow-400 border-[2px] border-black font-black uppercase text-xs shadow-[2.5px_2.5px_0px_0px_#000] mb-4">
+                <span>💬 We're Here to Help</span>
+            </div>
+            <h1 class="text-4xl sm:text-5xl font-black uppercase tracking-tight leading-tight mb-4" style="color: var(--text-primary);">
+                Contact Us & <span class="text-cyan-500 underline decoration-[5px] decoration-black dark:decoration-white">Community</span>
+            </h1>
+            <p class="text-base sm:text-lg font-bold max-w-2xl mx-auto" style="color: var(--text-muted);">
+                Have feedback, bug reports, feature requests, or queries? Connect with the PDF to PRACTICE team via Telegram or Email.
+            </p>
+        </div>
+
+        <!-- Contact Cards Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+            
+            <!-- Telegram Contact Card -->
+            <div class="brutal-card p-8 flex flex-col justify-between relative overflow-hidden group">
+                <div class="absolute -top-12 -right-12 w-36 h-36 bg-sky-400/20 rounded-full blur-2xl pointer-events-none"></div>
+                <div>
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="w-14 h-14 bg-[#229ED9] text-white border-2 border-black shadow-[3px_3px_0px_0px_#000] flex items-center justify-center">
+                            <svg class="w-8 h-8 fill-current" viewBox="0 0 24 24">
+                                <path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.562 8.161c-.18.717-.962 4.084-1.362 5.752-.169.706-.433.943-.684.966-.547.05-1.002-.387-1.533-.735-.83-.544-1.301-.883-2.107-1.413-.93-.614-.327-.951.203-1.503.138-.144 2.535-2.324 2.582-2.523.006-.025.01-.119-.045-.168s-.136-.032-.195-.019c-.083.018-1.408.895-3.974 2.628-.376.258-.717.385-1.022.378-.337-.008-.985-.191-1.467-.348-.592-.192-1.062-.294-1.021-.621.021-.17.256-.345.704-.524 2.766-1.204 4.61-1.998 5.534-2.383 2.637-1.099 3.183-1.29 3.539-1.296.078-.001.253.018.366.11.096.078.123.184.135.258.012.075.027.243.014.408z"/>
+                            </svg>
+                        </div>
+                        <span class="px-2.5 py-1 text-[10px] font-black uppercase bg-sky-400 text-black border-2 border-black">Fast Response</span>
+                    </div>
+                    <h2 class="text-2xl font-black uppercase tracking-tight mb-2" style="color: var(--text-primary);">Telegram Support</h2>
+                    <p class="text-xs font-mono font-bold text-sky-500 mb-4">https://t.me/PDFtoPractice</p>
+                    <p class="text-sm font-bold leading-relaxed mb-6" style="color: var(--text-muted);">
+                        Join our official Telegram channel and community to report bugs, suggest features, receive release notifications, and get direct assistance.
+                    </p>
+                </div>
+                
+                <a href="https://t.me/PDFtoPractice" target="_blank" rel="noopener" class="brutal-btn px-5 py-3 bg-[#229ED9] hover:bg-[#1f8ebd] text-white font-black uppercase text-sm flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.562 8.161c-.18.717-.962 4.084-1.362 5.752-.169.706-.433.943-.684.966-.547.05-1.002-.387-1.533-.735-.83-.544-1.301-.883-2.107-1.413-.93-.614-.327-.951.203-1.503.138-.144 2.535-2.324 2.582-2.523.006-.025.01-.119-.045-.168s-.136-.032-.195-.019c-.083.018-1.408.895-3.974 2.628-.376.258-.717.385-1.022.378-.337-.008-.985-.191-1.467-.348-.592-.192-1.062-.294-1.021-.621.021-.17.256-.345.704-.524 2.766-1.204 4.61-1.998 5.534-2.383 2.637-1.099 3.183-1.29 3.539-1.296.078-.001.253.018.366.11.096.078.123.184.135.258.012.075.027.243.014.408z"/></svg>
+                    <span>Telegram Us @PDFtoPractice</span>
+                </a>
+            </div>
+
+            <!-- Email Contact Card -->
+            <div class="brutal-card p-8 flex flex-col justify-between relative overflow-hidden group">
+                <div class="absolute -top-12 -right-12 w-36 h-36 bg-amber-400/20 rounded-full blur-2xl pointer-events-none"></div>
+                <div>
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="w-14 h-14 bg-amber-400 text-black border-2 border-black shadow-[3px_3px_0px_0px_#000] flex items-center justify-center">
+                            <svg class="w-8 h-8 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+                        <span class="px-2.5 py-1 text-[10px] font-black uppercase bg-amber-400 text-black border-2 border-black">Official Mail</span>
+                    </div>
+                    <h2 class="text-2xl font-black uppercase tracking-tight mb-2" style="color: var(--text-primary);">Email Support</h2>
+                    <p class="text-xs font-mono font-bold text-amber-500 mb-4">support@pdftopractice.in</p>
+                    <p class="text-sm font-bold leading-relaxed mb-6" style="color: var(--text-muted);">
+                        Prefer email? Drop us a line for direct support, business inquiries, or detailed bug reports with attached screenshots.
+                    </p>
+                </div>
+
+                <a href="mailto:support@pdftopractice.in" class="brutal-btn px-5 py-3 bg-amber-400 hover:bg-amber-300 text-black font-black uppercase text-sm flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    <span>Email Us (support@pdftopractice.in)</span>
+                </a>
+            </div>
+
+        </div>
+
+        <!-- Quick Interactive Contact Form -->
+        <div class="brutal-card p-6 sm:p-8">
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="p-2 bg-emerald-400 text-black border-2 border-black">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                </div>
+                <h3 class="text-xl font-black uppercase tracking-tight" style="color: var(--text-primary);">Send Quick Feedback</h3>
+            </div>
+
+            <form id="contactForm" onsubmit="handleContactSubmit(event)" class="space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-black uppercase mb-1" style="color: var(--text-primary);">Your Name</label>
+                        <input type="text" id="contactName" required placeholder="Aspirant Name" class="w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border-2 border-black font-bold text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400" style="color: var(--text-primary);" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-black uppercase mb-1" style="color: var(--text-primary);">Category</label>
+                        <select id="contactCategory" class="w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border-2 border-black font-bold text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400" style="color: var(--text-primary);">
+                            <option value="Bug Report">🐛 Bug Report</option>
+                            <option value="Feature Request">💡 Feature Request</option>
+                            <option value="General Support">❓ General Support</option>
+                            <option value="Other Feedback">❤️ Other Feedback</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-black uppercase mb-1" style="color: var(--text-primary);">Your Message</label>
+                    <textarea id="contactMessage" rows="4" required placeholder="Type your message or details here..." class="w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border-2 border-black font-bold text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400" style="color: var(--text-primary);"></textarea>
+                </div>
+                <button type="submit" class="brutal-btn w-full py-3.5 bg-emerald-400 hover:bg-emerald-300 text-black font-black uppercase text-sm flex items-center justify-center gap-2 cursor-pointer">
+                    <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                    <span>Compose Email via Client</span>
+                </button>
+            </form>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full mt-16 relative z-10" style="background-color: var(--bg-card); color: var(--text-primary); border-top: 4px solid var(--border-color);">
+        <div class="max-w-7xl mx-auto px-6 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10 pb-8 border-b-2 border-black">
+                <div class="md:col-span-2 space-y-4">
+                    <div class="flex items-center space-x-3">
+                        <img src="logo-light.png" alt="Logo" class="w-9 h-9 border-2 border-black dark:hidden">
+                        <img src="logo-dark.png" alt="Logo" class="w-9 h-9 border-2 border-black hidden dark:block">
+                        <span class="text-xl font-black tracking-tight uppercase" style="color: var(--text-primary);">PDF to PRACTICE</span>
+                    </div>
+                    <p class="text-sm font-bold max-w-sm leading-relaxed" style="color: var(--text-muted);">
+                        Transform coaching DPPs, PYQs, and test PDFs into interactive JEE/NEET CBT Mock Simulators instantly.
+                    </p>
+                    <div class="flex items-center gap-3">
+                        <a href="https://t.me/PDFtoPractice" target="_blank" rel="noopener" class="brutal-btn px-3 py-1.5 text-xs font-black uppercase bg-[#229ED9] text-white flex items-center gap-1.5">
+                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.562 8.161c-.18.717-.962 4.084-1.362 5.752-.169.706-.433.943-.684.966-.547.05-1.002-.387-1.533-.735-.83-.544-1.301-.883-2.107-1.413-.93-.614-.327-.951.203-1.503.138-.144 2.535-2.324 2.582-2.523.006-.025.01-.119-.045-.168s-.136-.032-.195-.019c-.083.018-1.408.895-3.974 2.628-.376.258-.717.385-1.022.378-.337-.008-.985-.191-1.467-.348-.592-.192-1.062-.294-1.021-.621.021-.17.256-.345.704-.524 2.766-1.204 4.61-1.998 5.534-2.383 2.637-1.099 3.183-1.29 3.539-1.296.078-.001.253.018.366.11.096.078.123.184.135.258.012.075.027.243.014.408z"/></svg>
+                            Telegram Channel
+                        </a>
+                        <a href="mailto:support@pdftopractice.in" class="brutal-btn px-3 py-1.5 text-xs font-black uppercase bg-amber-400 text-black flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                            Email Us
+                        </a>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <h4 class="text-xs font-black uppercase tracking-widest" style="color: var(--text-primary);">Quick Links</h4>
+                    <ul class="space-y-2.5 text-sm font-bold">
+                        <li><a href="/" class="hover:underline flex items-center gap-1.5" style="color: var(--text-primary);"><svg class="w-4 h-4 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg> Home Dashboard</a></li>
+                        <li><a href="/contact" class="hover:underline flex items-center gap-1.5 text-emerald-500"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg> Contact Us</a></li>
+                        <li><a href="/donate" class="hover:underline flex items-center gap-1.5" style="color: var(--text-primary);"><svg class="w-4 h-4 text-rose-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg> Support & Donate</a></li>
+                    </ul>
+                </div>
+
+                <div class="space-y-3">
+                    <h4 class="text-xs font-black uppercase tracking-widest" style="color: var(--text-primary);">Legal & Support</h4>
+                    <ul class="space-y-2.5 text-sm font-bold">
+                        <li><a href="/terms" class="hover:underline" style="color: var(--text-primary);">Terms & Conditions</a></li>
+                        <li><a href="/privacy" class="hover:underline" style="color: var(--text-primary);">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row items-center justify-between text-xs font-bold gap-4" style="color: var(--text-muted);">
+                <p>&copy; 2026 PDF to PRACTICE. Built for JEE & NEET Aspirants.</p>
+                <p class="flex items-center gap-1">
+                    <span>Crafted with</span>
+                    <svg class="w-3.5 h-3.5 text-rose-500 inline fill-current" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>
+                    <span>for free education</span>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('themeToggleBtn').addEventListener('click', () => {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        });
+
+        function handleContactSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('contactName').value;
+            const category = document.getElementById('contactCategory').value;
+            const message = document.getElementById('contactMessage').value;
+            
+            const subject = encodeURIComponent(`[PDF to PRACTICE] ${category} from ${name}`);
+            const body = encodeURIComponent(`Hi PDF to PRACTICE Team,\n\nName: ${name}\nCategory: ${category}\n\nMessage:\n${message}`);
+            
+            window.location.href = `mailto:support@pdftopractice.in?subject=${subject}&body=${body}`;
+        }
+    </script>
+</body>
+</html>

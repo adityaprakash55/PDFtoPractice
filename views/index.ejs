@@ -226,16 +226,26 @@
                 <img src="logo-dark.png" alt="Logo" class="w-10 h-10 rounded-none hidden dark:block">
                 <h1 class="text-xl font-bold dark: tracking-tight">PDF to PRACTICE</h1>
             </div>
-            <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-3 sm:space-x-4">
                 <button id="themeToggleBtn" aria-label="Toggle Theme" class="p-2 brutal-card border-[2.5px] border-black shadow-[3px_3px_0px_0px_#000] text-yellow-500 dark:text-yellow-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all cursor-pointer active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000]" title="Toggle Theme">
                     <svg id="themeIconSun" class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                     <svg id="themeIconMoon" class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
                 </button>
+                <a href="https://t.me/PDFtoPractice" target="_blank" rel="noopener" aria-label="Telegram" title="Telegram Channel" class="p-2 brutal-card border-[2.5px] border-black shadow-[3px_3px_0px_0px_#000] hover:bg-sky-100 dark:hover:bg-sky-900/40 transition-all cursor-pointer active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] flex items-center justify-center">
+                    <svg class="w-5 h-5 text-[#229ED9]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.562 8.161c-.18.717-.962 4.084-1.362 5.752-.169.706-.433.943-.684.966-.547.05-1.002-.387-1.533-.735-.83-.544-1.301-.883-2.107-1.413-.93-.614-.327-.951.203-1.503.138-.144 2.535-2.324 2.582-2.523.006-.025.01-.119-.045-.168s-.136-.032-.195-.019c-.083.018-1.408.895-3.974 2.628-.376.258-.717.385-1.022.378-.337-.008-.985-.191-1.467-.348-.592-.192-1.062-.294-1.021-.621.021-.17.256-.345.704-.524 2.766-1.204 4.61-1.998 5.534-2.383 2.637-1.099 3.183-1.29 3.539-1.296.078-.001.253.018.366.11.096.078.123.184.135.258.012.075.027.243.014.408z"/></svg>
+                </a>
+                <a href="mailto:support@pdftopractice.in" aria-label="Email Us" title="Email Support" class="p-2 brutal-card border-[2.5px] border-black shadow-[3px_3px_0px_0px_#000] hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-all cursor-pointer active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] flex items-center justify-center">
+                    <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                </a>
+                <a href="/contact" class="px-4 py-2 bg-emerald-400 hover:bg-emerald-300 border-[2.5px] border-black shadow-[3px_3px_0px_0px_#000] font-black uppercase text-xs hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all flex items-center gap-1">
+                    <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                    <span class="hidden sm:inline">Contact Us</span>
+                </a>
                 <a href="/donate" class="px-4 py-2 bg-pink-400 hover:bg-pink-300 border-[2.5px] border-black shadow-[3px_3px_0px_0px_#000] font-black uppercase text-xs hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all flex items-center gap-1">
                     <svg class="w-4 h-4 text-cyan-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>
                     <span class="hidden sm:inline">Support/Donate</span>
                 </a>
-                <a href="mailto:support@pdftopractice.in" class="px-4 py-2 bg-yellow-400 hover:bg-yellow-300 border-[2.5px] border-black shadow-[3px_3px_0px_0px_#000] font-black uppercase text-xs hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all flex items-center gap-1">
+                <a href="mailto:support@pdftopractice.in" class="px-4 py-2 bg-yellow-400 hover:bg-yellow-300 border-[2.5px] border-black shadow-[3px_3px_0px_0px_#000] font-black uppercase text-xs hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all hidden md:flex items-center gap-1">
                     <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
                     <span class="hidden sm:inline">Report a Bug</span>
                 </a>
@@ -309,6 +319,10 @@
                 </div>
                 <span class="text-[9px] font-black uppercase px-1.5 py-0.5 bg-purple-500 text-white rounded">LIVE</span>
             </button>
+            <a href="/contact" class="dash-nav-btn w-full flex items-center gap-2.5 px-3 py-2.5 rounded-none text-sm font-medium hover:hover:bg-white/5 transition-all text-left" title="Contact Us">
+                <svg class="w-4 h-4 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+                <span class="dash-nav-text whitespace-nowrap">Contact Us</span>
+            </a>
         </nav>
     </aside>
 
@@ -1975,8 +1989,9 @@
                         <h4 class="text-xs font-black uppercase tracking-widest" style="color: var(--text-primary);">Quick Links</h4>
                         <ul class="space-y-2.5 text-sm font-bold">
                             <li><a href="/" class="hover:underline flex items-center gap-1.5" style="color: var(--text-primary);"><svg class="w-4 h-4 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg> Home Dashboard</a></li>
+                            <li><a href="/contact" class="hover:underline flex items-center gap-1.5" style="color: var(--text-primary);"><svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg> Contact Us</a></li>
                             <li><a href="/donate" class="hover:underline flex items-center gap-1.5" style="color: var(--text-primary);"><svg class="w-4 h-4 text-rose-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg> Support & Donate</a></li>
-                            <li><a href="https://youtu.be/AYSNQ1UcL7I" target="_blank" rel="noopener" class="hover:underline flex items-center gap-1.5" style="color: var(--text-primary);"><svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M21.582,6.186c-0.23-0.86-0.908-1.538-1.768-1.768C18.254,4,12,4,12,4S5.746,4,4.186,4.418c-0.86,0.23-1.538,0.908-1.768,1.768C2,7.746,2,12,2,12s0,4.254,0.418,5.814c0.23,0.86,0.908,1.538,1.768,1.768C5.746,20,12,20,12,20s6.254,0,7.814-0.418c0.86-0.23,1.538-0.908,1.768-1.768C22,16.254,22,12,22,12S22,7.746,21.582,6.186z M10,15.464V8.536L16,12L10,15.464z"></path></svg> Video Tutorial</a></li>
+                            <li><a href="https://t.me/PDFtoPractice" target="_blank" rel="noopener" class="hover:underline flex items-center gap-1.5" style="color: var(--text-primary);"><svg class="w-4 h-4 text-[#229ED9]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.562 8.161c-.18.717-.962 4.084-1.362 5.752-.169.706-.433.943-.684.966-.547.05-1.002-.387-1.533-.735-.83-.544-1.301-.883-2.107-1.413-.93-.614-.327-.951.203-1.503.138-.144 2.535-2.324 2.582-2.523.006-.025.01-.119-.045-.168s-.136-.032-.195-.019c-.083.018-1.408.895-3.974 2.628-.376.258-.717.385-1.022.378-.337-.008-.985-.191-1.467-.348-.592-.192-1.062-.294-1.021-.621.021-.17.256-.345.704-.524 2.766-1.204 4.61-1.998 5.534-2.383 2.637-1.099 3.183-1.29 3.539-1.296.078-.001.253.018.366.11.096.078.123.184.135.258.012.075.027.243.014.408z"/></svg> Telegram Channel</a></li>
                         </ul>
                     </div>
 
