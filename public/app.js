@@ -1701,6 +1701,20 @@ function logQuestionJourney(realIndex, action, details = {}) {
 }
 
 function startPracticeSession(indices) {
+    // Automatically trigger fullscreen mode
+    try {
+        const docEl = document.documentElement;
+        if (docEl.requestFullscreen) {
+            docEl.requestFullscreen().catch(err => console.log("Fullscreen failed:", err));
+        } else if (docEl.webkitRequestFullscreen) {
+            docEl.webkitRequestFullscreen();
+        } else if (docEl.msRequestFullscreen) {
+            docEl.msRequestFullscreen();
+        }
+    } catch(err) {
+        console.error("Fullscreen API not supported or failed:", err);
+    }
+
     practiceState.activeIndices = indices;
     practiceState.currentIndex = 0;
     practiceState.theme = 'nta';
@@ -3779,6 +3793,15 @@ let _lrdNavWired = false;
 let _lrdChartTime = null, _lrdChartScoreQ = null, _lrdChartScoreT = null;
 
 function showResultsDashboard() {
+    // Exit fullscreen mode on test complete
+    try {
+        if (document.fullscreenElement) {
+            document.exitFullscreen().catch(err => console.log("Exit fullscreen failed:", err));
+        }
+    } catch(err) {
+        console.error("Fullscreen exit error:", err);
+    }
+
     // Stop all timers
     if (practiceState.totalTimerInterval) clearInterval(practiceState.totalTimerInterval);
     if (practiceState.qTimerInterval) clearInterval(practiceState.qTimerInterval);
