@@ -103,12 +103,6 @@
         <div class="absolute -bottom-8 left-20 w-72 h-72 bg-amber-400/20 dark:bg-amber-900/30 rounded-full filter blur-3xl opacity-70 animate-blob animation-delay-4000"></div>
     </div>
 
-    <!-- Theme Toggle Button -->
-    <button id="themeToggleBtn" aria-label="Toggle Theme" title="Toggle Theme" class="fixed top-4 right-4 z-[100] p-3 brutal-btn bg-white dark:bg-slate-800 text-yellow-500 dark:text-yellow-400 hover:bg-gray-100 dark:hover:bg-slate-700 cursor-pointer">
-        <svg id="themeIconSun" class="w-6 h-6 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-        <svg id="themeIconMoon" class="w-6 h-6 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
-    </button>
-
     <!-- Header Bar -->
     <header class="header-bar border-b-[3.5px] border-black sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -118,7 +112,11 @@
                 <span class="text-lg sm:text-xl font-black uppercase tracking-tight" style="color: var(--text-primary);">PDF to PRACTICE</span>
             </a>
             
-            <div class="flex items-center space-x-3">
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <button id="themeToggleBtn" aria-label="Toggle Theme" title="Toggle Theme" class="p-2 brutal-card border-[2.5px] border-black shadow-[3px_3px_0px_0px_#000] text-yellow-500 dark:text-yellow-400 hover:bg-gray-100 dark:hover:bg-slate-700 transition-all cursor-pointer active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000]">
+                    <svg id="themeIconSun" class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    <svg id="themeIconMoon" class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                </button>
                 <a href="https://t.me/PDFtoPractice" target="_blank" rel="noopener" aria-label="Telegram" title="Telegram Channel" class="p-2 brutal-card border-[2.5px] border-black shadow-[3px_3px_0px_0px_#000] hover:bg-sky-100 dark:hover:bg-sky-900/40 transition-all cursor-pointer flex items-center justify-center">
                     <svg class="w-5 h-5 text-[#229ED9]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.562 8.161c-.18.717-.962 4.084-1.362 5.752-.169.706-.433.943-.684.966-.547.05-1.002-.387-1.533-.735-.83-.544-1.301-.883-2.107-1.413-.93-.614-.327-.951.203-1.503.138-.144 2.535-2.324 2.582-2.523.006-.025.01-.119-.045-.168s-.136-.032-.195-.019c-.083.018-1.408.895-3.974 2.628-.376.258-.717.385-1.022.378-.337-.008-.985-.191-1.467-.348-.592-.192-1.062-.294-1.021-.621.021-.17.256-.345.704-.524 2.766-1.204 4.61-1.998 5.534-2.383 2.637-1.099 3.183-1.29 3.539-1.296.078-.001.253.018.366.11.096.078.123.184.135.258.012.075.027.243.014.408z"/></svg>
                 </a>
