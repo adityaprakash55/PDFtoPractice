@@ -544,6 +544,9 @@
   .mx-auto {
     margin-inline: auto;
   }
+  .my-8 {
+    margin-block: calc(var(--spacing) * 8);
+  }
   .my-auto {
     margin-block: auto;
   }
@@ -2412,6 +2415,9 @@
   .p-8 {
     padding: calc(var(--spacing) * 8);
   }
+  .p-10 {
+    padding: calc(var(--spacing) * 10);
+  }
   .px-1 {
     padding-inline: var(--spacing);
   }
@@ -2961,6 +2967,9 @@
   }
   .opacity-80 {
     opacity: 80%;
+  }
+  .opacity-90 {
+    opacity: 90%;
   }
   .opacity-\[0\.03\] {
     opacity: 0.03;

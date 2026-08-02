@@ -3844,10 +3844,10 @@ function showResultsDashboard() {
 
     const stats = { scorePerQ, hasNeg, totalQ, totalSeconds, correctCount, incorrectCount, attemptedCount, skippedCount, maxScore, score, scorePercent, accuracy, avgTimePerQ };
 
-    // Role badge
+    // Role badge & Live tags
+    const inLive = typeof isLiveMode !== 'undefined' && isLiveMode;
     const roleBadge = document.getElementById('lrdRoleBadge');
     if (roleBadge) {
-        const inLive = typeof isLiveMode !== 'undefined' && isLiveMode;
         if (inLive) {
             const amHost = typeof isHost !== 'undefined' && isHost;
             roleBadge.textContent = amHost ? 'Host' : 'Participant';
@@ -3855,6 +3855,14 @@ function showResultsDashboard() {
             roleBadge.textContent = 'Solo Practice';
         }
     }
+
+    document.querySelectorAll('.lrd-live-tag').forEach(tag => {
+        if (!inLive) {
+            tag.classList.remove('hidden');
+        } else {
+            tag.classList.add('hidden');
+        }
+    });
 
     // Wire nav once
     if (!_lrdNavWired) {
@@ -4073,6 +4081,19 @@ function _lrdFillPeerCompare(s) {
     const { correctCount, totalQ, maxScore, hasNeg, scorePerQ, totalSeconds, attemptedCount } = s;
     const el = id => document.getElementById(id);
     if (!el('lrdPeerCompare')) return;
+
+    const inLive = typeof isLiveMode !== 'undefined' && isLiveMode;
+    const peerGrid = el('lrdPeerCompareGrid');
+    const peerSolo = el('lrdPeerCompareSolo');
+
+    if (!inLive) {
+        if (peerGrid) peerGrid.classList.add('hidden');
+        if (peerSolo) peerSolo.classList.remove('hidden');
+        return;
+    } else {
+        if (peerGrid) peerGrid.classList.remove('hidden');
+        if (peerSolo) peerSolo.classList.add('hidden');
+    }
 
     // You
     const youAcc = attemptedCount > 0 ? Math.round((correctCount / attemptedCount) * 100) : 0;
