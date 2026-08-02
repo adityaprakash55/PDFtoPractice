@@ -168,17 +168,18 @@ if (createLiveRoomBtn) {
             livePeer = new Peer(randomId);
             
             livePeer.on('open', (id) => {
-        window.myLivePeerId = id;
+                window.myLivePeerId = id;
                 const link = `${window.location.origin}/?room=${id}`;
-                liveRoomLinkText.textContent = link;
-                
-                copyLiveLinkBtn.addEventListener('click', () => {
-                    navigator.clipboard.writeText(link);
-                    copyLiveLinkBtn.innerHTML = '<span class="text-sm font-bold">Copied!</span>';
-                    setTimeout(() => {
-                        copyLiveLinkBtn.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>';
-                    }, 2000);
-                });
+                if (liveRoomLinkText) liveRoomLinkText.textContent = link;
+                if (copyLiveLinkBtn) {
+                    copyLiveLinkBtn.onclick = () => {
+                        navigator.clipboard.writeText(link);
+                        copyLiveLinkBtn.innerHTML = '<span class="text-xs font-bold text-emerald-400">Copied!</span>';
+                        setTimeout(() => {
+                            copyLiveLinkBtn.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>';
+                        }, 2000);
+                    };
+                }
             });
             
             livePeer.on('connection', (conn) => {
@@ -652,22 +653,29 @@ window.startLiveRoomFromSession = function(session) {
       livePeer.on('open', (id) => {
           window.myLivePeerId = id;
           const link = window.location.origin + '/?room=' + id;
-          document.getElementById('lobbyRoomCode').textContent = id;
-          const copyLiveLinkBtn = document.getElementById('lobbyCopyLinkBtn');
-          if (copyLiveLinkBtn) {
-              // Note: you may want to re-clone the button to clear old event listeners, but this is fine for now
-              copyLiveLinkBtn.addEventListener('click', () => {
+          const linkTextEl = document.getElementById('liveRoomLinkText');
+          if (linkTextEl) linkTextEl.textContent = link;
+          const copyBtn = document.getElementById('copyLiveLinkBtn');
+          if (copyBtn) {
+              copyBtn.onclick = () => {
                   navigator.clipboard.writeText(link);
-                  copyLiveLinkBtn.innerHTML = '<span class="text-sm font-bold">Copied!</span>';
+                  copyBtn.innerHTML = '<span class="text-xs font-bold text-emerald-400">Copied!</span>';
                   setTimeout(() => {
-                      copyLiveLinkBtn.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>';
+                      copyBtn.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>';
                   }, 2000);
-              });
+              };
+          }
+      });
+
+      livePeer.on('error', (err) => {
+          console.error("PeerJS P2P Error:", err);
+          const linkTextEl = document.getElementById('liveRoomLinkText');
+          if (linkTextEl && linkTextEl.textContent.includes('Generating')) {
+              linkTextEl.textContent = 'Connection Error: Unable to generate P2P link. Please retry.';
           }
       });
 
       livePeer.on('connection', (conn) => {
-          // Note: handleHostData is already defined in liveRoom.js
           conn.on('data', (data) => handleHostData(conn, data));
           conn.on('close', () => {
               participants = participants.filter(p => p.id !== conn.peer);
