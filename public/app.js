@@ -3832,6 +3832,32 @@ function showResultsDashboard() {
     indices.forEach(ri => {
         const s = practiceState.stats[ri];
         if (!s) return;
+        
+        const ans = practiceState.answers ? practiceState.answers[ri] : undefined;
+        const q = (typeof extractedImages !== 'undefined' && extractedImages) ? extractedImages[ri] : undefined;
+        
+        if (ans !== undefined && ans !== null && ans !== '') {
+            s.attempted = true;
+            if (s.ntaStatus === 'not_visited' || s.ntaStatus === 'not_answered') {
+                s.ntaStatus = 'answered';
+            }
+        } else if (s.ntaStatus === 'answered' || s.ntaStatus === 'answered_marked') {
+            s.attempted = true;
+        }
+
+        if (s.evaluation === null) {
+            if (s.attempted) {
+                if (q && (q.correctAnswer || q.answer)) {
+                    const normAns = String(ans).trim().toUpperCase();
+                    const normCorrect = String(q.correctAnswer || q.answer).trim().toUpperCase();
+                    s.evaluation = (normAns === normCorrect) ? 'correct' : 'incorrect';
+                } else {
+                    // Default attempted question to 'correct' for practice/live mode if no official key embedded
+                    s.evaluation = 'correct';
+                }
+            }
+        }
+
         totalSeconds += (s.timeSpent || 0);
         if (s.attempted) attemptedCount++;
         if (s.evaluation === 'correct') correctCount++;
@@ -3895,18 +3921,27 @@ function showResultsDashboard() {
         }
     }
 
-    // Always reset to Overview panel on open
-    document.querySelectorAll('.lrd-nav').forEach(b => {
-        b.style.backgroundColor = '';
-        b.style.color = '';
-    });
-    document.querySelectorAll('.lrd-panel').forEach(p => p.classList.add('hidden'));
-    const overviewPanel = document.getElementById('lrdOverview');
-    if (overviewPanel) overviewPanel.classList.remove('hidden');
-    const overviewBtn = document.querySelector('.lrd-nav[data-panel="Overview"]');
-    if (overviewBtn) {
-        overviewBtn.style.backgroundColor = '#FFE600';
-        overviewBtn.style.color = '#000000';
+    // Preserve active panel if user is currently inspecting a tab, or set default
+    const currentlyActivePanel = Array.from(document.querySelectorAll('.lrd-panel')).find(p => !p.classList.contains('hidden'));
+    const amSpectatorHost = inLive && (typeof isHost !== 'undefined' && isHost) && (typeof hostParticipating !== 'undefined' && !hostParticipating);
+
+    if (!currentlyActivePanel || amSpectatorHost) {
+        document.querySelectorAll('.lrd-nav').forEach(b => {
+            b.style.backgroundColor = '';
+            b.style.color = '';
+        });
+        document.querySelectorAll('.lrd-panel').forEach(p => p.classList.add('hidden'));
+        
+        const targetPanelId = amSpectatorHost ? 'lrdLeaderboard' : 'lrdOverview';
+        const targetNavPanel = amSpectatorHost ? 'Leaderboard' : 'Overview';
+
+        const targetPanel = document.getElementById(targetPanelId);
+        if (targetPanel) targetPanel.classList.remove('hidden');
+        const targetBtn = document.querySelector(`.lrd-nav[data-panel="${targetNavPanel}"]`);
+        if (targetBtn) {
+            targetBtn.style.backgroundColor = '#FFE600';
+            targetBtn.style.color = '#000000';
+        }
     }
 
     // Populate all panels

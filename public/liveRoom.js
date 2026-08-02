@@ -520,13 +520,13 @@ function renderLeaderboard(leaderboardData) {
             if (lbPanel) lbPanel.classList.remove('hidden');
             
             document.querySelectorAll('.lrd-nav').forEach(b => {
-                b.classList.remove('bg-white/10', 'text-white');
-                b.classList.add('text-gray-400');
+                b.style.backgroundColor = '';
+                b.style.color = '';
             });
             const lbNav = document.querySelector('.lrd-nav[data-panel="Leaderboard"]');
             if (lbNav) {
-                lbNav.classList.add('bg-white/10', 'text-white');
-                lbNav.classList.remove('text-gray-400');
+                lbNav.style.backgroundColor = '#FFE600';
+                lbNav.style.color = '#000000';
             }
             const reviewNav = document.querySelector('.lrd-nav[data-panel="ReviewExam"]');
             if (reviewNav) {
