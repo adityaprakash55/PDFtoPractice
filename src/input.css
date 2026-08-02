@@ -11,7 +11,7 @@
 @source "../views/*.ejs";
 
 /* ============================================================
-   ROOT THEME VARIABLES � auto-switch via .dark class
+   ROOT THEME VARIABLES  auto-switch via .dark class
    ============================================================ */
 :root {
   --bg-page:    #FFF5E1;
@@ -73,8 +73,8 @@
 @layer utilities {
 
   .brutal-card {
-    background-color: var(--bg-card) !important;
-    color:            var(--text-primary) !important;
+    background-color: var(--bg-card);
+    color:            var(--text-primary);
     border:           3px solid var(--border-color) !important;
     box-shadow:       6px 6px 0 var(--shadow-color) !important;
     border-radius:    0 !important;
@@ -84,8 +84,8 @@
     display:          inline-flex !important;
     align-items:      center !important;
     justify-content:  center !important;
-    background-color: var(--bg-card) !important;
-    color:            var(--text-primary) !important;
+    background-color: var(--bg-card);
+    color:            var(--text-primary);
     border:           3px solid var(--border-color) !important;
     box-shadow:       4px 4px 0 var(--shadow-color) !important;
     border-radius:    0 !important;
@@ -115,8 +115,8 @@
   }
 
   .icon-btn {
-    background-color: var(--bg-card) !important;
-    color:            var(--text-primary) !important;
+    background-color: var(--bg-card);
+    color:            var(--text-primary);
   }
 
   .combine-item {
@@ -254,7 +254,7 @@ header, .header-bar {
   color: var(--text-primary);
 }
 
-/* Safelist — force Tailwind to always emit these used-in-JS colors */
+/* Safelist â force Tailwind to always emit these used-in-JS colors */
 .bg-yellow-400 { background-color: #facc15 !important; }
 .bg-yellow-300 { background-color: #fde047 !important; }
 .bg-rose-400   { background-color: #fb7185 !important; }

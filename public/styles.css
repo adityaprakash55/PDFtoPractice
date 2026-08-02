@@ -2190,9 +2190,6 @@
   .bg-red-600 {
     background-color: var(--color-red-600);
   }
-  .bg-rose-400 {
-    background-color: var(--color-rose-400);
-  }
   .bg-rose-500\/10 {
     background-color: color-mix(in srgb, oklch(64.5% 0.246 16.439) 10%, transparent);
     @supports (color: color-mix(in lab, red, red)) {
@@ -3555,9 +3552,6 @@
         background-color: color-mix(in oklab, var(--color-red-900) 30%, transparent);
       }
     }
-    .hover\:bg-rose-300:hover {
-      background-color: var(--color-rose-300);
-    }
     .hover\:bg-rose-500\/20:hover {
       background-color: color-mix(in srgb, oklch(64.5% 0.246 16.439) 20%, transparent);
     }
@@ -4491,8 +4485,8 @@
 }
 @layer utilities {
   .brutal-card {
-    background-color: var(--bg-card) !important;
-    color: var(--text-primary) !important;
+    background-color: var(--bg-card);
+    color: var(--text-primary);
     border: 3px solid var(--border-color) !important;
     box-shadow: 6px 6px 0 var(--shadow-color) !important;
     border-radius: 0 !important;
@@ -4501,8 +4495,8 @@
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    background-color: var(--bg-card) !important;
-    color: var(--text-primary) !important;
+    background-color: var(--bg-card);
+    color: var(--text-primary);
     border: 3px solid var(--border-color) !important;
     box-shadow: 4px 4px 0 var(--shadow-color) !important;
     border-radius: 0 !important;
@@ -4522,8 +4516,8 @@
     color: #000000 !important;
   }
   .icon-btn {
-    background-color: var(--bg-card) !important;
-    color: var(--text-primary) !important;
+    background-color: var(--bg-card);
+    color: var(--text-primary);
   }
   .combine-item {
     background-color: var(--bg-card);
