@@ -544,6 +544,9 @@
   .mx-auto {
     margin-inline: auto;
   }
+  .my-1 {
+    margin-block: var(--spacing);
+  }
   .my-8 {
     margin-block: calc(var(--spacing) * 8);
   }
@@ -1647,6 +1650,12 @@
       border-color: color-mix(in oklab, var(--color-purple-500) 20%, transparent);
     }
   }
+  .border-purple-500\/40 {
+    border-color: color-mix(in srgb, oklch(62.7% 0.265 303.9) 40%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      border-color: color-mix(in oklab, var(--color-purple-500) 40%, transparent);
+    }
+  }
   .border-red-500 {
     border-color: var(--color-red-500);
   }
@@ -2152,6 +2161,12 @@
     background-color: color-mix(in srgb, oklch(62.7% 0.265 303.9) 10%, transparent);
     @supports (color: color-mix(in lab, red, red)) {
       background-color: color-mix(in oklab, var(--color-purple-500) 10%, transparent);
+    }
+  }
+  .bg-purple-500\/20 {
+    background-color: color-mix(in srgb, oklch(62.7% 0.265 303.9) 20%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-purple-500) 20%, transparent);
     }
   }
   .bg-purple-600 {
@@ -3498,6 +3513,14 @@
     }
     .hover\:bg-purple-300:hover {
       background-color: var(--color-purple-300);
+    }
+    .hover\:bg-purple-500\/30:hover {
+      background-color: color-mix(in srgb, oklch(62.7% 0.265 303.9) 30%, transparent);
+    }
+    @supports (color: color-mix(in lab, red, red)) {
+      .hover\:bg-purple-500\/30:hover {
+        background-color: color-mix(in oklab, var(--color-purple-500) 30%, transparent);
+      }
     }
     .hover\:bg-purple-700:hover {
       background-color: var(--color-purple-700);

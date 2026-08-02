@@ -152,6 +152,18 @@ const homeCreateLiveRoomBtn = document.getElementById('homeCreateLiveRoomBtn');
       });
   }
 
+  const navHostLiveBtn = document.getElementById('navHostLiveBtn');
+  if (navHostLiveBtn) {
+      navHostLiveBtn.addEventListener('click', () => {
+          handleCreateRoom(() => {
+              isLiveMode = true;
+              isHost = true;
+              const fileInput = document.getElementById('fileInput');
+              if (fileInput) fileInput.click();
+          });
+      });
+  }
+
 if (createLiveRoomBtn) {
     createLiveRoomBtn.addEventListener('click', () => {
         handleCreateRoom(() => {
