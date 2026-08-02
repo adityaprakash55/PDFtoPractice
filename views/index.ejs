@@ -188,10 +188,11 @@
             }
         }
     </style>
-    <link rel="preload" href="logo.png" as="image">
+    <link rel="preload" href="logo-light.png" as="image">
+    <link rel="icon" type="image/png" href="/favicon.png">
 
     <!-- Safari & Apple Specific Meta -->
-    <link rel="apple-touch-icon" href="/logo.png">
+    <link rel="apple-touch-icon" href="/logo-light.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="theme-color" content="#0a192f">
@@ -200,8 +201,8 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="<%= title %>">
     <meta name="twitter:description" content="<%= description %>">
-    <meta name="twitter:image" content="https://pdftopractice.in/logo.png">
-    <meta property="og:image" content="https://pdftopractice.in/logo.png">
+    <meta name="twitter:image" content="https://pdftopractice.in/logo-light.png">
+    <meta property="og:image" content="https://pdftopractice.in/logo-light.png">
 
 </head>
 <body class="font-sans relative min-h-screen overflow-x-hidden">
@@ -221,7 +222,8 @@
                 <button id="mobileSidebarToggleBtn" aria-label="Toggle Navigation" class="md:hidden p-2 rounded-none bg-gray-100  dark: hover:bg-gray-200 dark:hover:bg-navy-700 transition-colors">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 </button>
-                <img src="logo.png" alt="Logo" class="w-10 h-10 rounded-none">
+                <img src="logo-light.png" alt="Logo" class="w-10 h-10 rounded-none dark:hidden">
+                <img src="logo-dark.png" alt="Logo" class="w-10 h-10 rounded-none hidden dark:block">
                 <h1 class="text-xl font-bold dark: tracking-tight">PDF to PRACTICE</h1>
             </div>
             <div class="flex items-center space-x-4">
@@ -1954,7 +1956,8 @@
                     <!-- Column 1: Brand & Tagline -->
                     <div class="md:col-span-2 space-y-4">
                         <div class="flex items-center space-x-3">
-                            <img src="logo.png" alt="Logo" class="w-9 h-9 rounded-none border-2 border-black">
+                            <img src="logo-light.png" alt="Logo" class="w-9 h-9 rounded-none border-2 border-black dark:hidden">
+                            <img src="logo-dark.png" alt="Logo" class="w-9 h-9 rounded-none border-2 border-black hidden dark:block">
                             <span class="text-xl font-black tracking-tight uppercase" style="color: var(--text-primary);">PDF to PRACTICE</span>
                             <span class="px-2.5 py-0.5 text-[10px] font-black uppercase bg-yellow-400 text-black border-2 border-black">v2.0 CBT</span>
                         </div>
@@ -2277,7 +2280,7 @@
     </div>
     
 
-    <script defer src="app.js?v=180"></script>
+    <script defer src="app.js?v=185"></script>
     <script defer src="/liveRoom.js"></script>
 </body>
 </html>
