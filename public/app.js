@@ -3884,8 +3884,7 @@ function showResultsDashboard() {
         const exitBtn = document.getElementById('lrdExitBtn');
         if (exitBtn) {
             exitBtn.onclick = () => {
-                const dash = document.getElementById('liveResultsDashboard');
-                if (dash) dash.classList.add('hidden');
+                window.location.href = '/';
             };
         }
     }
