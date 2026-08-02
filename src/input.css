@@ -4,196 +4,296 @@
 
 @theme {
   --font-sans: "Inter", sans-serif;
-  --color-navy-50: #f0f4f8;
-  --color-navy-100: #d9e2ec;
-  --color-navy-200: #bcccdc;
-  --color-navy-300: #9fb3c8;
-  --color-navy-400: #829ab1;
-  --color-navy-500: #627d98;
-  --color-navy-600: #486581;
-  --color-navy-700: #334e68;
-  --color-navy-800: #243b53;
-  --color-navy-900: #102a43;
-  --color-navy-950: #0a192f;
-
-  /* NTA-inspired brand colors */
-  --color-nta-navy: #003366;
-  --color-nta-saffron: #FF6B00;
-  --color-nta-saffron-light: #FFF3E8;
-  --color-nta-blue-light: #E8EFF8;
 }
-
 
 @source "../views";
 @source "../public";
-@source "../views/index.ejs";
-@source "../public/app.js";
+@source "../views/*.ejs";
 
-/* =========================================================== */
-/* Dashboard Layout & Sidebar — NTA Light / Dark Theme          */
-/* =========================================================== */
-
-/* ---- LIGHT MODE ---- */
+/* ============================================================
+   ROOT THEME VARIABLES � auto-switch via .dark class
+   ============================================================ */
 :root {
-    --sidebar-bg: #ffffff;
-    --sidebar-border: #000000;
-    --sidebar-active-bg: #facc15;
-    --sidebar-active-text: #000000;
-    --sidebar-inactive-text: #000000;
-    --sidebar-hover-bg: #f4f4f0;
-    --sidebar-brand-text: #000000;
-    --sidebar-sub-text: #3b82f6;
-    --sidebar-header-border: #000000;
-    --sidebar-icon-active: #000000;
-    --sidebar-icon-inactive: #000000;
+  --bg-page:    #FFF5E1;
+  --bg-card:    #ffffff;
+  --bg-input:   #f5f5f5;
 
-    --layout-bg: #f4f4f0;
-    --layout-main-bg: #f4f4f0;
+  --text-primary: #000000;
+  --text-muted:   #555555;
+
+  --border-color: #000000;
+  --shadow-color: #000000;
+
+  --sidebar-bg:            #FFE600;
+  --sidebar-border:        #000000;
+  --sidebar-active-bg:     #000000;
+  --sidebar-active-text:   #ffffff;
+  --sidebar-inactive-text: #000000;
+  --sidebar-hover-bg:      rgba(0,0,0,0.08);
+  --sidebar-brand-text:    #000000;
 }
 
-/* ---- DARK MODE ---- */
 .dark {
-    --sidebar-bg: #11131c;
-    --sidebar-border: #000000;
-    --sidebar-active-bg: #22d3ee;
-    --sidebar-active-text: #000000;
-    --sidebar-inactive-text: #ffffff;
-    --sidebar-hover-bg: #1a1d28;
-    --sidebar-brand-text: #ffffff;
-    --sidebar-sub-text: #22d3ee;
-    --sidebar-header-border: #000000;
-    --sidebar-icon-active: #000000;
-    --sidebar-icon-inactive: #ffffff;
+  --bg-page:    #1e1e1e;
+  --bg-card:    #2d2d2d;
+  --bg-input:   #3a3a3a;
 
-    --layout-bg: #0a0b0e;
-    --layout-main-bg: #0a0b0e;
+  --text-primary: #f0f0f0;
+  --text-muted:   #a0a0a0;
+
+  --border-color: #000000;
+  --shadow-color: #000000;
+
+  --sidebar-bg:            #111111;
+  --sidebar-border:        #000000;
+  --sidebar-active-bg:     #FFE600;
+  --sidebar-active-text:   #000000;
+  --sidebar-inactive-text: #a0a0a0;
+  --sidebar-hover-bg:      rgba(255,230,0,0.1);
+  --sidebar-brand-text:    #FFE600;
 }
 
-/* =========================================================== */
-/* Dashboard Layout                                             */
-/* =========================================================== */
+/* ============================================================
+   GLOBAL BASE
+   ============================================================ */
+@layer base {
+  html, body {
+    background-color: var(--bg-page) !important;
+    color: var(--text-primary) !important;
+    font-family: var(--font-sans, "Inter", sans-serif);
+  }
+
+  /* Kill blobs */
+  .animate-blob { display: none !important; }
+}
+
+/* ============================================================
+   BRUTALIST UTILITIES
+   ============================================================ */
+@layer utilities {
+
+  .brutal-card {
+    background-color: var(--bg-card) !important;
+    color:            var(--text-primary) !important;
+    border:           3px solid var(--border-color) !important;
+    box-shadow:       6px 6px 0 var(--shadow-color) !important;
+    border-radius:    0 !important;
+  }
+
+  .brutal-btn {
+    display:          inline-flex !important;
+    align-items:      center !important;
+    justify-content:  center !important;
+    background-color: var(--bg-card) !important;
+    color:            var(--text-primary) !important;
+    border:           3px solid var(--border-color) !important;
+    box-shadow:       4px 4px 0 var(--shadow-color) !important;
+    border-radius:    0 !important;
+    font-weight:      700 !important;
+    transition:       transform 0.08s ease, box-shadow 0.08s ease !important;
+    cursor:           pointer !important;
+  }
+  .brutal-btn:hover {
+    transform:  translate(-2px, -2px) !important;
+    box-shadow: 6px 6px 0 var(--shadow-color) !important;
+  }
+  .brutal-btn:active {
+    transform:  translate(4px, 4px) !important;
+    box-shadow: none !important;
+  }
+
+  /* Coloured accent buttons override bg but keep dark text */
+  .brutal-btn[class*="bg-yellow"],
+  .brutal-btn[class*="bg-pink"],
+  .brutal-btn[class*="bg-emerald"],
+  .brutal-btn[class*="bg-blue"],
+  .brutal-btn[class*="bg-purple"],
+  .brutal-btn[class*="bg-rose"],
+  .brutal-btn[class*="bg-cyan"],
+  .brutal-btn[class*="bg-green"] {
+    color: #000000 !important;
+  }
+
+  .icon-btn {
+    background-color: var(--bg-card) !important;
+    color:            var(--text-primary) !important;
+  }
+
+  .combine-item {
+    background-color: var(--bg-card);
+    color:            var(--text-primary);
+    border-bottom:    2px solid var(--border-color);
+  }
+  .combine-item:hover { background-color: #fffbe6; color: #000; }
+  .dark .combine-item:hover { background-color: #3d3d2a; color: #f0f0f0; }
+
+  .brutal-border   { border:     3px solid var(--border-color) !important; }
+  .brutal-shadow   { box-shadow: 6px 6px 0 var(--shadow-color) !important; }
+  .brutal-shadow-sm{ box-shadow: 4px 4px 0 var(--shadow-color) !important; }
+
+  .text-muted { color: var(--text-muted) !important; }
+
+  .glass-panel {
+    background:      transparent !important;
+    backdrop-filter: none !important;
+    border:          none !important;
+    box-shadow:      none !important;
+  }
+}
+
+/* ============================================================
+   DASHBOARD LAYOUT
+   ============================================================ */
 #landingDashboardLayout {
-    display: flex !important;
-    min-height: calc(100vh - 64px);
-    width: 100%;
-    background-color: var(--layout-bg);
-    position: relative;
-    transition: background-color 0.2s ease;
+  display:    flex;
+  min-height: calc(100vh - 64px);
+  width:      100%;
+  background: var(--bg-page);
+  position:   relative;
 }
 
-/* =========================================================== */
-/* Sidebar                                                       */
-/* =========================================================== */
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
 #landingSidebar {
-    display: flex !important;
-    width: 16rem;
-    background-color: var(--sidebar-bg) !important;
-    border-right: 3.5px solid var(--sidebar-border) !important;
-    flex-direction: column !important;
-    flex-shrink: 0 !important;
-    transition: width 0.3s ease, transform 0.3s ease, background-color 0.2s ease !important;
-}
-.dark #landingSidebar {
-    background-image: none !important;
-    background-color: var(--sidebar-bg) !important;
+  display:          flex !important;
+  width:            16rem;
+  background-color: var(--sidebar-bg) !important;
+  border-right:     3px solid var(--sidebar-border) !important;
+  flex-direction:   column !important;
+  flex-shrink:      0 !important;
+  transition:       width 0.3s ease, transform 0.3s ease;
 }
 
-/* Sidebar header divider */
 #landingSidebar > div:first-child {
-    border-bottom-color: var(--sidebar-header-border) !important;
+  border-bottom: 3px solid var(--sidebar-border) !important;
 }
 
-/* Sidebar nav button base */
 #landingSidebar .dash-nav-btn {
-    color: var(--sidebar-inactive-text) !important;
+  color:         var(--sidebar-inactive-text) !important;
+  border:        2px solid transparent;
+  border-radius: 0 !important;
+  transition:    all 0.1s;
 }
+#landingSidebar .dash-nav-btn svg { color: inherit; }
+
 #landingSidebar .dash-nav-btn:hover {
-    background-color: var(--sidebar-hover-bg) !important;
-    color: #ffffff !important;
+  background-color: var(--sidebar-hover-bg) !important;
+  color:            var(--sidebar-brand-text) !important;
+  border-color:     var(--sidebar-border);
 }
 
-/* Active nav button */
 #landingSidebar .dash-nav-btn.sidebar-active {
-    background-color: var(--sidebar-active-bg) !important;
-    color: var(--sidebar-active-text) !important;
-    border-left: 3px solid var(--sidebar-active-text);
-    padding-left: calc(0.75rem - 3px) !important;
-}
-.dark #landingSidebar .dash-nav-btn.sidebar-active {
-    border-left: 3px solid #22d3ee;
-    color: #22d3ee !important;
+  background-color: var(--sidebar-active-bg) !important;
+  color:            var(--sidebar-active-text) !important;
+  border:           2px solid var(--sidebar-border);
+  box-shadow:       4px 4px 0 var(--sidebar-border);
+  transform:        translate(-4px, -4px);
+  font-weight:      bold;
 }
 
-/* Icon colors in sidebar */
-#landingSidebar .dash-nav-btn svg {
-    opacity: 0.65;
-    transition: opacity 0.2s;
-}
-#landingSidebar .dash-nav-btn:hover svg,
-#landingSidebar .dash-nav-btn.sidebar-active svg {
-    opacity: 1;
+#landingSidebar .dash-sidebar-brand,
+#landingSidebar .dash-sidebar-brand * {
+  color: var(--sidebar-brand-text) !important;
 }
 
-/* Sidebar brand text always white (on navy bg) */
-#landingSidebar .dash-sidebar-brand .text-gray-900,
-#landingSidebar .dash-sidebar-brand .dark\:text-white {
-    color: #ffffff !important;
-}
-
-/* =========================================================== */
-/* Collapsed Sidebar State (Desktop)                            */
-/* =========================================================== */
-#landingSidebar.collapsed {
-    width: 4.5rem !important;
-}
+/* Collapsed */
+#landingSidebar.collapsed { width: 4.5rem !important; }
 #landingSidebar.collapsed .dash-sidebar-brand,
 #landingSidebar.collapsed .dash-nav-text,
-#landingSidebar.collapsed .dash-nav-section-label {
-    display: none !important;
-}
+#landingSidebar.collapsed .dash-nav-section-label { display: none !important; }
 #landingSidebar.collapsed .dash-nav-btn {
-    justify-content: center !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
+  justify-content: center !important;
+  padding: 0 !important;
 }
-#landingSidebar.collapsed #collapseIcon {
-    transform: rotate(180deg);
-}
+#landingSidebar.collapsed #collapseIcon { transform: rotate(180deg); }
 
-/* =========================================================== */
-/* Mobile Sidebar Drawer (< 768px)                              */
-/* =========================================================== */
 @media (max-width: 767px) {
-    #landingSidebar {
-        position: fixed !important;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        z-index: 50 !important;
-        width: 16rem !important;
-        transform: translateX(-100%);
-        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.4);
-    }
-    #landingSidebar.mobile-open {
-        transform: translateX(0) !important;
-    }
+  #landingSidebar {
+    position:   fixed !important;
+    top: 0; bottom: 0; left: 0;
+    z-index:    50 !important;
+    width:      16rem !important;
+    transform:  translateX(-100%);
+    box-shadow: 8px 0 0 var(--shadow-color) !important;
+  }
+  #landingSidebar.mobile-open { transform: translateX(0) !important; }
 }
 
-/* =========================================================== */
-/* Main Dashboard Content Area                                  */
-/* =========================================================== */
-#landingDashboardLayout > main {
-    background-color: transparent;
+/* ============================================================
+   VAULT FILTER TABS
+   ============================================================ */
+.vault-filter-tab {
+  padding:        6px 16px;
+  font-size:      0.75rem;
+  font-weight:    700;
+  text-transform: uppercase;
+  border:         2px solid transparent;
+  background:     transparent;
+  color:          var(--text-muted);
+  cursor:         pointer;
+  transition:     all 0.1s;
+  border-radius:  0;
+}
+.vault-filter-tab:hover {
+  border-color: var(--border-color);
+  color:        var(--text-primary);
+}
+.vault-filter-tab.active {
+  background:   #FFE600 !important;
+  color:        #000000 !important;
+  border-color: var(--border-color) !important;
+  box-shadow:   2px 2px 0 var(--shadow-color);
 }
 
-/* =========================================================== */
-/* Light mode only overrides (dark class is on <html>/<root>)   */
-/* =========================================================== */
-:root:not(.dark) body {
-    background-color: #EEF2F7;
+#landingDashboardLayout > main { background: transparent; }
+
+/* Header bar */
+header, .header-bar {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
 }
-html:not(.dark) .glass-panel {
-    background: rgba(255, 255, 255, 0.92) !important;
-    border-bottom: 1px solid rgba(0, 40, 85, 0.1) !important;
-    box-shadow: 0 1px 8px rgba(0, 40, 85, 0.08) !important;
-}
+
+/* Safelist — force Tailwind to always emit these used-in-JS colors */
+.bg-yellow-400 { background-color: #facc15 !important; }
+.bg-yellow-300 { background-color: #fde047 !important; }
+.bg-rose-400   { background-color: #fb7185 !important; }
+.bg-rose-300   { background-color: #fda4af !important; }
+.bg-emerald-400{ background-color: #34d399 !important; }
+.bg-emerald-300{ background-color: #6ee7b7 !important; }
+.bg-blue-400   { background-color: #60a5fa !important; }
+.bg-blue-300   { background-color: #93c5fd !important; }
+.bg-purple-400 { background-color: #c084fc !important; }
+.bg-purple-300 { background-color: #d8b4fe !important; }
+
+/* Hover overrides for all icon/action buttons */
+.brutal-btn:hover.hover\:bg-yellow-300 { background-color: #fde047 !important; }
+.brutal-btn:hover.hover\:bg-rose-300   { background-color: #fda4af !important; }
+.brutal-btn:hover.hover\:bg-emerald-300{ background-color: #6ee7b7 !important; }
+.brutal-btn:hover.hover\:bg-blue-300   { background-color: #93c5fd !important; }
+.brutal-btn:hover.hover\:bg-purple-300 { background-color: #d8b4fe !important; }
+
+/* Text on coloured buttons always black */
+.brutal-btn.text-black, .brutal-btn.text-black * { color: #000000 !important; }
+
+/* ============================================================
+   ICON/ACTION BUTTON ACCENT COLORS
+   Compound selectors (.brutal-btn.bg-X) have 2-class specificity
+   and beat .brutal-btn (1-class) even when both use !important
+   ============================================================ */
+.brutal-btn.bg-yellow-400  { background-color: #facc15 !important; color: #000000 !important; }
+.brutal-btn.bg-yellow-300  { background-color: #fde047 !important; color: #000000 !important; }
+.brutal-btn.bg-rose-400    { background-color: #fb7185 !important; color: #000000 !important; }
+.brutal-btn.bg-rose-300    { background-color: #fda4af !important; color: #000000 !important; }
+.brutal-btn.bg-emerald-400 { background-color: #34d399 !important; color: #000000 !important; }
+.brutal-btn.bg-emerald-300 { background-color: #6ee7b7 !important; color: #000000 !important; }
+.brutal-btn.bg-blue-400    { background-color: #60a5fa !important; color: #000000 !important; }
+.brutal-btn.bg-blue-300    { background-color: #93c5fd !important; color: #000000 !important; }
+.brutal-btn.bg-purple-400  { background-color: #c084fc !important; color: #000000 !important; }
+.brutal-btn.bg-purple-300  { background-color: #d8b4fe !important; color: #000000 !important; }
+
+.brutal-btn.bg-yellow-400:hover  { background-color: #fde047 !important; }
+.brutal-btn.bg-rose-400:hover    { background-color: #fda4af !important; }
+.brutal-btn.bg-emerald-400:hover { background-color: #6ee7b7 !important; }
+.brutal-btn.bg-blue-400:hover    { background-color: #93c5fd !important; }
+.brutal-btn.bg-purple-400:hover  { background-color: #d8b4fe !important; }

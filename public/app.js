@@ -831,10 +831,10 @@ async function detectExerciseHeadersFromPage(page, viewport) {
 // DRAG & DROP
 // =============================================================
 dropZone.addEventListener('dragenter', e => { e.preventDefault(); });
-dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('border-blue-500','bg-blue-50'); });
-dropZone.addEventListener('dragleave',e => { e.preventDefault(); dropZone.classList.remove('border-blue-500','bg-blue-50'); });
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('','bg-blue-50'); });
+dropZone.addEventListener('dragleave',e => { e.preventDefault(); dropZone.classList.remove('','bg-blue-50'); });
 dropZone.addEventListener('drop', e => {
-    e.preventDefault(); dropZone.classList.remove('border-blue-500','bg-blue-50');
+    e.preventDefault(); dropZone.classList.remove('','bg-blue-50');
     if (e.dataTransfer.files.length) loadPDF(e.dataTransfer.files[0]);
 });
 fileInput.addEventListener('change', e => { if (e.target.files.length) loadPDF(e.target.files[0]); });
@@ -865,8 +865,8 @@ cancelBtn.addEventListener('click', () => {
     dropTextMain.textContent = 'Upload DPP or PYQ';
     dropTextSub.textContent = 'Drag & drop or click to browse';
     skipAnswersBtn.classList.add('hidden');
-    dropZone.classList.remove('hover:border-green-400', 'hover:bg-green-50');
-    dropZone.classList.add('hover:border-blue-400', 'hover:bg-blue-50');
+    dropZone.classList.remove('hover:-green-400', 'hover:bg-green-50');
+    dropZone.classList.add('hover:', 'hover:bg-blue-50');
 });
 
 // =============================================================
@@ -920,8 +920,8 @@ wizardNextBtn.addEventListener('click', async () => {
             dropTextMain.textContent = 'Upload Answer Key PDF';
             dropTextSub.textContent = 'Drag & drop or click to browse';
             // skipAnswersBtn.classList.remove('hidden'); // Force user to upload answer key
-            dropZone.classList.add('hover:border-green-400', 'hover:bg-green-50');
-            dropZone.classList.remove('hover:border-blue-400', 'hover:bg-blue-50');
+            dropZone.classList.add('hover:-green-400', 'hover:bg-green-50');
+            dropZone.classList.remove('hover:', 'hover:bg-blue-50');
         }
     }
 });
@@ -1840,7 +1840,7 @@ function renderPracticeQuestion(index) {
     const realIndex = practiceState.activeIndices[index];
     const q = extractedImages[realIndex];
     currentQNum.textContent = index + 1;
-    const typeBadge = q.type ? `<span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800 dark:bg-blue-900/70 dark:text-blue-200 border border-blue-200 dark:border-blue-700 shadow-sm">${q.type}</span>` : '';
+    const typeBadge = q.type ? `<span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800 dark:bg-blue-900/70 dark:text-blue-200 dark:">${q.type}</span>` : '';
     practiceQLabel.innerHTML = `Question ${q.label} ${typeBadge}`;
     
     practiceQImage.src = q.dataUrl;
@@ -2122,32 +2122,32 @@ function renderReviewCards(filter = 'all') {
         count++;
         
         const card = document.createElement('div');
-        card.className = 'bg-white dark:bg-[#1C212E] p-6 rounded-2xl border border-gray-200 dark:border-gray-800 flex flex-col gap-4 shadow-lg';
+        card.className = 'brutal-card p-6 flex flex-col gap-4';
         
         // Header
         const header = document.createElement('div');
-        header.className = 'flex justify-between items-center border-b border-gray-200 dark:border-gray-800 pb-4';
+        header.className = 'flex justify-between items-center -b  dark: pb-4';
         
         const title = document.createElement('h4');
-        title.className = 'text-lg font-bold text-white';
+        title.className = 'text-lg font-bold ';
         title.textContent = `Question ${stat.activeSectionNumber} (${stat.exercise.toUpperCase()})`;
         
         const badges = document.createElement('div');
         badges.className = 'flex flex-wrap gap-2 text-[10px] sm:text-xs font-bold';
         
         const timeBadge = document.createElement('span');
-        timeBadge.className = 'bg-gray-800 text-gray-300 px-3 py-1 rounded-full border border-gray-700';
+        timeBadge.className = 'bg-gray-800  px-3 py-1 rounded-full  ';
         timeBadge.textContent = formatTime(stat.timeSpent);
         badges.appendChild(timeBadge);
         
-        let statusClass = 'bg-gray-800 text-gray-400 border border-gray-700';
+        let statusClass = 'bg-gray-800   ';
         let statusText = 'Skipped';
         
         if (stat.evaluation === 'correct') {
-            statusClass = 'bg-green-500/20 text-green-400 border border-green-500/30';
+            statusClass = 'bg-green-500/20 text-green-400  -green-500/30';
             statusText = 'Correct';
         } else if (stat.evaluation === 'incorrect') {
-            statusClass = 'bg-red-500/20 text-red-400 border border-red-500/30';
+            statusClass = 'bg-red-500/20 text-red-400  -red-500/30';
             statusText = 'Incorrect';
         }
         
@@ -2158,7 +2158,7 @@ function renderReviewCards(filter = 'all') {
         
         if (stat.ntaStatus === 'marked' || stat.ntaStatus === 'answered_marked') {
             const markBadge = document.createElement('span');
-            markBadge.className = 'bg-[#B58A18]/20 text-[#FBBF24] border border-[#B58A18]/50 px-3 py-1 rounded-full';
+            markBadge.className = 'bg-[#B58A18]/20 text-[#FBBF24]  /50 px-3 py-1 rounded-full';
             markBadge.textContent = 'Marked';
             badges.appendChild(markBadge);
         }
@@ -2173,18 +2173,18 @@ function renderReviewCards(filter = 'all') {
         
         const qImg = document.createElement('img');
         qImg.src = q.dataUrl;
-        qImg.className = 'max-w-full rounded bg-white p-2 border border-gray-300 mx-auto';
+        qImg.className = 'max-w-full rounded bg-white p-2   mx-auto';
         imagesContainer.appendChild(qImg);
         
         if (q.answerDataUrl) {
             const aLabel = document.createElement('div');
-            aLabel.className = 'text-sm font-bold text-gray-400 mt-2 text-center';
+            aLabel.className = 'text-sm font-bold  mt-2 text-center';
             aLabel.textContent = 'Solution:';
             imagesContainer.appendChild(aLabel);
             
             const aImg = document.createElement('img');
             aImg.src = q.answerDataUrl;
-            aImg.className = 'max-w-full rounded bg-white p-2 border border-green-500 mx-auto';
+            aImg.className = 'max-w-full rounded bg-white p-2  -green-500 mx-auto';
             imagesContainer.appendChild(aImg);
         }
         
@@ -2192,12 +2192,12 @@ function renderReviewCards(filter = 'all') {
         
         if (stat.journey && stat.journey.length > 0) {
             const journeyDiv = document.createElement('div');
-            journeyDiv.className = 'mt-4 border-t border-gray-200 dark:border-gray-700 pt-4';
-            journeyDiv.innerHTML = `<h4 class="text-sm font-bold text-gray-500 dark:text-gray-400 mb-2">Question Journey</h4>
+            journeyDiv.className = 'mt-4 -t  dark: pt-4';
+            journeyDiv.innerHTML = `<h4 class="text-sm font-bold dark: mb-2">Question Journey</h4>
                 <div class="flex flex-wrap gap-2 text-xs">
                 ${stat.journey.map(j => {
                     const t = new Date(j.timestamp).toLocaleTimeString();
-                    let color = 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300';
+                    let color = 'bg-gray-100  dark:bg-gray-800 dark:';
                     if (j.action === 'correct') color = 'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300';
                     if (j.action === 'incorrect') color = 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300';
                     if (j.action === 'answered' || j.action === 'answered_marked') color = 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300';
@@ -2212,7 +2212,7 @@ function renderReviewCards(filter = 'all') {
     });
     
     if (count === 0) {
-        reviewList.innerHTML = `<div class="text-gray-500 text-center py-10 font-medium">No questions found for this filter.</div>`;
+        reviewList.innerHTML = `<div class="text-center py-10 font-medium">No questions found for this filter.</div>`;
     }
 }
 
@@ -2244,8 +2244,8 @@ function renderRadarChart() {
                 data: data,
                 backgroundColor: 'rgba(59, 130, 246, 0.85)', // Premium Blue
                 hoverBackgroundColor: 'rgba(59, 130, 246, 1)',
-                borderRadius: 6,
-                borderSkipped: false,
+                Radius: 6,
+                Skipped: false,
                 barPercentage: 0.5,
                 maxBarThickness: 50
             }]
@@ -2258,8 +2258,8 @@ function renderRadarChart() {
                     backgroundColor: 'rgba(15, 20, 30, 0.95)',
                     titleColor: '#fff',
                     bodyColor: '#e2e8f0',
-                    borderColor: 'rgba(59, 130, 246, 0.3)',
-                    borderWidth: 1,
+                    Color: 'rgba(59, 130, 246, 0.3)',
+                    Width: 1,
                     padding: 12,
                     displayColors: false,
                     callbacks: {
@@ -2352,7 +2352,7 @@ async function renderHistory() {
         const sessions = await getAllSessionsFromDB();
         if (sessions.length === 0) {
             historyContainer.classList.remove('hidden');
-            historyList.innerHTML = '<div class="text-center text-gray-500 py-12">Your Vault is empty. Extract a PDF to create a test!</div>';
+            historyList.innerHTML = '<div class="text-center py-12">Your Vault is empty. Extract a PDF to create a test!</div>';
             return;
         }
         
@@ -2374,7 +2374,7 @@ async function renderHistory() {
         }
 
         if (filteredSessions.length === 0) {
-            historyList.innerHTML = '<div class="text-center text-gray-500 py-12">No tests found for this filter.</div>';
+            historyList.innerHTML = '<div class="text-center py-12">No tests found for this filter.</div>';
         }
         
         const reversedSessions = [...filteredSessions].reverse();
@@ -2383,7 +2383,7 @@ async function renderHistory() {
         
         sessionsToShow.forEach(session => {
             const card = document.createElement('div');
-            card.className = 'bg-white dark:bg-[#11131c] border-[3px] border-black p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_#22d3ee] relative group mb-3.5 gap-4 transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_#000] dark:hover:shadow-[6px_6px_0px_0px_#22d3ee]';
+            card.className = 'brutal-card p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between relative group mb-3.5 gap-4 transition-all hover:bg-yellow-50 dark:hover:bg-[#3d3d2a]';
             
             let rawTitle = session.title || `Mock Test Session #${session.id}`;
             let formattedTitle = rawTitle;
@@ -2396,34 +2396,34 @@ async function renderHistory() {
             
             card.innerHTML = `
                 <div class="flex-1 min-w-0">
-                    <h4 class="text-sm sm:text-base font-bold text-white truncate tracking-tight">${formattedTitle}</h4>
-                    <p class="text-xs text-slate-400 mt-1 font-medium">Created: ${dateStr}</p>
+                    <h4 class="text-sm sm:text-base font-bold truncate tracking-tight">${formattedTitle}</h4>
+                    <p class="text-xs mt-1 font-medium">Created: ${dateStr}</p>
                 </div>
                 
                 <div class="flex items-center justify-end gap-2.5 shrink-0">
-                    <button class="rename-session-btn p-2 bg-white dark:bg-[#11131c] border-[2px] border-black text-black dark:text-white shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all hover:bg-yellow-400 dark:hover:bg-yellow-400 hover:text-black" data-id="${session.id}" title="Rename Test">
+                    <!-- Rename: yellow accent -->
+                    <button class="brutal-btn rename-session-btn p-2 bg-yellow-400 hover:bg-yellow-300 text-black transition-all" data-id="${session.id}" title="Rename Test">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                     </button>
-                    <button class="delete-session-btn p-2 bg-white dark:bg-[#11131c] border-[2px] border-black text-black dark:text-white shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all hover:bg-rose-400 dark:hover:bg-rose-400 hover:text-black" data-id="${session.id}" title="Delete Test">
+                    <!-- Delete: red accent -->
+                    <button class="brutal-btn delete-session-btn p-2 bg-rose-400 hover:bg-rose-300 text-black transition-all" data-id="${session.id}" title="Delete Test">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                     </button>
-                    <button class="view-session-btn p-2 bg-white dark:bg-[#11131c] border-[2px] border-black text-black dark:text-white shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all hover:bg-yellow-400 dark:hover:bg-yellow-400 hover:text-black" data-id="${session.id}" title="View Analysis">
+                    <!-- View Analysis: green accent -->
+                    <button class="brutal-btn view-session-btn p-2 bg-emerald-400 hover:bg-emerald-300 text-black transition-all" data-id="${session.id}" title="View Analysis">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                     </button>
-
-                    <!-- Share Button (Square Dark Blue Container) -->
-                    <button class="share-session-btn p-2.5 bg-blue-400 hover:bg-blue-300 text-black font-extrabold border-[2px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all flex items-center justify-center" data-id="${session.id}" title="Share Test">
+                    <!-- Share: blue accent -->
+                    <button class="brutal-btn share-session-btn p-2 bg-blue-400 hover:bg-blue-300 text-black transition-all flex items-center justify-center" data-id="${session.id}" title="Share Test">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
                     </button>
-
-                    <!-- Host Wifi Icon -->
-                    <button class="share-session-btn p-2 bg-purple-400 hover:bg-purple-300 text-black border-[2px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all" data-id="${session.id}" title="Host Live Test">
+                    <!-- Host: purple accent -->
+                    <button class="brutal-btn share-session-btn p-2 bg-purple-400 hover:bg-purple-300 text-black transition-all" data-id="${session.id}" title="Host Live Test">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path></svg>
                     </button>
-                    
-                    <!-- Black Pill Take Test Button -->
-                    <button class="take-test-modal-btn bg-[#facc15] hover:bg-yellow-300 text-black text-xs font-black uppercase py-2.5 px-4 flex items-center gap-2 border-[2px] border-black shadow-[3px_3px_0px_0px_#000] transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] shrink-0 ml-1" data-id="${session.id}" data-type="all">
-                        <svg class="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
+                    <!-- Take Test: yellow pill -->
+                    <button class="brutal-btn take-test-modal-btn bg-yellow-400 hover:bg-yellow-300 text-black text-xs font-black uppercase py-2.5 px-4 flex items-center gap-2 transition-all shrink-0 ml-1" data-id="${session.id}" data-type="all">
+                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
                         <span>Take Test</span>
                     </button>
                 </div>
@@ -2434,7 +2434,7 @@ async function renderHistory() {
         if (historyDisplayLimit < totalSessions) {
             const viewMoreContainer = document.createElement('div');
             viewMoreContainer.className = 'flex justify-center mt-6 w-full';
-            viewMoreContainer.innerHTML = `<button id="viewMoreHistoryBtn" class="bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold py-2 px-8 rounded-lg transition-colors border border-gray-700">View More</button>`;
+            viewMoreContainer.innerHTML = `<button id="viewMoreHistoryBtn" class="brutal-btn hover:bg-yellow-400 text-[var(--text-primary)] hover:text-black font-bold py-2 px-8 transition-colors">View More</button>`;
             historyList.appendChild(viewMoreContainer);
             
             document.getElementById('viewMoreHistoryBtn').addEventListener('click', () => {
@@ -2450,9 +2450,9 @@ async function renderHistory() {
                 window.vaultCurrentFilter = btn.getAttribute('data-filter');
                 document.querySelectorAll('.vault-filter-tab').forEach(b => {
                     if (b.getAttribute('data-filter') === window.vaultCurrentFilter) {
-                        b.className = "vault-filter-tab active px-4 py-1.5 rounded-full text-xs font-semibold text-white bg-gray-700 border border-gray-600 shadow";
+                        b.className = "vault-filter-tab active px-4 py-1.5 rounded-full text-xs font-semibold  bg-yellow-400 text-black border-black   shadow";
                     } else {
-                        b.className = "vault-filter-tab px-4 py-1.5 rounded-full text-xs font-semibold text-gray-400 hover:text-gray-200 transition-colors bg-transparent border border-gray-800 hover:border-gray-600";
+                        b.className = "vault-filter-tab px-4 py-1.5 rounded-full text-xs font-semibold  hover: transition-colors bg-transparent   hover:";
                     }
                 });
                 renderHistory();
@@ -2594,22 +2594,22 @@ function renderBookmarkDetailsQuestions() {
     list.innerHTML = '';
     
     if (!activeBookmarkGroup || !activeBookmarkGroup.questions.length) {
-        list.innerHTML = `<div class="text-center text-gray-500 py-10">This group is empty.</div>`;
+        list.innerHTML = `<div class="text-center py-10">This group is empty.</div>`;
         return;
     }
     
     activeBookmarkGroup.questions.forEach(q => {
         const div = document.createElement('div');
-        div.className = 'bg-white dark:bg-[#1C212E] border border-gray-200 dark:border-gray-800 rounded-xl p-4 flex flex-col sm:flex-row gap-4 items-center relative group';
+        div.className = 'brutal-card   dark: rounded-none p-4 flex flex-col sm:flex-row gap-4 items-center relative group';
         div.innerHTML = `
-            <div class="w-full sm:w-32 shrink-0 bg-white rounded-lg p-1 overflow-hidden h-20 flex items-center justify-center">
+            <div class="w-full sm:w-32 shrink-0 bg-white rounded-none p-1 overflow-hidden h-20 flex items-center justify-center">
                 <img src="${q.dataUrl}" class="max-w-full max-h-full object-contain mix-blend-multiply" />
             </div>
             <div class="flex-1 flex flex-col justify-center">
-                <h4 class="font-bold text-white text-sm">${q.label || 'Question'}</h4>
-                <p class="text-xs text-gray-400 mt-1">Added ${new Date(activeBookmarkGroup.timestamp).toLocaleDateString()}</p>
+                <h4 class="font-bold text-sm">${q.label || 'Question'}</h4>
+                <p class="text-xs mt-1">Added ${new Date(activeBookmarkGroup.timestamp).toLocaleDateString()}</p>
             </div>
-            <button class="bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white p-2.5 rounded-lg transition-colors border border-red-500/20 hover:border-red-500 shrink-0" title="Remove Question" aria-label="Remove Question">
+            <button class="brutal-btn bg-red-500/10 hover:bg-red-500 text-red-500 hover: p-2.5 transition-colors -red-500/20 hover:-red-500 shrink-0" title="Remove Question" aria-label="Remove Question">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
             </button>
         `;
@@ -2721,33 +2721,33 @@ async function renderNotedQuestions() {
         
         if (currentNotedQuestions.length === 0) {
             notedQsList.innerHTML = `
-                <div class="col-span-1 sm:col-span-2 lg:col-span-3 bg-[#090b10] p-8 rounded-2xl border border-gray-800 border-dashed flex flex-col items-center justify-center text-center opacity-70">
+                <div class="col-span-1 sm:col-span-2 lg:col-span-3 brutal-card p-8 rounded-none -dashed flex flex-col items-center justify-center text-center opacity-70">
                     <div class="bg-yellow-500/10 p-4 rounded-full text-yellow-500 mb-4">
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                     </div>
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-gray-400 mb-1">No Notes Yet</h3>
-                    <p class="text-sm text-gray-600 dark:text-gray-500 max-w-sm">Write notes using the scratchpad during practice. They will be saved here!</p>
+                    <h3 class="text-lg font-bold dark: mb-1">No Notes Yet</h3>
+                    <p class="text-sm dark: max-w-sm">Write notes using the scratchpad during practice. They will be saved here!</p>
                 </div>
             `;
             return;
         }
         
         const card = document.createElement('div');
-        card.className = 'bg-white dark:bg-[#11131c] p-5 border-[3px] border-black shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_#22d3ee] flex flex-col justify-between relative cursor-pointer transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_#000] dark:hover:shadow-[6px_6px_0px_0px_#22d3ee] group';
+        card.className = 'brutal-card p-5 flex flex-col justify-between relative cursor-pointer transition-all hover:bg-yellow-50 dark:hover:bg-[#3d3d2a] group';
         card.innerHTML = `
             <div class="flex items-start justify-between mb-4">
                 <div class="flex items-center gap-3">
-                    <div class="bg-yellow-500/10 p-2 rounded-lg text-yellow-500 group-hover:bg-yellow-500 group-hover:text-white transition-colors">
+                    <div class="bg-yellow-500/10 p-2 rounded-none text-yellow-500 group-hover:bg-yellow-500 group-hover: transition-colors">
                         <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg>
                     </div>
                     <div>
-                        <h3 class="font-bold text-lg text-white group-hover:text-yellow-400 transition-colors">My Noted Questions</h3>
-                        <p class="text-sm text-gray-400">${currentNotedQuestions.length} questions</p>
+                        <h3 class="font-bold text-lg group-hover:text-yellow-400 transition-colors">My Noted Questions</h3>
+                        <p class="text-sm">${currentNotedQuestions.length} questions</p>
                     </div>
                 </div>
             </div>
             <div class="mt-auto">
-                <button class="w-full bg-white/10 hover:bg-yellow-500 text-white font-bold py-2 rounded-lg text-sm transition-colors flex items-center justify-center gap-2">
+                <button class="brutal-btn w-full bg-white/10 hover:bg-yellow-500  font-bold py-2 text-sm transition-colors flex items-center justify-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                     View Notes
                 </button>
@@ -2780,28 +2780,28 @@ function renderNotedQsModalList() {
     list.innerHTML = '';
     
     if (currentNotedQuestions.length === 0) {
-        list.innerHTML = `<div class="text-center text-gray-500 py-10">You have no noted questions.</div>`;
+        list.innerHTML = `<div class="text-center py-10">You have no noted questions.</div>`;
         return;
     }
     
     currentNotedQuestions.forEach(q => {
         const div = document.createElement('div');
-        div.className = 'bg-white dark:bg-[#1C212E] border border-gray-200 dark:border-gray-800 rounded-xl p-4 flex flex-col sm:flex-row gap-4 items-stretch relative group';
+        div.className = 'brutal-card   dark: rounded-none p-4 flex flex-col sm:flex-row gap-4 items-stretch relative group';
         div.innerHTML = `
-            <div class="w-full sm:w-1/3 shrink-0 bg-white rounded-lg p-2 overflow-hidden flex items-center justify-center min-h-[100px]">
+            <div class="w-full sm:w-1/3 shrink-0 bg-white rounded-none p-2 overflow-hidden flex items-center justify-center min-h-[100px]">
                 <img src="${q.dataUrl}" class="max-w-full max-h-32 object-contain mix-blend-multiply" />
             </div>
-            <div class="flex-1 flex flex-col border-l border-gray-200 dark:border-gray-800 pl-4">
+            <div class="flex-1 flex flex-col -l dark: pl-4">
                 <div class="flex justify-between items-start mb-2">
                     <div>
-                        <h4 class="font-bold text-white text-sm">${q.label}</h4>
-                        <p class="text-xs text-gray-400">Added ${new Date(q.timestamp).toLocaleDateString()}</p>
+                        <h4 class="font-bold text-sm">${q.label}</h4>
+                        <p class="text-xs">Added ${new Date(q.timestamp).toLocaleDateString()}</p>
                     </div>
-                    <button class="bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white p-2 rounded-lg transition-colors border border-red-500/20 hover:border-red-500 shrink-0" title="Delete Note" aria-label="Delete Note">
+                    <button class="brutal-btn bg-red-500/10 hover:bg-red-500 text-red-500 hover: p-2 transition-colors -red-500/20 hover:-red-500 shrink-0" title="Delete Note" aria-label="Delete Note">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                     </button>
                 </div>
-                <div class="flex-1 bg-black/30 rounded-lg p-3 text-gray-300 text-sm whitespace-pre-wrap overflow-y-auto max-h-32 hide-scrollbar font-mono">${q.noteText}</div>
+                <div class="flex-1 bg-black/30 rounded-none p-3 text-sm whitespace-pre-wrap overflow-y-auto max-h-32 hide-scrollbar font-mono">${q.noteText}</div>
             </div>
         `;
         
@@ -2898,12 +2898,12 @@ async function renderBookmarks() {
 
         if (groups.length === 0) {
             bookmarksList.innerHTML = `
-                <div class="col-span-1 sm:col-span-2 lg:col-span-3 bg-[#090b10] p-8 rounded-2xl border border-gray-800 border-dashed flex flex-col items-center justify-center text-center opacity-70">
-                    <div class="bg-gray-100 dark:bg-white/5 p-4 rounded-full text-gray-500 mb-4">
+                <div class="col-span-1 sm:col-span-2 lg:col-span-3 brutal-card p-8 rounded-none -dashed flex flex-col items-center justify-center text-center opacity-70">
+                    <div class="bg-gray-100 dark:bg-white/5 p-4 rounded-full mb-4">
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
                     </div>
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-gray-400 mb-1">No Bookmarks Yet</h3>
-                    <p class="text-sm text-gray-600 dark:text-gray-500 max-w-sm">When you bookmark questions during a practice session, your custom collections will appear here.</p>
+                    <h3 class="text-lg font-bold dark: mb-1">No Bookmarks Yet</h3>
+                    <p class="text-sm dark: max-w-sm">When you bookmark questions during a practice session, your custom collections will appear here.</p>
                 </div>
             `;
             return;
@@ -2911,22 +2911,22 @@ async function renderBookmarks() {
         
         groups.forEach(g => {
             const card = document.createElement('div');
-            card.className = 'bg-white dark:bg-[#11131c] p-5 border-[3px] border-black shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_#22d3ee] flex flex-col justify-between relative cursor-pointer transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_#000] dark:hover:shadow-[6px_6px_0px_0px_#22d3ee] group';
+            card.className = 'brutal-card p-5 flex flex-col justify-between relative cursor-pointer transition-all hover:bg-yellow-50 dark:hover:bg-[#3d3d2a] group';
             
             card.innerHTML = `
                 <div class="flex items-start justify-between mb-4">
                     <div class="flex items-center gap-3">
-                        <div class="bg-blue-500/10 p-2 rounded-lg text-blue-400 group-hover:bg-blue-500 group-hover:text-white transition-colors">
+                        <div class="bg-blue-500/10 p-2 rounded-none text-blue-400 group-hover:bg-blue-500 group-hover: transition-colors">
                             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path></svg>
                         </div>
                         <div>
-                            <h3 class="font-bold text-lg text-white group-hover:text-blue-400 transition-colors">${g.name}</h3>
-                            <p class="text-sm text-gray-400">${g.questions.length} questions</p>
+                            <h3 class="font-bold text-lg group-hover:text-blue-400 transition-colors">${g.name}</h3>
+                            <p class="text-sm">${g.questions.length} questions</p>
                         </div>
                     </div>
                 </div>
                 <div class="mt-auto">
-                    <button class="w-full bg-white/10 hover:bg-blue-500 text-white font-bold py-2 rounded-lg text-sm transition-colors flex items-center justify-center gap-2">
+                    <button class="brutal-btn w-full bg-white/10 hover:bg-blue-500  font-bold py-2 text-sm transition-colors flex items-center justify-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         Practice Now
                     </button>
@@ -2980,7 +2980,7 @@ function showReviewList(type) {
     }
     
     if (filteredIndices.length === 0) {
-        reviewList.innerHTML = `<p class="text-gray-500 italic">No ${type} questions found.</p>`;
+        reviewList.innerHTML = `<p class="italic">No ${type} questions found.</p>`;
         return;
     }
     
@@ -2988,15 +2988,15 @@ function showReviewList(type) {
         const q = extractedImages[realIndex];
         
         const card = document.createElement('div');
-        card.className = 'bg-gray-50 dark:bg-navy-800 p-4 rounded-xl border border-gray-200 dark:border-navy-700';
+        card.className = 'brutal-card p-4';
         
         const header = document.createElement('div');
-        header.className = 'font-bold text-sm text-gray-700 dark:text-gray-200 mb-2';
+        header.className = 'font-bold text-sm  dark: mb-2';
         header.textContent = `Question ${q.label}`;
         
         const img = document.createElement('img');
         img.src = q.dataUrl;
-        img.className = 'max-w-full h-auto object-contain mb-4 rounded border border-gray-100 dark:border-navy-600 dark:bg-white dark:p-1';
+        img.className = 'max-w-full h-auto object-contain mb-4 rounded   dark:-navy-600 dark:bg-white dark:p-1';
         
         const btn = document.createElement('button');
         btn.className = 'bg-blue-100 dark:bg-blue-900/50 hover:bg-blue-200 dark:hover:bg-blue-800 text-blue-700 dark:text-blue-300 text-sm font-bold py-2 px-4 rounded';
@@ -3006,7 +3006,7 @@ function showReviewList(type) {
         if (q.answerDataUrl) {
             answerImg.src = q.answerDataUrl;
         }
-        answerImg.className = 'max-w-full h-auto object-contain mt-4 rounded border border-gray-100 dark:border-navy-600 dark:bg-white dark:p-1 hidden';
+        answerImg.className = 'max-w-full h-auto object-contain mt-4 rounded   dark:-navy-600 dark:bg-white dark:p-1 hidden';
         
         btn.onclick = () => {
             answerImg.classList.toggle('hidden');
@@ -3104,19 +3104,19 @@ async function renderBookmarkSidebar() {
         
         groups.forEach(g => {
             const div = document.createElement('div');
-            div.className = 'bg-[#060b14]/50 rounded-lg p-3 flex items-center justify-between group transition-colors hover:bg-white/5 border border-transparent hover:border-white/10';
+            div.className = 'bg-[#060b14]/50 rounded-none p-3 flex items-center justify-between group transition-colors hover:bg-white/5   hover:';
             div.innerHTML = `
                 <div>
                     <div class="flex items-center gap-2 mb-1">
-                        <svg class="w-3.5 h-3.5 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path></svg>
-                        <h5 class="font-bold text-sm text-gray-200">${g.name}</h5>
+                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path></svg>
+                        <h5 class="font-bold text-sm">${g.name}</h5>
                     </div>
-                    <p class="text-[10px] text-gray-500 flex items-center gap-1">
+                    <p class="text-[10px] flex items-center gap-1">
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         ${g.questions ? g.questions.length : 0} questions
                     </p>
                 </div>
-                <button class="bg-blue-500/20 hover:bg-blue-500 text-blue-400 hover:text-white px-3 py-1 rounded-md text-xs font-bold transition-colors flex items-center gap-1">
+                <button class="brutal-btn bg-blue-500/20 hover:bg-blue-500 text-blue-400 hover: px-3 py-1 text-xs font-bold transition-colors flex items-center gap-1">
                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> Add
                 </button>
             `;
@@ -3126,7 +3126,7 @@ async function renderBookmarkSidebar() {
                     await addQuestionToBookmarkGroup(g.id, g.name, q);
                     btn.innerHTML = `<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Added`;
                     btn.classList.replace('bg-blue-500/20', 'bg-green-500');
-                    btn.classList.replace('text-blue-400', 'text-white');
+                    btn.classList.replace('text-blue-400', '');
                     setTimeout(() => renderBookmarkSidebar(), 1000);
                 } catch (e) {
                     console.error(e);
@@ -3165,14 +3165,14 @@ function buildNtaTabs(exercises) {
     ntaSubjectTabs.innerHTML = '';
     exercises.forEach((ex, i) => {
         const btn = document.createElement('button');
-        btn.className = `px-6 py-2 h-full font-bold text-sm tracking-wide transition-colors border-r border-[#d4781d] ${i === 0 ? 'bg-white text-blue-900' : 'text-white hover:bg-[#e07b1a]'}`;
+        btn.className = `px-6 py-2 h-full font-bold text-sm tracking-wide transition-colors -r  ${i === 0 ? 'bg-white text-blue-900' : ' hover:bg-[#e07b1a]'}`;
         btn.textContent = ex.toUpperCase();
         btn.onclick = () => {
             // Update Tab styles
             Array.from(ntaSubjectTabs.children).forEach(child => {
-                child.className = 'px-6 py-2 h-full font-bold text-sm tracking-wide transition-colors border-r border-[#d4781d] text-white hover:bg-[#e07b1a]';
+                child.className = 'px-6 py-2 h-full font-bold text-sm tracking-wide transition-colors -r   hover:bg-[#e07b1a]';
             });
-            btn.className = 'px-6 py-2 h-full font-bold text-sm tracking-wide transition-colors border-r border-[#d4781d] bg-white text-blue-900';
+            btn.className = 'px-6 py-2 h-full font-bold text-sm tracking-wide transition-colors -r  bg-white text-blue-900';
             
             // Jump to first question in this exercise
             const firstIndex = practiceState.stats.findIndex(s => s.exercise === ex);
@@ -3197,7 +3197,7 @@ function buildNtaPalette() {
     Object.keys(groups).forEach(ex => {
         // Create Section Header
         const header = document.createElement('div');
-        header.className = 'bg-blue-100 dark:bg-navy-800 font-bold text-sm p-2 text-center text-blue-900 dark:text-blue-300 rounded shadow-sm';
+        header.className = 'bg-blue-100 dark:bg-navy-800 font-bold text-sm p-2 text-center text-blue-900 dark:text-blue-300 rounded ';
         header.textContent = ex.toUpperCase();
         ntaPaletteGrid.appendChild(header);
         
@@ -3209,7 +3209,7 @@ function buildNtaPalette() {
             item.stat.activeSectionNumber = sectionIndex + 1;
             const btn = document.createElement('button');
             btn.id = `ntaPaletteBtn_${item.paletteIndex}`;
-            btn.className = 'w-10 h-10 flex items-center justify-center font-bold text-sm rounded transition-transform transform hover:scale-105 shadow-sm border border-gray-300 nta-not-visited';
+            btn.className = 'w-10 h-10 flex items-center justify-center font-bold text-sm rounded transition-transform transform hover:scale-105    nta-not-visited';
             btn.textContent = item.stat.activeSectionNumber.toString().padStart(2, '0');
             btn.onclick = () => renderNtaQuestion(item.paletteIndex);
             sectionGrid.appendChild(btn);
@@ -3225,7 +3225,7 @@ function updateNtaPaletteColors() {
         const btn = document.getElementById(`ntaPaletteBtn_${i}`);
         if (!btn) return;
         
-        btn.className = 'w-10 h-10 flex items-center justify-center font-bold text-sm transition-transform transform hover:scale-105 shadow-sm border border-gray-300';
+        btn.className = 'w-10 h-10 flex items-center justify-center font-bold text-sm transition-transform transform hover:scale-105   ';
         
         // Remove old internal indicator if present
         btn.innerHTML = stat.activeSectionNumber.toString().padStart(2, '0');
@@ -3253,7 +3253,7 @@ function updateNtaPaletteColors() {
                 } else {
                     btn.classList.add('nta-answered-marked', 'relative');
                 }
-                btn.innerHTML += `<span class="w-3 h-3 bg-green-400 rounded-full absolute bottom-0 right-0 border border-white"></span>`;
+                btn.innerHTML += `<span class="w-3 h-3 bg-green-400 rounded-full absolute bottom-0 right-0"></span>`;
                 break;
         }
     });
@@ -3272,7 +3272,7 @@ function updateNtaSummary() {
     document.getElementById('ntaLegendMarked').textContent = counts.marked;
     const answeredMarkedEl = document.getElementById('ntaLegendAnsweredMarked');
     if(answeredMarkedEl) {
-        answeredMarkedEl.innerHTML = `<span class="w-2 h-2 bg-green-400 rounded-full absolute bottom-0 right-0 border border-white"></span>${counts.answered_marked}`;
+        answeredMarkedEl.innerHTML = `<span class="w-2 h-2 bg-green-400 rounded-full absolute bottom-0 right-0"></span>${counts.answered_marked}`;
     }
 }
 
@@ -3298,13 +3298,13 @@ function renderNtaQuestion(index) {
     // Auto-select the correct Subject Tab if user navigated via Palette
     Array.from(ntaSubjectTabs.children).forEach(btn => {
         if (btn.textContent === stat.exercise.toUpperCase()) {
-            btn.className = 'px-6 py-2 h-full font-bold text-sm tracking-wide transition-colors border-r border-[#d4781d] bg-white text-blue-900';
+            btn.className = 'px-6 py-2 h-full font-bold text-sm tracking-wide transition-colors -r  bg-white text-blue-900';
         } else {
-            btn.className = 'px-6 py-2 h-full font-bold text-sm tracking-wide transition-colors border-r border-[#d4781d] text-white hover:bg-[#e07b1a]';
+            btn.className = 'px-6 py-2 h-full font-bold text-sm tracking-wide transition-colors -r   hover:bg-[#e07b1a]';
         }
     });
     
-    const typeBadge = q.type ? `<span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-amber-100 text-amber-900 dark:bg-amber-900/80 dark:text-amber-100 border border-amber-300 dark:border-amber-700">${q.type}</span>` : '';
+    const typeBadge = q.type ? `<span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-amber-100 text-amber-900 dark:bg-amber-900/80 dark:text-amber-100 -amber-300 dark:-amber-700">${q.type}</span>` : '';
     ntaQuestionLabel.innerHTML = `Question ${stat.activeSectionNumber}: <span class="text-xs font-normal opacity-80">(${q.label})</span> ${typeBadge}`;
     ntaQImage.src = q.dataUrl;
     ntaQImage.onload = () => {
@@ -3488,10 +3488,10 @@ function triggerExamSummary() {
     if (tbody) {
         tbody.innerHTML = Object.entries(sectionCounts).map(([name, c]) => `
             <tr class="hover:bg-gray-50 dark:hover:bg-[#1a1f2e]/50">
-                <td class="px-4 py-2.5 font-semibold text-gray-800 dark:text-gray-200">${name}</td>
+                <td class="px-4 py-2.5 font-semibold dark:">${name}</td>
                 <td class="px-3 py-2.5 text-center text-[#5cb85c] font-bold">${c.answered}</td>
                 <td class="px-3 py-2.5 text-center text-[#d9534f] font-bold">${c.not_answered}</td>
-                <td class="px-3 py-2.5 text-center text-gray-600 dark:text-gray-300 font-bold">${c.not_visited}</td>
+                <td class="px-3 py-2.5 text-center dark: font-bold">${c.not_visited}</td>
                 <td class="px-3 py-2.5 text-center text-[#5bc0de] font-bold">${c.marked}</td>
                 <td class="px-3 py-2.5 text-center text-purple-500 font-bold">${c.answered_marked}</td>
             </tr>
@@ -3768,12 +3768,12 @@ function openFullAnswerKeyModal() {
     container.innerHTML = '';
     
     if (extractedAnswerPages.length === 0) {
-        container.innerHTML = '<p class="text-gray-500 text-center p-8">No full answer key pages available.</p>';
+        container.innerHTML = '<p class="text-center p-8">No full answer key pages available.</p>';
     } else {
         extractedAnswerPages.forEach(p => {
             const img = document.createElement('img');
             img.src = p.dataUrl;
-            img.className = 'w-full h-auto block border border-gray-300 dark:border-navy-600 shadow-md rounded';
+            img.className = 'w-full h-auto block   dark:-navy-600  rounded';
             container.appendChild(img);
         });
     }
@@ -3862,18 +3862,18 @@ function showResultsDashboard() {
         document.querySelectorAll('.lrd-nav').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.lrd-nav').forEach(b => {
-                    b.classList.remove('bg-white/10', 'text-white');
-                    b.classList.add('text-gray-400');
+                    b.classList.remove('bg-white/10', '');
+                    b.classList.add('');
                 });
-                btn.classList.add('bg-white/10', 'text-white');
-                btn.classList.remove('text-gray-400');
+                btn.classList.add('bg-white/10', '');
+                btn.classList.remove('');
                 document.querySelectorAll('.lrd-panel').forEach(p => p.classList.add('hidden'));
                 const panel = document.getElementById('lrd' + btn.dataset.panel);
                 if (panel) panel.classList.remove('hidden');
             });
         });
         const overviewBtn = document.querySelector('.lrd-nav[data-panel="Overview"]');
-        if (overviewBtn) { overviewBtn.classList.add('bg-white/10', 'text-white'); overviewBtn.classList.remove('text-gray-400'); }
+        if (overviewBtn) { overviewBtn.classList.add('bg-white/10', ''); overviewBtn.classList.remove(''); }
 
         const exitBtn = document.getElementById('lrdExitBtn');
         if (exitBtn) exitBtn.addEventListener('click', () => { window.location.reload(); });
@@ -3969,12 +3969,12 @@ function _lrdFillOverview(s) {
         (practiceState.activeIndices || []).forEach((ri, i) => {
             const stat = practiceState.stats[ri];
             if (!stat) return;
-            let bg = 'bg-gray-800 border border-gray-700';
+            let bg = 'bg-gray-800  ';
             if (stat.evaluation === 'correct') bg = 'bg-green-600';
             else if (stat.evaluation === 'incorrect') bg = 'bg-red-600';
             else if (stat.attempted || stat.ntaStatus === 'answered' || stat.ntaStatus === 'answered_marked') bg = 'bg-gray-500';
             const d = document.createElement('div');
-            d.className = 'w-6 h-6 rounded text-[9px] flex items-center justify-center font-bold text-white ' + bg;
+            d.className = 'w-6 h-6 rounded text-[9px] flex items-center justify-center font-bold  ' + bg;
             d.textContent = i + 1;
             d.title = 'Q' + (i+1) + ': ' + (stat.evaluation || stat.ntaStatus);
             qMap.appendChild(d);
@@ -4038,7 +4038,7 @@ function _lrdFillTimeAnalysis(s) {
             type: 'bar',
             data: {
                 labels: (practiceState.activeIndices || []).map((_, i) => i + 1),
-                datasets: [{ data: timeData, backgroundColor: colorData, borderWidth: 0, borderRadius: 2 }]
+                datasets: [{ data: timeData, backgroundColor: colorData, Width: 0, Radius: 2 }]
             },
             options: {
                 responsive: true, maintainAspectRatio: false,
@@ -4127,8 +4127,8 @@ function _lrdFillInsights(s) {
         } else { curStreak = 0; curWrong = 0; }
     });
 
-    if (el('lrdBestStreak')) el('lrdBestStreak').innerHTML = bestStreak + ' <span class="text-base text-gray-400">Q</span>';
-    if (el('lrdWrongRun')) el('lrdWrongRun').innerHTML = worstRun + ' <span class="text-base text-gray-400">Q</span>';
+    if (el('lrdBestStreak')) el('lrdBestStreak').innerHTML = bestStreak + ' <span class="text-base">Q</span>';
+    if (el('lrdWrongRun')) el('lrdWrongRun').innerHTML = worstRun + ' <span class="text-base">Q</span>';
     if (el('lrdBlindGuesses')) el('lrdBlindGuesses').textContent = blindGuesses;
     if (el('lrdBlindNote')) {
         el('lrdBlindNote').textContent = blindGuesses === 0 ? 'None. Well considered.' : blindGuesses + ' answered in under 15 seconds';
@@ -4155,7 +4155,7 @@ function _lrdFillInsights(s) {
             bar.className = 'flex-1 flex flex-col items-center gap-1';
             const barH = Math.max(pAcc * 0.7, 4);
             const barColor = pAcc > 60 ? '#8b5cf6' : pAcc > 30 ? '#6366f1' : '#4f46e5';
-            bar.innerHTML = '<span class="text-[10px] text-gray-400">' + pAcc + '%</span><div style="width:100%; height:' + barH + 'px; background:' + barColor + '; border-radius:3px 3px 0 0;"></div>';
+            bar.innerHTML = '<span class="text-[10px]">' + pAcc + '%</span><div style="width:100%; height:' + barH + 'px; background:' + barColor + '; -radius:3px 3px 0 0;"></div>';
             accParts.appendChild(bar);
         }
     }
@@ -4177,16 +4177,16 @@ function _lrdFillInsights(s) {
         let rank = 1;
         const entries = Object.entries(subjectData);
         if (entries.length === 0) {
-            mpmEl.innerHTML = '<div class="text-gray-500 text-xs">No data available</div>';
+            mpmEl.innerHTML = '<div class="text-xs">No data available</div>';
         } else {
             entries.forEach(([name, d]) => {
                 const mpm = d.seconds > 0 ? (d.marks / (d.seconds / 60)).toFixed(2) : '0.00';
                 const isPos = parseFloat(mpm) >= 0;
                 const row = document.createElement('div');
                 row.className = 'flex items-center gap-3';
-                row.innerHTML = '<span class="text-gray-500 text-xs w-4">' + (rank++) + '</span>' +
-                    '<span class="text-white text-xs font-semibold flex-1 truncate">' + name + '</span>' +
-                    '<div class="w-24 h-1.5 bg-gray-700 rounded-full overflow-hidden"><div class="h-full rounded-full ' + (isPos ? 'bg-orange-400' : 'bg-red-500') + '" style="width:' + Math.min(Math.abs(parseFloat(mpm)) * 15, 100) + '%"></div></div>' +
+                row.innerHTML = '<span class="text-xs w-4">' + (rank++) + '</span>' +
+                    '<span class="text-xs font-semibold flex-1 truncate">' + name + '</span>' +
+                    '<div class="w-24 h-1.5 bg-yellow-400 text-black border-black rounded-full overflow-hidden"><div class="h-full rounded-full ' + (isPos ? 'bg-orange-400' : 'bg-red-500') + '" style="width:' + Math.min(Math.abs(parseFloat(mpm)) * 15, 100) + '%"></div></div>' +
                     '<span class="text-xs ' + (isPos ? 'text-orange-400' : 'text-red-400') + ' w-20 text-right">' + mpm + ' m/min</span>';
                 mpmEl.appendChild(row);
             });
@@ -4235,7 +4235,7 @@ function _lrdFillScoreProgress(s) {
             ...chartDefaults,
             data: {
                 labels: scoreByQ.map((_, i) => i === 0 ? 'Start' : i),
-                datasets: [{ data: scoreByQ, borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.05)', borderWidth: 2, pointRadius: 0, fill: true, tension: 0.3 }]
+                datasets: [{ data: scoreByQ, Color: '#ef4444', backgroundColor: 'rgba(239,68,68,0.05)', Width: 2, pointRadius: 0, fill: true, tension: 0.3 }]
             }
         });
     }
@@ -4247,7 +4247,7 @@ function _lrdFillScoreProgress(s) {
             ...chartDefaults,
             data: {
                 labels: scoreByTime.map(d => d.x === 0 ? 'Start' : Math.floor(d.x/60) + 'm'),
-                datasets: [{ data: scoreByTime.map(d => d.y), borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.05)', borderWidth: 2, pointRadius: 0, fill: true, tension: 0.3 }]
+                datasets: [{ data: scoreByTime.map(d => d.y), Color: '#ef4444', backgroundColor: 'rgba(239,68,68,0.05)', Width: 2, pointRadius: 0, fill: true, tension: 0.3 }]
             }
         });
     }
@@ -4309,10 +4309,10 @@ function _lrdUpdateLeaderboard(participants) {
             const col = realRank === 1 ? '#eab308' : realRank === 2 ? '#6b7280' : '#92400e';
             const d = document.createElement('div');
             d.className = 'flex flex-col items-center';
-            d.innerHTML = '<div class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg mb-1" style="background:' + col + '">' + p.name.charAt(0).toUpperCase() + '</div>' +
-                '<div class="text-xs text-white font-semibold mb-0.5 max-w-[80px] truncate text-center">' + p.name + '</div>' +
+            d.innerHTML = '<div class="w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg mb-1" style="background:' + col + '">' + p.name.charAt(0).toUpperCase() + '</div>' +
+                '<div class="text-xs font-semibold mb-0.5 max-w-[80px] truncate text-center">' + p.name + '</div>' +
                 '<div class="text-sm font-bold mb-1" style="color:' + col + '">' + (p.score !== null ? p.score : '—') + '</div>' +
-                '<div class="w-16 rounded-t flex items-start justify-center pt-1 text-white font-black text-base" style="height:' + h + 'px; background:' + col + '">' + medals[realRank - 1] + '</div>';
+                '<div class="w-16 rounded-t flex items-start justify-center pt-1 font-black text-base" style="height:' + h + 'px; background:' + col + '">' + medals[realRank - 1] + '</div>';
             podium.appendChild(d);
         });
     }
@@ -4323,12 +4323,12 @@ function _lrdUpdateLeaderboard(participants) {
     if (myRankEl && me) {
         const total = data.length;
         const pct = total > 1 ? Math.round((total - me.rank) / (total - 1) * 100) : 100;
-        myRankEl.innerHTML = '<div class="bg-blue-900/30 border border-blue-700/50 rounded-xl p-4 flex items-center gap-4 mb-4">' +
-            '<div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold shrink-0">#' + me.rank + '</div>' +
-            '<div class="flex-1"><div class="text-white font-semibold text-sm">Your Test Percentile</div>' +
-            '<div class="text-blue-400 font-bold">' + pct + '%ile <span class="text-gray-400 font-normal">— better than ' + pct + '% of participants</span></div></div>' +
-            '<div class="text-right border border-gray-700 rounded-lg px-3 py-2"><div class="text-xl font-black text-white">' + (me.score !== null ? me.score : '—') + '</div>' +
-            '<div class="text-[10px] text-gray-400">points</div></div></div>';
+        myRankEl.innerHTML = '<div class="bg-blue-900/30 rounded-none p-4 flex items-center gap-4 mb-4">' +
+            '<div class="w-10 h-10 bg-blue-600 rounded-none flex items-center justify-center font-bold shrink-0">#' + me.rank + '</div>' +
+            '<div class="flex-1"><div class="font-semibold text-sm">Your Test Percentile</div>' +
+            '<div class="text-blue-400 font-bold">' + pct + '%ile <span class="font-normal">— better than ' + pct + '% of participants</span></div></div>' +
+            '<div class="text-right rounded-none px-3 py-2"><div class="text-xl font-black">' + (me.score !== null ? me.score : '—') + '</div>' +
+            '<div class="text-[10px]">points</div></div></div>';
 
         // Also update overview percentile card
         const pCard = document.getElementById('lrdPercentileCard');
@@ -4347,12 +4347,12 @@ function _lrdUpdateLeaderboard(participants) {
         list.innerHTML = data.map((p) => {
             const isMe = p.id === myId;
             const medal = p.rank === 1 ? '🥇' : p.rank === 2 ? '🥈' : p.rank === 3 ? '🥉' : '#' + p.rank;
-            return '<div class="flex items-center gap-3 px-4 py-3 ' + (isMe ? 'bg-blue-900/20 border-l-2 border-blue-500' : 'hover:bg-white/5') + '">' +
-                '<span class="text-sm w-8 text-center font-bold ' + (p.rank <= 3 ? '' : 'text-gray-400') + '">' + medal + '</span>' +
-                '<div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-white text-xs font-bold shrink-0">' + p.name.charAt(0).toUpperCase() + '</div>' +
-                '<div class="flex-1 min-w-0"><div class="text-sm font-semibold text-white truncate">' + p.name + (isMe ? ' <span class="text-xs text-blue-400 font-normal">(You)</span>' : '') + (p.id === 'host' ? ' <span class="text-xs text-yellow-400 font-normal">(Host)</span>' : '') + '</div></div>' +
-                '<div class="text-xs text-gray-500">' + (p.accuracy !== null && p.accuracy !== undefined ? (typeof p.accuracy === 'number' ? p.accuracy.toFixed(1) : p.accuracy) + '%' : '—') + '</div>' +
-                '<div class="text-sm font-bold text-white ml-2">' + (p.score !== null && p.score !== undefined ? p.score : '—') + '</div></div>';
+            return '<div class="flex items-center gap-3 px-4 py-3 ' + (isMe ? 'bg-blue-900/20 -l-2 ' : 'hover:bg-white/5') + '">' +
+                '<span class="text-sm w-8 text-center font-bold ' + (p.rank <= 3 ? '' : '') + '">' + medal + '</span>' +
+                '<div class="w-8 h-8 rounded-full bg-yellow-400 text-black border-black flex items-center justify-center text-xs font-bold shrink-0">' + p.name.charAt(0).toUpperCase() + '</div>' +
+                '<div class="flex-1 min-w-0"><div class="text-sm font-semibold truncate">' + p.name + (isMe ? ' <span class="text-xs text-blue-400 font-normal">(You)</span>' : '') + (p.id === 'host' ? ' <span class="text-xs text-yellow-400 font-normal">(Host)</span>' : '') + '</div></div>' +
+                '<div class="text-xs">' + (p.accuracy !== null && p.accuracy !== undefined ? (typeof p.accuracy === 'number' ? p.accuracy.toFixed(1) : p.accuracy) + '%' : '—') + '</div>' +
+                '<div class="text-sm font-bold ml-2">' + (p.score !== null && p.score !== undefined ? p.score : '—') + '</div></div>';
         }).join('');
     }
 }
@@ -4465,7 +4465,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (saStatsAvgAcc) saStatsAvgAcc.textContent = '0%';
             if (saStatsQsPracticed) saStatsQsPracticed.textContent = '0';
             if (saHistoricalList) {
-                saHistoricalList.innerHTML = '<div class="text-center text-gray-500 py-8">No tests recorded yet. Start practicing!</div>';
+                saHistoricalList.innerHTML = '<div class="text-center py-8">No tests recorded yet. Start practicing!</div>';
             }
             return;
         }
@@ -4517,9 +4517,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     datasets: [{
                         label: 'Score %',
                         data: chartScores,
-                        borderColor: '#3B82F6',
+                        Color: '#3B82F6',
                         backgroundColor: gradient,
-                        borderWidth: 3,
+                        Width: 3,
                         fill: true,
                         tension: 0.4,
                         pointBackgroundColor: '#1E3A8A',
@@ -4536,7 +4536,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     scales: {
                         x: {
                             grid: { display: false, drawBorder: false },
-                            ticks: { color: '#6B7280', font: { size: 10 }, maxTicksLimit: 6 }
+                            ticks: { color: document.documentElement.classList.contains('dark') ? '#a0a0a0' : '#555555', font: { size: 10 }, maxTicksLimit: 6 }
                         },
                         y: {
                             display: false,
@@ -4569,7 +4569,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             ${innerText}
                         </div>
                     </div>
-                    <div class="text-[11px] text-gray-500 dark:text-gray-400 mt-1 font-medium">${label}</div>
+                    <div class="text-[11px] dark: mt-1 font-medium">${label}</div>
                 </div>
                 `;
             }
@@ -4579,14 +4579,14 @@ document.addEventListener('DOMContentLoaded', () => {
             let filteredSessions = sessions;
 
             if (filteredSessions.length === 0) {
-                saHistoricalList.innerHTML = '<div class="text-center text-gray-500 py-8">No tests recorded yet. Start practicing!</div>';
+                saHistoricalList.innerHTML = '<div class="text-center py-8">No tests recorded yet. Start practicing!</div>';
             }
 
             const reversedSessions = [...filteredSessions].reverse();
 
             reversedSessions.forEach(s => {
                 const item = document.createElement('div');
-                item.className = 'bg-[#090b10] hover:bg-[#0d1017] transition-all p-4 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between border border-gray-800/80 hover:border-gray-700 shadow-xl relative group mb-3.5 gap-4';
+                item.className = 'brutal-card hover:bg-yellow-50 dark:hover:bg-[#3d3d2a] transition-all p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between relative group mb-3.5 gap-4';
                 
                 let rawTitle = s.title || `Mock Test Session #${s.id}`;
                 let formattedTitle = rawTitle;
@@ -4599,31 +4599,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 item.innerHTML = `
                     <div class="flex-1 min-w-0">
-                        <h4 class="text-sm sm:text-base font-bold text-white truncate tracking-tight">${formattedTitle}</h4>
-                        <p class="text-xs text-slate-400 mt-1 font-medium">Created: ${dateStr}</p>
+                        <h4 class="text-sm sm:text-base font-bold truncate tracking-tight">${formattedTitle}</h4>
+                        <p class="text-xs mt-1 font-medium">Created: ${dateStr}</p>
                     </div>
                     
                     <div class="flex items-center justify-end gap-2.5 shrink-0">
-                        <button class="rename-session-btn p-2 bg-white dark:bg-[#11131c] border-[2px] border-black text-black dark:text-white shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all hover:bg-yellow-400 dark:hover:bg-yellow-400 hover:text-black" data-id="${s.id}" title="Rename Test">
+                        <!-- Rename: yellow -->
+                        <button class="brutal-btn rename-session-btn p-2 bg-yellow-400 hover:bg-yellow-300 text-black transition-all" data-id="${s.id}" title="Rename Test">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                         </button>
-                        <button class="delete-session-btn p-2 bg-white dark:bg-[#11131c] border-[2px] border-black text-black dark:text-white shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all hover:bg-rose-400 dark:hover:bg-rose-400 hover:text-black" data-id="${s.id}" title="Delete Test">
+                        <!-- Delete: red -->
+                        <button class="brutal-btn delete-session-btn p-2 bg-rose-400 hover:bg-rose-300 text-black transition-all" data-id="${s.id}" title="Delete Test">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                         </button>
-                        <button class="view-session-btn p-2 bg-white dark:bg-[#11131c] border-[2px] border-black text-black dark:text-white shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all hover:bg-yellow-400 dark:hover:bg-yellow-400 hover:text-black" data-id="${s.id}" title="View Analysis">
+                        <!-- View Analysis: green -->
+                        <button class="brutal-btn view-session-btn p-2 bg-emerald-400 hover:bg-emerald-300 text-black transition-all" data-id="${s.id}" title="View Analysis">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                         </button>
-
-                        <button class="share-session-btn p-2.5 bg-blue-400 hover:bg-blue-300 text-black font-extrabold border-[2px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all flex items-center justify-center" data-id="${s.id}" title="Share Test">
+                        <!-- Share: blue -->
+                        <button class="brutal-btn share-session-btn p-2 bg-blue-400 hover:bg-blue-300 text-black transition-all flex items-center justify-center" data-id="${s.id}" title="Share Test">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
                         </button>
-
-                        <button class="share-session-btn p-2 bg-purple-400 hover:bg-purple-300 text-black border-[2px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all" data-id="${s.id}" title="Host Live Test">
+                        <!-- Host: purple -->
+                        <button class="brutal-btn share-session-btn p-2 bg-purple-400 hover:bg-purple-300 text-black transition-all" data-id="${s.id}" title="Host Live Test">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path></svg>
                         </button>
                         
-                        <button class="take-test-modal-btn bg-[#facc15] hover:bg-yellow-300 text-black text-xs font-black uppercase py-2.5 px-4 flex items-center gap-2 border-[2px] border-black shadow-[3px_3px_0px_0px_#000] transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] shrink-0 ml-1" data-id="${s.id}" data-type="all">
-                            <svg class="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
+                        <button class="brutal-btn take-test-modal-btn bg-yellow-400 hover:bg-yellow-300 text-black text-xs font-black uppercase py-2.5 px-4 flex items-center gap-2 transition-all shrink-0 ml-1" data-id="${s.id}" data-type="all">
+                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
                             <span>Take Test</span>
                         </button>
                     </div>
@@ -4847,15 +4850,15 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if(tabRecentTests && tabExternalSources) {
         tabRecentTests.addEventListener('click', () => {
-            tabRecentTests.className = "text-white font-bold text-lg pb-2 border-b-2 border-blue-500 transition-colors";
-            tabExternalSources.className = "text-gray-500 hover:text-gray-300 font-bold text-lg pb-2 border-b-2 border-transparent hover:border-gray-600 transition-colors";
+            tabRecentTests.className = " font-bold text-lg pb-2 -b-2  transition-colors";
+            tabExternalSources.className = " hover: font-bold text-lg pb-2 -b-2  hover: transition-colors";
             recentTestsView.classList.remove('hidden');
             externalSourcesView.classList.add('hidden');
         });
         
         tabExternalSources.addEventListener('click', () => {
-            tabExternalSources.className = "text-white font-bold text-lg pb-2 border-b-2 border-blue-500 transition-colors";
-            tabRecentTests.className = "text-gray-500 hover:text-gray-300 font-bold text-lg pb-2 border-b-2 border-transparent hover:border-gray-600 transition-colors";
+            tabExternalSources.className = " font-bold text-lg pb-2 -b-2  transition-colors";
+            tabRecentTests.className = " hover: font-bold text-lg pb-2 -b-2  hover: transition-colors";
             externalSourcesView.classList.remove('hidden');
             recentTestsView.classList.add('hidden');
             // Default to add source view if none exists, else sources
@@ -4870,16 +4873,16 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if(subTabSources && subTabAddSource) {
         subTabSources.addEventListener('click', () => {
-            subTabSources.className = "text-white font-semibold text-sm pb-1 border-b-2 border-blue-500 transition-colors";
-            subTabAddSource.className = "text-gray-500 hover:text-gray-300 font-semibold text-sm pb-1 border-b-2 border-transparent hover:border-gray-600 transition-colors";
+            subTabSources.className = " font-semibold text-sm pb-1 -b-2  transition-colors";
+            subTabAddSource.className = " hover: font-semibold text-sm pb-1 -b-2  hover: transition-colors";
             sourcesListContainer.classList.remove('hidden');
             addSourceFormContainer.classList.add('hidden');
             renderExternalSources();
         });
         
         subTabAddSource.addEventListener('click', () => {
-            subTabAddSource.className = "text-white font-semibold text-sm pb-1 border-b-2 border-blue-500 transition-colors";
-            subTabSources.className = "text-gray-500 hover:text-gray-300 font-semibold text-sm pb-1 border-b-2 border-transparent hover:border-gray-600 transition-colors";
+            subTabAddSource.className = " font-semibold text-sm pb-1 -b-2  transition-colors";
+            subTabSources.className = " hover: font-semibold text-sm pb-1 -b-2  hover: transition-colors";
             addSourceFormContainer.classList.remove('hidden');
             sourcesListContainer.classList.add('hidden');
         });
@@ -4913,24 +4916,24 @@ function renderExternalSources() {
     list.innerHTML = '';
     
     if(sources.length === 0) {
-        list.innerHTML = '<div class="text-center text-gray-500 py-8">No external sources added yet.</div>';
+        list.innerHTML = '<div class="text-center py-8">No external sources added yet.</div>';
         return;
     }
     
     sources.forEach(src => {
         const card = document.createElement('div');
-        card.className = 'bg-[#151921] border border-gray-800 rounded-xl p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:border-gray-700 transition-colors';
+        card.className = 'brutal-card p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:bg-yellow-50 dark:hover:bg-[#3d3d2a] transition-colors';
         card.innerHTML = `
             <div class="flex-1 min-w-0">
-                <h4 class="text-base font-bold text-gray-200 truncate">${src.name}</h4>
+                <h4 class="text-base font-bold truncate">${src.name}</h4>
                 <p class="text-xs text-blue-400 mt-1 truncate">${src.url}</p>
-                <p class="text-[10px] text-gray-500 mt-1">Added: ${src.date}</p>
+                <p class="text-[10px] mt-1">Added: ${src.date}</p>
             </div>
             <div class="flex items-center gap-2 shrink-0">
-                <button class="delete-source-btn p-2 rounded-lg bg-[#1a1e26] hover:bg-red-900/30 text-gray-400 hover:text-red-400 border border-gray-700 hover:border-red-900/50 transition-colors" data-id="${src.id}" title="Remove Source">
+                <button class="brutal-btn delete-source-btn p-2 bg-[#1a1e26] hover:bg-red-900/30  hover:text-red-400 hover:-red-900/50 transition-colors" data-id="${src.id}" title="Remove Source">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                 </button>
-                <button class="bg-[#28498f] hover:bg-[#3459a8] text-white text-sm font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors border border-blue-900/50 shadow" onclick="alert('Fetching data from external sources will be implemented in future updates!')">
+                <button class="brutal-btn bg-[#28498f] hover:bg-[#3459a8]  text-sm font-bold py-2 px-4 flex items-center gap-2 transition-colors shadow" onclick="alert('Fetching data from external sources will be implemented in future updates!')">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
                     Fetch
                 </button>
@@ -5117,7 +5120,7 @@ async function loadCombineTestsPage() {
         const validSessions = sessions.filter(s => s.extractedImages && s.extractedImages.length > 0);
         
         if (validSessions.length === 0) {
-            listContainer.innerHTML = '<div class="text-center text-gray-500 py-12 text-sm font-medium">No tests available in your vault to combine. Upload some PDFs first!</div>';
+            listContainer.innerHTML = '<div class="text-center py-12 text-sm font-medium">No tests available in your vault to combine. Upload some PDFs first!</div>';
             document.getElementById('combinePageSelectedCount').textContent = '0';
             document.getElementById('combinePageTotalQuestionsCount').textContent = '0';
             return;
@@ -5125,12 +5128,12 @@ async function loadCombineTestsPage() {
         
         validSessions.forEach(session => {
             const label = document.createElement('label');
-            label.className = 'flex items-center gap-4 p-4 bg-[#06080c] hover:bg-[#0b0e14] rounded-2xl border border-gray-800/80 cursor-pointer transition-colors';
+            label.className = 'combine-item flex items-center gap-4 p-4 rounded-none cursor-pointer transition-colors border-b border-[var(--sidebar-border)]';
             label.innerHTML = `
-                <input type="checkbox" class="combine-page-checkbox w-5 h-5 text-emerald-600 bg-[#090b10] border-gray-800 rounded-lg focus:ring-emerald-500 focus:ring-offset-0" data-id="${session.id}" data-qcount="${session.extractedImages.length}">
+                <input type="checkbox" class="combine-page-checkbox w-5 h-5 text-emerald-600 brutal-card rounded-none focus:ring-emerald-500 focus:ring-offset-0" data-id="${session.id}" data-qcount="${session.extractedImages.length}">
                 <div class="flex-1 min-w-0">
-                    <p class="text-sm font-bold text-white truncate">${session.title || `Test Session #${session.id}`}</p>
-                    <p class="text-xs text-gray-400 mt-1">${session.extractedImages.length} Questions • Created ${session.date ? session.date.split(',')[0] : 'Unknown'}</p>
+                    <p class="text-sm font-bold truncate">${session.title || `Test Session #${session.id}`}</p>
+                    <p class="text-xs mt-1">${session.extractedImages.length} Questions • Created ${session.date ? session.date.split(',')[0] : 'Unknown'}</p>
                 </div>
             `;
             listContainer.appendChild(label);

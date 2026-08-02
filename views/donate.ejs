@@ -19,31 +19,61 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Local CSS -->
     <link rel="stylesheet" href="/styles.css">
     <script>
+        // Check for saved theme preference or use system preference
         if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
         } else {
             document.documentElement.classList.remove('dark');
         }
     </script>
+    <style>
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-blob {
+            animation: blob 7s infinite;
+        }
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+        .animation-delay-4000 {
+            animation-delay: 4s;
+        }
+        
+        .brutal-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .dark .brutal-card {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
     <link rel="preload" href="logo.png" as="image">
 
     <!-- Safari & Apple Specific Meta -->
     <link rel="apple-touch-icon" href="/logo.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="theme-color" content="#000000">
+    <meta name="theme-color" content="#0a192f">
 
-    <!-- Universal Social/Search Cards -->
+    <!-- Universal Social/Search Cards (Brave, Twitter, etc.) -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="<%= title %>">
     <meta name="twitter:description" content="<%= description %>">
     <meta name="twitter:image" content="https://pdftopractice.in/logo.png">
     <meta property="og:image" content="https://pdftopractice.in/logo.png">
+
 
     <!-- Favicon & Icons -->
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
@@ -51,124 +81,148 @@
     <link rel="shortcut icon" href="/favicon.ico">
     <link rel="apple-touch-icon" href="/favicon.png">
 </head>
-<body class="bg-[#f4f4f0] dark:bg-[#0a0b0e] text-black dark:text-white font-sans transition-colors duration-200 relative min-h-screen overflow-x-hidden flex flex-col">
+<body class="  dark: font-sans transition-colors duration-200 relative min-h-screen overflow-x-hidden">
     
+    <!-- Animated Background Mesh -->
+    <div class="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
+        <div class="absolute top-0 -left-4 w-72 h-72 bg-yellow-400 text-black/20 dark:bg-blue-900/30 rounded-full mix-blend-multiply dark:mix-blend-lighten filter blur-3xl opacity-70 animate-blob"></div>
+        <div class="absolute top-0 -right-4 w-72 h-72 bg-indigo-600/20 dark:bg-indigo-900/30 rounded-full mix-blend-multiply dark:mix-blend-lighten filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
+        <div class="absolute -bottom-8 left-20 w-72 h-72 bg-sky-600/20 dark:bg-sky-900/30 rounded-full mix-blend-multiply dark:mix-blend-lighten filter blur-3xl opacity-70 animate-blob animation-delay-4000"></div>
+    </div>
+
     <!-- Theme Toggle Button -->
-    <button id="themeToggleBtn" class="fixed top-4 right-4 z-[100] p-3 rounded-full bg-white dark:bg-[#11131c] shadow-[4px_4px_0px_0px_#000] border-[3px] border-black text-yellow-500 dark:text-yellow-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all cursor-pointer active:translate-x-0.5 active:translate-y-0.5 active:shadow-[2px_2px_0px_0px_#000]">
-        <svg id="themeIconSun" class="w-6 h-6 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-        <svg id="themeIconMoon" class="w-6 h-6 block dark:hidden text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+    <button id="themeToggleBtn" class="fixed top-4 right-4 z-[100] p-3 rounded-full bg-white dark:bg-navy-800  border  dark:border-navy-700 text-yellow-500 dark:text-yellow-400 hover:bg-gray-100 dark:hover:bg-navy-700 transition-colors cursor-pointer">
+        <svg id="themeIconSun" class="w-6 h-6 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+        <svg id="themeIconMoon" class="w-6 h-6 block dark:hidden " fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
     </button>
 
-    <header class="border-b-[3.5px] border-black bg-white dark:bg-[#0f111a] sticky top-0 z-40">
-        <div class="max-w-4xl mx-auto px-4 h-20 flex items-center justify-between">
-            <a href="/" class="flex items-center gap-2.5 px-5 py-2.5 bg-cyan-400 text-black font-black uppercase text-xs tracking-wider border-[3px] border-black shadow-[4px_4px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_#000] active:translate-x-0 active:translate-y-0 transition-all select-none">
-                <svg class="w-4 h-4 text-black shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                <span>Back to Home</span>
+    <header class="brutal-card sticky top-0 z-40  transition-colors border-b-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <a href="/" class="flex items-center space-x-3 group">
+                <div class="bg-yellow-400 text-black p-2   group-hover:bg-blue-700 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                </div>
+                <h1 class="text-xl font-bold  dark: tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Back to Home</h1>
             </a>
-            <div class="flex items-center gap-2">
-                <span class="px-3 py-1 bg-yellow-400 text-black border-[2px] border-black font-black text-[10px] uppercase tracking-wider shadow-[2px_2px_0px_0px_#000]">Support</span>
-            </div>
         </div>
     </header>
 
-    <main class="max-w-3xl mx-auto px-4 py-16 flex-1 w-full">
-        <div class="bg-white dark:bg-[#11131c] border-[3.5px] border-black p-8 md:p-12 shadow-[8px_8px_0px_0px_#000] dark:shadow-[8px_8px_0px_0px_#22d3ee] transition-all text-center">
-            
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-rose-100 dark:bg-rose-950/40 text-rose-500 border-[3px] border-black shadow-[4px_4px_0px_0px_#000] mb-6 select-none">
-                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>
-            </div>
-            
-            <h2 class="text-3xl md:text-5xl font-black text-black dark:text-white uppercase tracking-tight mb-4 leading-none">Support the Project</h2>
-            <p class="text-sm md:text-base font-medium text-gray-700 dark:text-gray-300 mb-8 max-w-xl mx-auto leading-relaxed">
-                This tool is built to help aspirants save time and prepare efficiently. It is, and always will be, 100% free. If you found it helpful and want to support the server costs and development, you can buy me a coffee!
-            </p>
+    <main class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="brutal-card  p-8 md:p-12  border  dark:border-navy-700/50 text-center relative overflow-hidden">
+            <!-- Decorative blur -->
+            <div class="absolute -top-20 -right-20 w-64 h-64 bg-pink-500/20 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-yellow-400 text-black/20 rounded-full blur-3xl pointer-events-none"></div>
 
-            <!-- Disclaimer -->
-            <div class="bg-yellow-400 text-black border-[3px] border-black p-5 mb-10 text-left shadow-[4px_4px_0px_0px_#000] max-w-xl mx-auto">
-                <div class="flex gap-3">
-                    <div class="flex-shrink-0">
-                        <svg class="h-6 w-6 text-black" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                    <div>
-                        <h3 class="text-sm font-black uppercase tracking-wider">Important Student Disclaimer</h3>
-                        <p class="mt-1 text-xs font-bold leading-relaxed">If you are a student, please do not donate more than Rs 50. Student lives are tough and I want you guys to utilize your money for something better!</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- QR Code Section -->
-            <div class="flex flex-col items-center justify-center">
-                <div class="bg-white border-[3px] border-black shadow-[6px_6px_0px_0px_#000] p-3 mb-8">
-                    <img id="qrImage" src="upi_qr.jpg" alt="UPI QR Code" class="w-60 h-auto object-contain" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'w-60 h-60 flex flex-col items-center justify-center text-black p-4 text-center\\'><svg class=\\'w-12 h-12 mb-3 text-red-500\\' fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\' stroke-width=\\'3\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' d=\\'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z\\'></path></svg><span class=\\'text-xs font-black uppercase tracking-wider\\'>Image not found!</span><span class=\\'text-[10px] mt-2 font-bold text-gray-600\\'>Save QR code as upi_qr.jpg in project folder</span></div>';">
+            <div class="relative z-10">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-pink-100 dark:bg-pink-900/30 text-pink-500 dark:text-pink-400 mb-6">
+                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>
                 </div>
                 
-                <!-- UPI ID Box -->
-                <div class="bg-white text-black border-[3px] border-black p-4 flex items-center justify-between w-full max-w-sm shadow-[4px_4px_0px_0px_#000] mb-6">
-                    <div class="flex flex-col text-left">
-                        <span class="text-[9px] uppercase font-black text-gray-500 tracking-wider mb-1">Direct UPI ID</span>
-                        <span id="upiIdText" class="text-sm font-extrabold font-mono">Undatedarc@axl</span>
+                <h2 class="text-3xl md:text-4xl font-extrabold mb-4 tracking-tight">Support the Project</h2>
+                <p class="text-lg  dark: mb-8 max-w-xl mx-auto">
+                    This tool is built to help aspirants save time and prepare efficiently. It is, and always will be, 100% free. If you found it helpful and want to support the server costs and development, you can buy me a coffee!
+                </p>
+
+                <!-- Disclaimer -->
+                <div class="bg-yellow-50 dark:bg-yellow-900/20 border-l-4  p-4 mb-10 text-left rounded-r-lg max-w-xl mx-auto">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-yellow-500 dark:text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-bold text-yellow-800 dark:text-yellow-300">Important Disclaimer for Students</h3>
+                            <div class="mt-2 text-sm text-yellow-700 dark:text-yellow-400/90 font-medium">
+                                <p>If you are a student, please don't donate more than Rs 50. Student lives are tough and I want you guys to utilize your money for something better!</p>
+                            </div>
+                        </div>
                     </div>
-                    <button onclick="navigator.clipboard.writeText('Undatedarc@axl').then(() => { const b = this; b.innerHTML = '<svg class=\\'w-5 h-5\\' fill=\\'currentColor\\' viewBox=\\'0 0 20 20\\'><path fill-rule=\\'evenodd\\' d=\\'M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z\\' clip-rule=\\'evenodd\\'></path></svg>'; setTimeout(() => b.innerHTML = '<svg class=\\'w-5 h-5\\' fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\' stroke-width=\\'2.5\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' d=\\'M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z\\'></path></svg>', 2000); })" class="p-2 bg-blue-100 hover:bg-blue-200 border-[2px] border-black text-black transition-colors cursor-pointer" title="Copy UPI ID">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                    </button>
                 </div>
 
-                <p class="text-xs font-black uppercase text-gray-500 tracking-wider">Scan QR or copy UPI ID to support</p>
+                <!-- QR Code Image -->
+                <div class="flex flex-col items-center justify-center">
+                    <div class="bg-white/50 dark:bg-slate-800/50   overflow-hidden p-2 mb-6 transform hover:scale-105 transition-transform duration-300">
+                        <img id="qrImage" src="upi_qr.jpg" alt="UPI QR Code" class="w-64 h-auto object-contain  border " onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'w-64 h-64 flex flex-col items-center justify-center  p-4 text-center\\'><svg class=\\'w-12 h-12 mb-3 opacity-50 text-red-400\\' fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'2\\' d=\\'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z\\'></path></svg><span class=\\'text-sm font-bold  dark:text-white\\'>Image not found!</span><span class=\\'text-xs mt-2 text-slate-500\\'>You must download the QR code image and save it into the <b>pdf2test</b> folder as <code class=\\'bg-gray-200 dark:bg-gray-700 px-1 rounded\\'>upi_qr.jpg</code></span></div>';">
+                    </div>
+                    
+                    <!-- UPI ID Box -->
+                    <div class="brutal-card p-4 flex items-center justify-between w-full max-w-sm group mb-4 transition-colors">
+                        <div class="flex flex-col text-left">
+                            <span class="text-[10px] uppercase font-bold tracking-wider mb-1" style="color:var(--text-muted)">Direct UPI ID</span>
+                            <span id="upiIdText" class="text-sm font-bold font-mono" style="color:var(--text-primary)">Undatedarc@axl</span>
+                        </div>
+                        <button onclick="navigator.clipboard.writeText('Undatedarc@axl').then(() => { const b = this; b.innerHTML = '<svg class=\'w-5 h-5\' fill=\'currentColor\' viewBox=\'0 0 20 20\'><path fill-rule=\'evenodd\' d=\'M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z\' clip-rule=\'evenodd\'></path></svg>'; setTimeout(() => b.innerHTML = '<svg class=\'w-5 h-5\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z\'></path></svg>', 2000); })" class="brutal-btn p-2 bg-blue-400 hover:bg-blue-300 text-black transition-colors cursor-pointer" title="Copy UPI ID">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        </button>
+                    </div>
+
+                    <p class="text-sm font-medium" style="color:var(--text-muted)">Scan QR or copy UPI ID to pay with any UPI App</p>
+                </div>
             </div>
         </div>
     </main>
 
-    <!-- Premium Neo-Brutalist Footer -->
-    <footer class="w-full bg-[#0d0e15] border-t-[3.5px] border-black text-gray-400 mt-auto">
-        <div class="max-w-4xl mx-auto px-6 py-12">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10 pb-8 border-b-[2.5px] border-black/40 text-left">
-                <!-- Column 1: Brand -->
+    <!-- Premium Modern Footer -->
+    <footer class="w-full /90 border-t  backdrop-blur-xl relative z-10  mt-auto">
+        <div class="max-w-7xl mx-auto px-6 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10 pb-8 border-b  text-left">
+                <!-- Column 1: Brand & Tagline -->
                 <div class="md:col-span-2 space-y-4">
-                    <div class="flex items-center gap-3">
-                        <img src="logo.png" alt="Logo" class="w-9 h-9 rounded-none border-[2.5px] border-black shadow-[2px_2px_0px_0px_#000] bg-white">
-                        <span class="text-xl font-black text-white tracking-tight uppercase">PDF to PRACTICE</span>
+                    <div class="flex items-center space-x-3">
+                        <img src="logo.png" alt="Logo" class="w-9 h-9 ">
+                        <span class="text-xl font-extrabold  tracking-tight">PDF to PRACTICE</span>
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/10 text-cyan-400 border ">v2.0 CBT</span>
                     </div>
-                    <p class="text-xs font-bold text-gray-400 max-w-sm leading-relaxed">
+                    <p class="text-sm  max-w-sm leading-relaxed">
                         Transform your coaching DPPs, PYQs, and test PDFs into interactive JEE/NEET CBT Mock Simulators instantly.
                     </p>
-                    <div class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-black bg-emerald-400 border-[2px] border-black px-3 py-1.5 w-max">
-                        <svg class="w-4 h-4 text-black shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                    <div class="flex items-center gap-2 text-xs font-semibold text-emerald-400 bg-emerald-500/10 border  px-3 py-1.5 rounded-full w-max">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                         <span>100% Client-Side & Private</span>
                     </div>
                 </div>
 
-                <!-- Column 2: Quick Links -->
+                <!-- Column 2: Navigation -->
                 <div class="space-y-3">
-                    <h4 class="text-xs font-black uppercase tracking-widest text-white">Quick Links</h4>
-                    <ul class="space-y-2 text-xs font-bold">
-                        <li><a href="/" class="hover:text-cyan-400 transition-colors flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg> Dashboard</a></li>
+                    <h4 class="text-xs font-bold uppercase tracking-wider ">Quick Links</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="/" class="hover:text-cyan-400 transition-colors flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg> Home Dashboard</a></li>
                         <li><a href="/donate" class="hover:text-cyan-400 transition-colors flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-cyan-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg> Support & Donate</a></li>
+                        <li><a href="https://youtu.be/AYSNQ1UcL7I" target="_blank" rel="noopener" class="hover:text-cyan-400 transition-colors flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 24 24"><path d="M21.582,6.186c-0.23-0.86-0.908-1.538-1.768-1.768C18.254,4,12,4,12,4S5.746,4,4.186,4.418c-0.86,0.23-1.538,0.908-1.768,1.768C2,7.746,2,12,2,12s0,4.254,0.418,5.814c0.23,0.86,0.908,1.538,1.768,1.768C5.746,20,12,20,12,20s6.254,0,7.814-0.418c0.86-0.23,1.538-0.908,1.768-1.768C22,16.254,22,12,22,12S22,7.746,21.582,6.186z M10,15.464V8.536L16,12L10,15.464z"></path></svg> Video Tutorial</a></li>
                     </ul>
                 </div>
 
-                <!-- Column 3: Legal -->
+                <!-- Column 3: Legal & Support -->
                 <div class="space-y-3">
-                    <h4 class="text-xs font-black uppercase tracking-widest text-white">Legal</h4>
-                    <ul class="space-y-2 text-xs font-bold">
+                    <h4 class="text-xs font-bold uppercase tracking-wider ">Legal & Support</h4>
+                    <ul class="space-y-2 text-sm">
                         <li><a href="/terms" class="hover:text-cyan-400 transition-colors">Terms & Conditions</a></li>
                         <li><a href="/privacy" class="hover:text-cyan-400 transition-colors">Privacy Policy</a></li>
+                        <li>
+                            <a href="mailto:support@pdftopractice.in" class="hover:text-rose-400 transition-colors inline-flex items-center gap-1 text-rose-400/90 font-medium">
+                                <svg class="w-3.5 h-3.5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                Report a Bug
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
 
             <!-- Bottom Credits -->
-            <div class="flex flex-col sm:flex-row items-center justify-between text-[10px] uppercase font-black tracking-widest text-gray-500 gap-4">
-                <p>&copy; 2026 PDF to PRACTICE.</p>
-                <p class="flex items-center gap-1">
-                    <span>Crafted for JEE & NEET Aspirants</span>
+            <div class="flex flex-col sm:flex-row items-center justify-between text-xs  gap-4">
+                <p>&copy; 2026 PDF to PRACTICE. Built for JEE & NEET Aspirants.</p>
+                <p class="flex items-center gap-1 ">
+                    <span>Crafted with</span>
+                    <svg class="w-3.5 h-3.5 text-rose-500 inline fill-current" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>
+                    <span>for free education</span>
                 </p>
             </div>
         </div>
     </footer>
 
     <script>
+        // Dark mode toggle functionality
         const themeToggleBtn = document.getElementById('themeToggleBtn');
         const themeIconSun = document.getElementById('themeIconSun');
         const themeIconMoon = document.getElementById('themeIconMoon');
