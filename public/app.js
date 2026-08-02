@@ -1681,6 +1681,10 @@ function linkQuestionsAndAnswers() {
 
 function showPracticeSetup() {
     setupCropCount.textContent = extractedImages.length;
+    const titleInput = document.getElementById('setupTestTitleInput');
+    if (titleInput) {
+        titleInput.value = window.currentPdfFilename || `Mock Test Session #${Date.now()}`;
+    }
     practiceSetupContainer.classList.remove('hidden');
 }
 
@@ -1765,10 +1769,13 @@ startPracticeBtn.addEventListener('click', () => {
     // Default active indices is ALL questions
     startPracticeSession(extractedImages.map((_, i) => i));
     
-    // Save to cache and auto-export the .practice file
-    saveCurrentSession().then(() => {
-        autoExportCurrentTest();
-    });
+    const titleInput = document.getElementById('setupTestTitleInput');
+    if (titleInput && titleInput.value.trim() !== '') {
+        window.currentPdfFilename = titleInput.value.trim();
+    }
+    
+    // Save to browser cache silently (no download prompt)
+    saveCurrentSession();
 });
 
 function formatTime(seconds) {
@@ -4926,39 +4933,26 @@ function renderExternalSources() {
 // =============================================================
 // TEST INSTRUCTIONS MODAL LOGIC
 // =============================================================
+
 window.pendingSessionToLaunch = null;
 
 async function openInstructionsModalForSession(id, type) {
-    console.log("openInstructionsModalForSession called with ID:", id, "Type:", type);
     try {
         let session = await getSessionFromDB(id);
-        console.log("getSessionFromDB returned:", session);
         if (!session) {
             const numId = parseInt(id);
-            if (!isNaN(numId)) {
-                session = await getSessionFromDB(numId);
-                console.log("getSessionFromDB(numId) returned:", session);
-            }
+            if (!isNaN(numId)) session = await getSessionFromDB(numId);
         }
         if (!session) {
             const strId = String(id);
             session = await getSessionFromDB(strId);
-            console.log("getSessionFromDB(strId) returned:", session);
         }
         if (!session) {
             const all = await getAllSessionsFromDB();
             session = all.find(s => String(s.id) === String(id));
-            console.log("allSessions search returned:", session);
         }
         
-        if (!session) {
-            console.log("No session found in DB for ID:", id);
-            alert("Could not load test session (session not found).");
-            return;
-        }
-
-        if (!session.extractedImages || session.extractedImages.length === 0) {
-            console.log("Session has no extractedImages:", session);
+        if (!session || !session.extractedImages || session.extractedImages.length === 0) {
             alert("This test does not contain any valid questions to launch.");
             return;
         }
@@ -4968,20 +4962,18 @@ async function openInstructionsModalForSession(id, type) {
         const modal = document.getElementById('testInstructionsModal');
         const titleEl = document.getElementById('instructionsModalTitle');
         const subtitleEl = document.getElementById('instructionsModalSubtitle');
+        const titleInputEl = document.getElementById('instructionsModalTitleInput');
         
-        console.log("Modal element:", modal);
-        if (titleEl) titleEl.textContent = session.title || `Mock Test Session #${session.id}`;
+        const testName = session.title || `Mock Test Session #${session.id}`;
+        if (titleEl) titleEl.textContent = testName;
+        if (titleInputEl) titleInputEl.value = testName;
+        
         if (subtitleEl) {
             const count = session.extractedImages ? session.extractedImages.length : 0;
             subtitleEl.textContent = `${count} Questions • Standard Marking (+4 / -1)`;
         }
         
-        if (modal) {
-            modal.classList.remove('hidden');
-            console.log("Removed hidden class from modal. Class list:", modal.className);
-        } else {
-            console.error("Modal element 'testInstructionsModal' not found in DOM!");
-        }
+        if (modal) modal.classList.remove('hidden');
     } catch(e) {
         console.error("Error opening instructions modal:", e);
         alert("Could not load test session.");
@@ -5002,10 +4994,21 @@ function initTestInstructionsModal() {
     if(cancelBtn) cancelBtn.onclick = hideModal;
     
     if(confirmStartBtn) {
-        confirmStartBtn.onclick = () => {
+        confirmStartBtn.onclick = async () => {
             if (!window.pendingSessionToLaunch) return;
             
             const session = window.pendingSessionToLaunch;
+            
+            // Check if title was updated in modal input
+            const titleInputEl = document.getElementById('instructionsModalTitleInput');
+            if (titleInputEl && titleInputEl.value.trim() !== '') {
+                session.title = titleInputEl.value.trim();
+                window.currentPdfFilename = session.title;
+                if (typeof saveSessionToDB === 'function') {
+                    await saveSessionToDB(session);
+                }
+            }
+            
             hideModal();
             
             // Set up global session variables
@@ -5028,8 +5031,6 @@ function initTestInstructionsModal() {
                 totalSecondsRemaining: mins * 60,
                 scorePerQ: 4,
                 negativeMarking: true,
-                answers: {},
-                scratchpadNotes: {},
                 stats: extractedImages.map((q, idx) => {
                     let ex = 'Exercise 1';
                     if (q.label && q.label.includes(' - ')) ex = q.label.split(' - ')[0];
@@ -5068,194 +5069,8 @@ function initTestInstructionsModal() {
     }
 }
 
-function initCombineTestsModal() {
-    const combineBtn = document.getElementById('combineTestsBtn');
-    const modal = document.getElementById('combineTestsModal');
-    const closeBtn = document.getElementById('closeCombineTestsModalBtn');
-    const cancelBtn = document.getElementById('cancelCombineTestsModalBtn');
-    const confirmBtn = document.getElementById('confirmCombineTestsBtn');
-    const listContainer = document.getElementById('combineTestsList');
-    const selectedCountEl = document.getElementById('combineSelectedCount');
-    const totalQuestionsCountEl = document.getElementById('combineTotalQuestionsCount');
-    const nameInput = document.getElementById('combinedTestNameInput');
-
-    if (!combineBtn || !modal) return;
-
-    function hideModal() {
-        modal.classList.add('hidden');
-    }
-
-    if (closeBtn) closeBtn.onclick = hideModal;
-    if (cancelBtn) cancelBtn.onclick = hideModal;
-
-    combineBtn.onclick = async () => {
-        // Fetch all sessions
-        const sessions = await getAllSessionsFromDB();
-        if (sessions.length < 2) {
-            alert("You need at least two tests in your Vault to combine them!");
-            return;
-        }
-
-        // Populate list
-        listContainer.innerHTML = '';
-        selectedCountEl.textContent = '0';
-        totalQuestionsCountEl.textContent = '0';
-        nameInput.value = '';
-
-        sessions.forEach(session => {
-            const item = document.createElement('div');
-            item.className = 'flex items-center gap-3 bg-[#151921] border border-gray-800 rounded-xl p-3 hover:border-gray-700 transition-colors cursor-pointer select-none';
-            
-            const qCount = session.extractedImages ? session.extractedImages.length : 0;
-            
-            item.innerHTML = `
-                <input type="checkbox" id="combine_check_${session.id}" data-id="${session.id}" data-qcount="${qCount}" data-title="${session.title || `Mock Test Session #${session.id}`}" class="combine-checkbox w-5 h-5 rounded border-gray-700 text-blue-600 focus:ring-blue-500 cursor-pointer" />
-                <label for="combine_check_${session.id}" class="flex-1 min-w-0 cursor-pointer">
-                    <h4 class="text-sm font-bold text-gray-200 truncate">${session.title || `Mock Test Session #${session.id}`}</h4>
-                    <p class="text-[11px] text-gray-500 mt-0.5">${session.date || 'Unknown Date'} • ${qCount} Questions</p>
-                </label>
-            `;
-            
-            // Toggle checkbox when clicking row
-            item.onclick = (e) => {
-                if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'LABEL') {
-                    const checkbox = item.querySelector('input[type="checkbox"]');
-                    checkbox.checked = !checkbox.checked;
-                    checkbox.dispatchEvent(new Event('change'));
-                }
-            };
-
-            listContainer.appendChild(item);
-        });
-
-        // Add event listener to all checkboxes to update stats and name
-        const checkboxes = listContainer.querySelectorAll('.combine-checkbox');
-        checkboxes.forEach(cb => {
-            cb.addEventListener('change', () => {
-                let selectedCount = 0;
-                let totalQuestions = 0;
-                const titles = [];
-
-                checkboxes.forEach(c => {
-                    if (c.checked) {
-                        selectedCount++;
-                        totalQuestions += parseInt(c.getAttribute('data-qcount'), 10) || 0;
-                        titles.push(c.getAttribute('data-title'));
-                    }
-                });
-
-                selectedCountEl.textContent = selectedCount;
-                totalQuestionsCountEl.textContent = totalQuestions;
-
-                // Auto-generate name based on selection
-                if (titles.length >= 2) {
-                    nameInput.value = `Combined: ${titles.slice(0, 3).join(' + ')}${titles.length > 3 ? '...' : ''}`;
-                } else {
-                    nameInput.value = '';
-                }
-            });
-        });
-
-        modal.classList.remove('hidden');
-    };
-
-    confirmBtn.onclick = async () => {
-        const checkboxes = listContainer.querySelectorAll('.combine-checkbox:checked');
-        if (checkboxes.length < 2) {
-            alert("Please select at least 2 tests to combine.");
-            return;
-        }
-
-        const testName = nameInput.value.trim() || `Combined Test (${new Date().toLocaleDateString()})`;
-
-        try {
-            const selectedIds = Array.from(checkboxes).map(cb => {
-                const rawId = cb.getAttribute('data-id');
-                return /^\d+$/.test(rawId) ? parseInt(rawId, 10) : rawId;
-            });
-            
-            // Fetch selected sessions in order
-            const allSessions = await getAllSessionsFromDB();
-            const selectedSessions = [];
-            selectedIds.forEach(id => {
-                const s = allSessions.find(sess => sess.id === id);
-                if (s) selectedSessions.push(s);
-            });
-
-            // Merge questions
-            const combinedImages = [];
-            selectedSessions.forEach(session => {
-                const testTitle = session.title || `Mock Test #${session.id}`;
-                const images = session.extractedImages || [];
-                images.forEach((img, idx) => {
-                    // Normalize the label by prefixing with testTitle (useful for NTA layout group parsing)
-                    const cleanLabel = img.label || `Q${idx + 1}`;
-                    const labelPrefix = testTitle.replace(/[\-\#]/g, '').trim(); // clean special chars
-                    const finalLabel = `${labelPrefix} - ${cleanLabel}`;
-                    
-                    combinedImages.push({
-                        label: finalLabel,
-                        dataUrl: img.dataUrl,
-                        answerDataUrl: img.answerDataUrl,
-                        yOffset: img.yOffset || 0,
-                        type: img.type || null
-                    });
-                });
-            });
-
-            // Create combined session
-            const newSessionId = Date.now();
-            const combinedSession = {
-                id: newSessionId,
-                date: new Date(newSessionId).toLocaleString(),
-                title: testName,
-                totalSeconds: 0,
-                correctCount: 0,
-                incorrectCount: 0,
-                unansweredCount: combinedImages.length,
-                extractedImages: combinedImages,
-                practiceState: {
-                    activeIndices: combinedImages.map((_, i) => i),
-                    currentIndex: 0,
-                    theme: 'nta',
-                    totalSecondsRemaining: 60 * 60, // Default 60 minutes
-                    scorePerQ: 4,
-                    negativeMarking: true,
-                    answers: {},
-                    scratchpadNotes: {},
-                    stats: combinedImages.map((q, idx) => {
-                        let ex = 'Exercise 1';
-                        if (q.label && q.label.includes(' - ')) ex = q.label.split(' - ')[0];
-                        return {
-                            index: idx,
-                            timeSpent: 0,
-                            targetTime: 0,
-                            attempted: false,
-                            evaluation: null,
-                            ntaStatus: 'not_visited',
-                            exercise: ex
-                        };
-                    })
-                }
-            };
-
-            await saveSessionToDB(combinedSession);
-            hideModal();
-            alert("Successfully combined tests into a new practice session!");
-            renderHistory();
-        } catch (e) {
-            console.error("Failed to combine tests:", e);
-            alert("Error: Could not combine selected tests.");
-        }
-    };
-}
-
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        initTestInstructionsModal();
-        initCombineTestsModal();
-    });
+    document.addEventListener('DOMContentLoaded', initTestInstructionsModal);
 } else {
     initTestInstructionsModal();
-    initCombineTestsModal();
 }

@@ -1,0 +1,39 @@
+[
+  {
+    "id": 1784714771204,
+    "date": "8/2/2026, 1:55:04 AM",
+    "title": "Mock Test Session #1784714771204",
+    "totalSeconds": 3600,
+    "correctCount": 1,
+    "incorrectCount": 0,
+    "unansweredCount": 0,
+    "extractedImages": [
+      {
+        "label": "Question A",
+        "dataUrl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+        "answerDataUrl": null
+      }
+    ],
+    "practiceState": {
+      "activeIndices": [0],
+      "currentIndex": 0,
+      "theme": "nta",
+      "totalSecondsRemaining": 3600,
+      "scorePerQ": 4,
+      "negativeMarking": true,
+      "answers": {},
+      "scratchpadNotes": {},
+      "stats": [
+        {
+          "index": 0,
+          "timeSpent": 0,
+          "targetTime": 0,
+          "attempted": false,
+          "evaluation": null,
+          "ntaStatus": "not_visited",
+          "exercise": "Exercise 1"
+        }
+      ]
+    }
+  }
+]
