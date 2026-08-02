@@ -492,18 +492,18 @@
                         <svg class="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
                         Your Vault (Local)
                     </h3>
-                    <div class="flex items-center gap-3">
-                        <button id="backupVaultBtn" class="brutal-btn flex items-center gap-2 px-4 py-2 text-sm font-semibold hover:bg-yellow-400 hover:text-black transition-colors">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                            Backup
+                    <div class="flex items-center gap-3 flex-wrap">
+                        <button id="backupVaultBtn" class="brutal-btn flex items-center gap-2 px-4 py-2 bg-yellow-400 dark:bg-yellow-400 hover:bg-yellow-300 text-black font-black text-xs uppercase shadow-[2.5px_2.5px_0px_0px_#000] transition-all cursor-pointer">
+                            <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            <span>Backup</span>
                         </button>
-                        <button id="restoreVaultBtn" class="brutal-btn flex items-center gap-2 px-4 py-2 text-sm font-semibold hover:bg-yellow-400 hover:text-black transition-colors">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                            Restore
+                        <button id="restoreVaultBtn" class="brutal-btn flex items-center gap-2 px-4 py-2 bg-cyan-400 dark:bg-cyan-400 hover:bg-cyan-300 text-black font-black text-xs uppercase shadow-[2.5px_2.5px_0px_0px_#000] transition-all cursor-pointer">
+                            <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                            <span>Restore</span>
                         </button>
-                        <button id="combineTestsBtn" class="brutal-btn flex items-center gap-2 px-4 py-2 text-sm font-semibold hover:bg-emerald-400 hover:text-black transition-colors">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                            Combine Tests
+                        <button id="combineTestsBtn" class="brutal-btn flex items-center gap-2 px-4 py-2 bg-emerald-400 dark:bg-emerald-400 hover:bg-emerald-300 text-black font-black text-xs uppercase shadow-[2.5px_2.5px_0px_0px_#000] transition-all cursor-pointer">
+                            <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+                            <span>Combine Tests</span>
                         </button>
                         <input type="file" id="restoreVaultInput" accept=".practice" class="hidden" />
                     </div>

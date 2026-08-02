@@ -123,15 +123,15 @@
     color:            var(--text-primary);
   }
 
-  /* Coloured accent buttons override bg but keep dark text */
-  .brutal-btn[class*="bg-yellow"],
-  .brutal-btn[class*="bg-pink"],
-  .brutal-btn[class*="bg-emerald"],
-  .brutal-btn[class*="bg-blue"],
-  .brutal-btn[class*="bg-purple"],
-  .brutal-btn[class*="bg-rose"],
-  .brutal-btn[class*="bg-cyan"],
-  .brutal-btn[class*="bg-green"] {
+  /* Coloured accent buttons override bg but keep dark text (ignore hover:bg-) */
+  .brutal-btn:not([class*="hover:bg-"])[class*="bg-yellow"],
+  .brutal-btn:not([class*="hover:bg-"])[class*="bg-pink"],
+  .brutal-btn:not([class*="hover:bg-"])[class*="bg-emerald"],
+  .brutal-btn:not([class*="hover:bg-"])[class*="bg-blue"],
+  .brutal-btn:not([class*="hover:bg-"])[class*="bg-purple"],
+  .brutal-btn:not([class*="hover:bg-"])[class*="bg-rose"],
+  .brutal-btn:not([class*="hover:bg-"])[class*="bg-cyan"],
+  .brutal-btn:not([class*="hover:bg-"])[class*="bg-green"] {
     color: #000000 !important;
   }
 
