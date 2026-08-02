@@ -9,24 +9,23 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     <!-- Local CSS -->
     <link rel="stylesheet" href="/styles.css">
-    <link rel="preload" href="logo.png" as="image">
+    <link rel="preload" href="/logo.png" as="image">
 
     <!-- Safari & Apple Specific Meta -->
     <link rel="apple-touch-icon" href="/logo.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="theme-color" content="#0a192f">
+    <meta name="theme-color" content="#000000">
 
-    <!-- Universal Social/Search Cards (Brave, Twitter, etc.) -->
+    <!-- Universal Social/Search Cards -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="<%= title %>">
     <meta name="twitter:description" content="<%= description %>">
     <meta name="twitter:image" content="https://pdftopractice.in/logo.png">
     <meta property="og:image" content="https://pdftopractice.in/logo.png">
-
 
     <!-- Favicon & Icons -->
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
@@ -34,33 +33,54 @@
     <link rel="shortcut icon" href="/favicon.ico">
     <link rel="apple-touch-icon" href="/favicon.png">
 </head>
-<body class="bg-slate-50 dark:bg-[#0B1120] text-gray-900 dark:text-gray-100 font-sans min-h-screen">
-    <header class="sticky top-0 z-40 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md shadow-sm">
-        <div class="max-w-4xl mx-auto px-4 h-16 flex items-center">
-            <a href="/" class="flex items-center space-x-2 text-blue-600 hover:text-blue-700 font-semibold">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+<body class="bg-[#f4f4f0] dark:bg-[#0a0b0e] text-black dark:text-white font-sans min-h-screen pb-16">
+    <header class="border-b-[3.5px] border-black bg-white dark:bg-[#0f111a] sticky top-0 z-40">
+        <div class="max-w-4xl mx-auto px-4 h-20 flex items-center justify-between">
+            <a href="/" class="flex items-center gap-2.5 px-5 py-2.5 bg-cyan-400 text-black font-black uppercase text-xs tracking-wider border-[3px] border-black shadow-[4px_4px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_#000] active:translate-x-0 active:translate-y-0 transition-all select-none">
+                <svg class="w-4 h-4 text-black shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                 <span>Back to Home</span>
             </a>
+            <div class="flex items-center gap-2">
+                <span class="px-3 py-1 bg-yellow-400 text-black border-[2px] border-black font-black text-[10px] uppercase tracking-wider shadow-[2px_2px_0px_0px_#000]">Document</span>
+            </div>
         </div>
     </header>
-    <main class="max-w-4xl mx-auto px-4 py-12">
-        <h1 class="text-3xl md:text-4xl font-extrabold mb-8 tracking-tight">Terms & Conditions</h1>
-        <div class="prose dark:prose-invert max-w-none text-lg text-gray-600 dark:text-gray-300 space-y-6">
-            <p><strong>Last Updated:</strong> July 2026</p>
-            <p>By accessing and using the PDF to PRACTICE, you agree to comply with and be bound by the following terms and conditions.</p>
-            
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mt-8 mb-4">1. Use of the Service</h2>
-            <p>This tool is provided completely free of charge to help students prepare for competitive exams. You may use it for personal, non-commercial educational purposes.</p>
-            
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mt-8 mb-4">2. User Uploads and Content</h2>
-            <p>Since this application runs entirely locally in your browser, you retain full ownership and responsibility for any PDF documents you upload. We do not endorse, review, or store any of your content.</p>
-            
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mt-8 mb-4">3. Disclaimer of Warranties</h2>
-            <p>This tool is provided "as is" without any guarantees or warranty. In association with the product, we make no warranties of any kind, either express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, of title, or of non-infringement of third party rights.</p>
-            <p>We do not guarantee the absolute accuracy of the auto-slicing AI or OCR tools. You are responsible for verifying your practice questions.</p>
-            
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mt-8 mb-4">4. Limitation of Liability</h2>
-            <p>In no event shall we be liable for any direct, indirect, punitive, incidental, special consequential damages, to property or life, whatsoever arising out of or connected with the use or misuse of our services.</p>
+    <main class="max-w-3xl mx-auto px-4 mt-12">
+        <div class="bg-white dark:bg-[#11131c] border-[3.5px] border-black p-8 md:p-12 shadow-[8px_8px_0px_0px_#000] dark:shadow-[8px_8px_0px_0px_#22d3ee] transition-all">
+            <!-- Header section -->
+            <div class="border-b-[3.5px] border-black pb-6 mb-8 text-left">
+                <h1 class="text-3xl md:text-5xl font-black text-black dark:text-white uppercase tracking-tight leading-none mb-3">Terms & Conditions</h1>
+                <p class="text-xs font-bold text-gray-500 uppercase tracking-widest">Last Updated: July 2026</p>
+            </div>
+
+            <!-- Content Area -->
+            <div class="prose dark:prose-invert max-w-none text-sm md:text-base font-medium text-gray-800 dark:text-gray-300 space-y-8 text-left leading-relaxed">
+                <p class="text-base font-bold text-black dark:text-white">By accessing and using PDF to PRACTICE, you agree to comply with and be bound by the following terms and conditions.</p>
+                
+                <div>
+                    <span class="bg-yellow-400 text-black border-[2.5px] border-black px-4 py-1.5 inline-block font-black uppercase text-xs tracking-wider mb-4 shadow-[3px_3px_0px_0px_#000]">1. Use of the Service</span>
+                    <p>This tool is provided completely free of charge to help students prepare for competitive exams. You may use it for personal, non-commercial educational purposes.</p>
+                </div>
+                
+                <div>
+                    <span class="bg-yellow-400 text-black border-[2.5px] border-black px-4 py-1.5 inline-block font-black uppercase text-xs tracking-wider mb-4 shadow-[3px_3px_0px_0px_#000]">2. User Uploads and Content</span>
+                    <p>Since this application runs entirely locally in your browser, you retain full ownership and responsibility for any PDF documents you upload. We do not endorse, review, or store any of your content.</p>
+                </div>
+                
+                <div>
+                    <span class="bg-yellow-400 text-black border-[2.5px] border-black px-4 py-1.5 inline-block font-black uppercase text-xs tracking-wider mb-4 shadow-[3px_3px_0px_0px_#000]">3. Disclaimer of Warranties</span>
+                    <div class="bg-emerald-400 text-black border-[3px] border-black p-5 shadow-[4px_4px_0px_0px_#000] rounded-none my-4">
+                        <p class="font-black uppercase text-xs tracking-wider mb-1">Standard Disclaimer</p>
+                        <p class="font-bold text-sm leading-snug">This tool is provided "as is" without any guarantees or warranties of any kind, either express or implied.</p>
+                    </div>
+                    <p class="mt-4">We do not guarantee the absolute accuracy of the auto-slicing AI or OCR tools. You are responsible for verifying your practice questions.</p>
+                </div>
+                
+                <div>
+                    <span class="bg-yellow-400 text-black border-[2.5px] border-black px-4 py-1.5 inline-block font-black uppercase text-xs tracking-wider mb-4 shadow-[3px_3px_0px_0px_#000]">4. Limitation of Liability</span>
+                    <p>In no event shall we be liable for any direct, indirect, punitive, incidental, special consequential damages, to property or life, whatsoever arising out of or connected with the use or misuse of our services.</p>
+                </div>
+            </div>
         </div>
     </main>
 </body>

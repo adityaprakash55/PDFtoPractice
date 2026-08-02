@@ -2383,7 +2383,7 @@ async function renderHistory() {
         
         sessionsToShow.forEach(session => {
             const card = document.createElement('div');
-            card.className = 'bg-[#090b10] hover:bg-[#0d1017] transition-all p-4 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between border border-gray-800/80 hover:border-gray-700 shadow-xl relative group mb-3.5 gap-4';
+            card.className = 'bg-white dark:bg-[#11131c] border-[3px] border-black p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_#22d3ee] relative group mb-3.5 gap-4 transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_#000] dark:hover:shadow-[6px_6px_0px_0px_#22d3ee]';
             
             let rawTitle = session.title || `Mock Test Session #${session.id}`;
             let formattedTitle = rawTitle;
@@ -2401,28 +2401,28 @@ async function renderHistory() {
                 </div>
                 
                 <div class="flex items-center justify-end gap-2.5 shrink-0">
-                    <button class="rename-session-btn text-gray-400 hover:text-white p-2 rounded-xl hover:bg-gray-800/60 transition-colors" data-id="${session.id}" title="Rename Test">
+                    <button class="rename-session-btn p-2 bg-white dark:bg-[#11131c] border-[2px] border-black text-black dark:text-white shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all hover:bg-yellow-400 dark:hover:bg-yellow-400 hover:text-black" data-id="${session.id}" title="Rename Test">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                     </button>
-                    <button class="delete-session-btn text-gray-400 hover:text-rose-400 p-2 rounded-xl hover:bg-gray-800/60 transition-colors" data-id="${session.id}" title="Delete Test">
+                    <button class="delete-session-btn p-2 bg-white dark:bg-[#11131c] border-[2px] border-black text-black dark:text-white shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all hover:bg-rose-400 dark:hover:bg-rose-400 hover:text-black" data-id="${session.id}" title="Delete Test">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                     </button>
-                    <button class="view-session-btn text-gray-400 hover:text-white p-2 rounded-xl hover:bg-gray-800/60 transition-colors" data-id="${session.id}" title="View Analysis">
+                    <button class="view-session-btn p-2 bg-white dark:bg-[#11131c] border-[2px] border-black text-black dark:text-white shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all hover:bg-yellow-400 dark:hover:bg-yellow-400 hover:text-black" data-id="${session.id}" title="View Analysis">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                     </button>
 
                     <!-- Share Button (Square Dark Blue Container) -->
-                    <button class="share-session-btn bg-[#1e293b] hover:bg-[#283750] text-blue-400 p-2.5 rounded-xl border border-blue-800/40 transition-all shadow-sm active:scale-95 flex items-center justify-center" data-id="${session.id}" title="Share Test">
+                    <button class="share-session-btn p-2.5 bg-blue-400 hover:bg-blue-300 text-black font-extrabold border-[2px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all flex items-center justify-center" data-id="${session.id}" title="Share Test">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
                     </button>
 
                     <!-- Host Wifi Icon -->
-                    <button class="share-session-btn text-gray-400 hover:text-blue-400 p-2 rounded-xl hover:bg-gray-800/60 transition-colors" data-id="${session.id}" title="Host Live Test">
+                    <button class="share-session-btn p-2 bg-purple-400 hover:bg-purple-300 text-black border-[2px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all" data-id="${session.id}" title="Host Live Test">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path></svg>
                     </button>
                     
                     <!-- Black Pill Take Test Button -->
-                    <button class="take-test-modal-btn bg-black hover:bg-neutral-900 text-white text-xs font-bold py-2 px-4 rounded-full flex items-center gap-2 border border-neutral-700 shadow-md transition-all active:scale-95 shrink-0 ml-1" data-id="${session.id}" data-type="all">
+                    <button class="take-test-modal-btn bg-[#facc15] hover:bg-yellow-300 text-black text-xs font-black uppercase py-2.5 px-4 flex items-center gap-2 border-[2px] border-black shadow-[3px_3px_0px_0px_#000] transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] shrink-0 ml-1" data-id="${session.id}" data-type="all">
                         <svg class="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
                         <span>Take Test</span>
                     </button>
@@ -2733,7 +2733,7 @@ async function renderNotedQuestions() {
         }
         
         const card = document.createElement('div');
-        card.className = 'bg-[#090b10] p-5 rounded-2xl flex flex-col justify-between border border-gray-800 shadow-xl relative z-10 hover:z-20 transition-all hover:border-yellow-500/50 hover:shadow-[0_0_15px_rgba(234,179,8,0.2)] cursor-pointer group';
+        card.className = 'bg-white dark:bg-[#11131c] p-5 border-[3px] border-black shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_#22d3ee] flex flex-col justify-between relative cursor-pointer transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_#000] dark:hover:shadow-[6px_6px_0px_0px_#22d3ee] group';
         card.innerHTML = `
             <div class="flex items-start justify-between mb-4">
                 <div class="flex items-center gap-3">
@@ -2911,7 +2911,7 @@ async function renderBookmarks() {
         
         groups.forEach(g => {
             const card = document.createElement('div');
-            card.className = 'bg-[#090b10] p-5 rounded-2xl flex flex-col justify-between border border-gray-800 shadow-xl relative z-10 hover:z-20 transition-all hover:border-blue-500/50 hover:shadow-[0_0_15px_rgba(59,130,246,0.2)] cursor-pointer group';
+            card.className = 'bg-white dark:bg-[#11131c] p-5 border-[3px] border-black shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_#22d3ee] flex flex-col justify-between relative cursor-pointer transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_#000] dark:hover:shadow-[6px_6px_0px_0px_#22d3ee] group';
             
             card.innerHTML = `
                 <div class="flex items-start justify-between mb-4">
@@ -4604,25 +4604,25 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     
                     <div class="flex items-center justify-end gap-2.5 shrink-0">
-                        <button class="rename-session-btn text-gray-400 hover:text-white p-2 rounded-xl hover:bg-gray-800/60 transition-colors" data-id="${s.id}" title="Rename Test">
+                        <button class="rename-session-btn p-2 bg-white dark:bg-[#11131c] border-[2px] border-black text-black dark:text-white shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all hover:bg-yellow-400 dark:hover:bg-yellow-400 hover:text-black" data-id="${s.id}" title="Rename Test">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                         </button>
-                        <button class="delete-session-btn text-gray-400 hover:text-rose-400 p-2 rounded-xl hover:bg-gray-800/60 transition-colors" data-id="${s.id}" title="Delete Test">
+                        <button class="delete-session-btn p-2 bg-white dark:bg-[#11131c] border-[2px] border-black text-black dark:text-white shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all hover:bg-rose-400 dark:hover:bg-rose-400 hover:text-black" data-id="${s.id}" title="Delete Test">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                         </button>
-                        <button class="view-session-btn text-gray-400 hover:text-white p-2 rounded-xl hover:bg-gray-800/60 transition-colors" data-id="${s.id}" title="View Analysis">
+                        <button class="view-session-btn p-2 bg-white dark:bg-[#11131c] border-[2px] border-black text-black dark:text-white shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all hover:bg-yellow-400 dark:hover:bg-yellow-400 hover:text-black" data-id="${s.id}" title="View Analysis">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                         </button>
 
-                        <button class="share-session-btn bg-[#1e293b] hover:bg-[#283750] text-blue-400 p-2.5 rounded-xl border border-blue-800/40 transition-all shadow-sm active:scale-95 flex items-center justify-center" data-id="${s.id}" title="Share Test">
+                        <button class="share-session-btn p-2.5 bg-blue-400 hover:bg-blue-300 text-black font-extrabold border-[2px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all flex items-center justify-center" data-id="${s.id}" title="Share Test">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
                         </button>
 
-                        <button class="share-session-btn text-gray-400 hover:text-blue-400 p-2 rounded-xl hover:bg-gray-800/60 transition-colors" data-id="${s.id}" title="Host Live Test">
+                        <button class="share-session-btn p-2 bg-purple-400 hover:bg-purple-300 text-black border-[2px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all" data-id="${s.id}" title="Host Live Test">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path></svg>
                         </button>
                         
-                        <button class="take-test-modal-btn bg-black hover:bg-neutral-900 text-white text-xs font-bold py-2 px-4 rounded-full flex items-center gap-2 border border-neutral-700 shadow-md transition-all active:scale-95 shrink-0 ml-1" data-id="${s.id}" data-type="all">
+                        <button class="take-test-modal-btn bg-[#facc15] hover:bg-yellow-300 text-black text-xs font-black uppercase py-2.5 px-4 flex items-center gap-2 border-[2px] border-black shadow-[3px_3px_0px_0px_#000] transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] shrink-0 ml-1" data-id="${s.id}" data-type="all">
                             <svg class="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
                             <span>Take Test</span>
                         </button>
