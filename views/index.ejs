@@ -870,25 +870,25 @@
     </div>
 </div>
 
-<div id="liveJoinContainer" class="hidden max-w-md mx-auto mt-20 brutal-card rounded-none shadow-2xl overflow-hidden border border-gray-100 ">
-            <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-8 text-center">
-                <div class="w-16 h-16 bg-white/20 rounded-none flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+        <div id="liveJoinContainer" class="hidden max-w-md mx-auto mt-20 brutal-card p-0 overflow-hidden">
+            <div class="bg-blue-600 border-b-3 border-black p-8 text-center text-white">
+                <div class="w-16 h-16 bg-white/20 brutal-card flex items-center justify-center mx-auto mb-4 border-2 border-black">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                 </div>
-                <h2 class="text-3xl font-extrabold mb-2">Join Live Practice</h2>
-                <p class="text-blue-100">Enter your name to join the room.</p>
+                <h2 class="text-3xl font-black uppercase mb-2 text-white">Join Live Practice</h2>
+                <p class="text-blue-100 font-bold">Enter your name to join the room.</p>
             </div>
             
-            <div class="p-8">
+            <div class="p-8 brutal-card border-none">
                 <div class="mb-6">
-                    <label class="block text-sm font-bold dark: mb-2">Your Name</label>
-                    <input type="text" id="participantNameInput" class="w-full bg-gray-50  border border-gray-300  rounded-none px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:" placeholder="e.g. Aditya" />
+                    <label class="block text-sm font-black uppercase mb-2" style="color: var(--text-primary);">Your Name</label>
+                    <input type="text" id="participantNameInput" class="w-full font-bold text-base px-4 py-3 border-3 border-black brutal-card focus:outline-none placeholder:text-gray-400" style="background-color: var(--bg-card) !important; color: var(--text-primary) !important;" placeholder="e.g. Aditya" />
                 </div>
                 
-                <button id="joinRoomBtn" class="w-full bg-blue-600 hover:bg-blue-700 font-bold py-4 px-6 rounded-none shadow-lg transition-all">
-                    Join Room
+                <button id="joinRoomBtn" class="brutal-btn w-full bg-blue-500 hover:bg-blue-400 text-white font-black uppercase text-base py-4 px-6 transition-all cursor-pointer" style="background-color: #3B82F6 !important; color: #ffffff !important;">
+                    Proceed to Room
                 </button>
-                <p id="joinStatusText" class="hidden text-center text-sm font-medium mt-4 text-blue-600 dark:text-blue-400"></p>
+                <p id="joinStatusText" class="hidden text-center text-sm font-bold mt-4 text-cyan-400"></p>
             </div>
         </div>
 
@@ -2281,7 +2281,7 @@
     </div>
     
 
-    <script defer src="app.js?v=150"></script>
+    <script defer src="app.js?v=155"></script>
     <script defer src="/liveRoom.js"></script>
 </body>
 </html>

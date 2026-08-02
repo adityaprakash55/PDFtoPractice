@@ -63,6 +63,16 @@
     font-family: var(--font-sans, "Inter", sans-serif);
   }
 
+  input, textarea, select {
+    background-color: var(--bg-card);
+    color: var(--text-primary);
+  }
+
+  input::placeholder, textarea::placeholder {
+    color: var(--text-muted);
+    opacity: 0.7;
+  }
+
   /* Kill blobs */
   .animate-blob { display: none !important; }
 }

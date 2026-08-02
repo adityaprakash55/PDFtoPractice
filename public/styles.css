@@ -1296,6 +1296,10 @@
     border-style: var(--tw-border-style);
     border-width: 2px;
   }
+  .border-3 {
+    border-style: var(--tw-border-style);
+    border-width: 3px;
+  }
   .border-4 {
     border-style: var(--tw-border-style);
     border-width: 4px;
@@ -1348,6 +1352,10 @@
     border-bottom-style: var(--tw-border-style);
     border-bottom-width: 2px;
   }
+  .border-b-3 {
+    border-bottom-style: var(--tw-border-style);
+    border-bottom-width: 3px;
+  }
   .border-b-\[3\.5px\] {
     border-bottom-style: var(--tw-border-style);
     border-bottom-width: 3.5px;
@@ -1367,6 +1375,10 @@
   .border-dashed {
     --tw-border-style: dashed;
     border-style: dashed;
+  }
+  .border-none {
+    --tw-border-style: none;
+    border-style: none;
   }
   .border-\[\#1C212E\] {
     border-color: #1C212E;
@@ -2400,6 +2412,9 @@
   .object-contain {
     object-fit: contain;
   }
+  .p-0 {
+    padding: 0px;
+  }
   .p-1 {
     padding: var(--spacing);
   }
@@ -3269,6 +3284,9 @@
   .peer-focus\:outline-none:is(:where(.peer):focus ~ *) {
     --tw-outline-style: none;
     outline-style: none;
+  }
+  .placeholder\:text-gray-400::placeholder {
+    color: var(--color-gray-400);
   }
   .after\:absolute::after {
     content: var(--tw-content);
@@ -4480,6 +4498,14 @@
     background-color: var(--bg-page) !important;
     color: var(--text-primary) !important;
     font-family: var(--font-sans, "Inter", sans-serif);
+  }
+  input, textarea, select {
+    background-color: var(--bg-card);
+    color: var(--text-primary);
+  }
+  input::placeholder, textarea::placeholder {
+    color: var(--text-muted);
+    opacity: 0.7;
   }
   .animate-blob {
     display: none !important;
