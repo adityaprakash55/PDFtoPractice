@@ -4652,108 +4652,48 @@ header, .header-bar {
   background-color: var(--bg-card);
   color: var(--text-primary);
 }
-.bg-yellow-400 {
-  background-color: #facc15 !important;
-}
-.bg-yellow-300 {
-  background-color: #fde047 !important;
-}
-.bg-rose-400 {
-  background-color: #fb7185 !important;
-}
-.bg-rose-300 {
-  background-color: #fda4af !important;
-}
-.bg-emerald-400 {
-  background-color: #34d399 !important;
-}
-.bg-emerald-300 {
-  background-color: #6ee7b7 !important;
-}
-.bg-blue-400 {
-  background-color: #60a5fa !important;
-}
-.bg-blue-300 {
-  background-color: #93c5fd !important;
-}
-.bg-purple-400 {
-  background-color: #c084fc !important;
-}
-.bg-purple-300 {
-  background-color: #d8b4fe !important;
-}
-.brutal-btn:hover.hover\:bg-yellow-300 {
-  background-color: #fde047 !important;
-}
-.brutal-btn:hover.hover\:bg-rose-300 {
-  background-color: #fda4af !important;
-}
-.brutal-btn:hover.hover\:bg-emerald-300 {
-  background-color: #6ee7b7 !important;
-}
-.brutal-btn:hover.hover\:bg-blue-300 {
-  background-color: #93c5fd !important;
-}
-.brutal-btn:hover.hover\:bg-purple-300 {
-  background-color: #d8b4fe !important;
-}
-.brutal-btn.text-black, .brutal-btn.text-black * {
+.btn-action-rename {
+  background-color: #FFE600 !important;
   color: #000000 !important;
 }
-.brutal-btn.bg-yellow-400 {
-  background-color: #facc15 !important;
+.btn-action-delete {
+  background-color: #FF4D4D !important;
+  color: #ffffff !important;
+}
+.btn-action-analysis {
+  background-color: #00E5FF !important;
   color: #000000 !important;
 }
-.brutal-btn.bg-yellow-300 {
-  background-color: #fde047 !important;
+.btn-action-share {
+  background-color: #3B82F6 !important;
+  color: #ffffff !important;
+}
+.btn-action-host {
+  background-color: #A855F7 !important;
+  color: #ffffff !important;
+}
+.btn-action-taketest {
+  background-color: #FFE600 !important;
   color: #000000 !important;
 }
-.brutal-btn.bg-rose-400 {
-  background-color: #fb7185 !important;
+.btn-action-rename svg, .btn-action-analysis svg, .btn-action-taketest svg {
+  stroke: #000000 !important;
   color: #000000 !important;
 }
-.brutal-btn.bg-rose-300 {
-  background-color: #fda4af !important;
-  color: #000000 !important;
+.btn-action-delete svg, .btn-action-share svg, .btn-action-host svg {
+  stroke: #ffffff !important;
+  color: #ffffff !important;
 }
-.brutal-btn.bg-emerald-400 {
-  background-color: #34d399 !important;
-  color: #000000 !important;
+.btn-action-taketest svg[fill="currentColor"] {
+  fill: #000000 !important;
 }
-.brutal-btn.bg-emerald-300 {
-  background-color: #6ee7b7 !important;
-  color: #000000 !important;
+.icon-btn {
+  background-color: var(--bg-card) !important;
+  color: var(--text-primary) !important;
 }
-.brutal-btn.bg-blue-400 {
-  background-color: #60a5fa !important;
-  color: #000000 !important;
-}
-.brutal-btn.bg-blue-300 {
-  background-color: #93c5fd !important;
-  color: #000000 !important;
-}
-.brutal-btn.bg-purple-400 {
-  background-color: #c084fc !important;
-  color: #000000 !important;
-}
-.brutal-btn.bg-purple-300 {
-  background-color: #d8b4fe !important;
-  color: #000000 !important;
-}
-.brutal-btn.bg-yellow-400:hover {
-  background-color: #fde047 !important;
-}
-.brutal-btn.bg-rose-400:hover {
-  background-color: #fda4af !important;
-}
-.brutal-btn.bg-emerald-400:hover {
-  background-color: #6ee7b7 !important;
-}
-.brutal-btn.bg-blue-400:hover {
-  background-color: #93c5fd !important;
-}
-.brutal-btn.bg-purple-400:hover {
-  background-color: #d8b4fe !important;
+.icon-btn svg {
+  stroke: currentColor !important;
+  color: inherit !important;
 }
 @property --tw-translate-x {
   syntax: "*";
