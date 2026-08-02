@@ -4438,6 +4438,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         closeMobileSidebar();
         if (targetView === 'analysisView') renderScoreAnalysis();
+        if (targetView === 'combineView') {
+            if (typeof loadCombineTestsPage === 'function') loadCombineTestsPage();
+        }
     };
     
     dashNavBtns.forEach(btn => {
@@ -5099,13 +5102,14 @@ if (document.readyState === 'loading') {
 }
 
 
+
 // =============================================================
-// COMBINE TESTS LOGIC
+// COMBINE TESTS LOGIC (PAGE VIEW & INSTANT START)
 // =============================================================
-async function openCombineTestsModal() {
+async function loadCombineTestsPage() {
     try {
         const sessions = await getAllSessionsFromDB();
-        const listContainer = document.getElementById('combineTestsList');
+        const listContainer = document.getElementById('combineTestsPageList');
         if (!listContainer) return;
         
         listContainer.innerHTML = '';
@@ -5113,28 +5117,27 @@ async function openCombineTestsModal() {
         const validSessions = sessions.filter(s => s.extractedImages && s.extractedImages.length > 0);
         
         if (validSessions.length === 0) {
-            listContainer.innerHTML = '<div class="text-center text-gray-500 py-6 text-sm">No tests available to combine.</div>';
-            document.getElementById('combineSelectedCount').textContent = '0';
-            document.getElementById('combineTotalQuestionsCount').textContent = '0';
-            document.getElementById('combineTestsModal').classList.remove('hidden');
+            listContainer.innerHTML = '<div class="text-center text-gray-500 py-12 text-sm font-medium">No tests available in your vault to combine. Upload some PDFs first!</div>';
+            document.getElementById('combinePageSelectedCount').textContent = '0';
+            document.getElementById('combinePageTotalQuestionsCount').textContent = '0';
             return;
         }
         
         validSessions.forEach(session => {
             const label = document.createElement('label');
-            label.className = 'flex items-center gap-3 p-3 bg-[#141924] hover:bg-[#1a202e] rounded-xl border border-gray-800/80 cursor-pointer transition-colors';
+            label.className = 'flex items-center gap-4 p-4 bg-[#06080c] hover:bg-[#0b0e14] rounded-2xl border border-gray-800/80 cursor-pointer transition-colors';
             label.innerHTML = `
-                <input type="checkbox" class="combine-test-checkbox w-4 h-4 text-emerald-600 bg-gray-900 border-gray-800 rounded focus:ring-emerald-500" data-id="${session.id}" data-qcount="${session.extractedImages.length}">
+                <input type="checkbox" class="combine-page-checkbox w-5 h-5 text-emerald-600 bg-[#090b10] border-gray-800 rounded-lg focus:ring-emerald-500 focus:ring-offset-0" data-id="${session.id}" data-qcount="${session.extractedImages.length}">
                 <div class="flex-1 min-w-0">
                     <p class="text-sm font-bold text-white truncate">${session.title || `Test Session #${session.id}`}</p>
-                    <p class="text-[10px] text-gray-500 mt-0.5">${session.extractedImages.length} Questions • Created ${session.date ? session.date.split(',')[0] : 'Unknown'}</p>
+                    <p class="text-xs text-gray-400 mt-1">${session.extractedImages.length} Questions • Created ${session.date ? session.date.split(',')[0] : 'Unknown'}</p>
                 </div>
             `;
             listContainer.appendChild(label);
         });
         
-        // Update stats on checkbox change
-        const checkboxes = document.querySelectorAll('.combine-test-checkbox');
+        // Update stats dynamically on check/uncheck
+        const checkboxes = document.querySelectorAll('.combine-page-checkbox');
         checkboxes.forEach(cb => {
             cb.addEventListener('change', () => {
                 let selectedCount = 0;
@@ -5147,48 +5150,41 @@ async function openCombineTestsModal() {
                     }
                 });
                 
-                document.getElementById('combineSelectedCount').textContent = selectedCount;
-                document.getElementById('combineTotalQuestionsCount').textContent = totalQ;
+                document.getElementById('combinePageSelectedCount').textContent = selectedCount;
+                document.getElementById('combinePageTotalQuestionsCount').textContent = totalQ;
             });
         });
         
-        document.getElementById('combinedTestNameInput').value = 'Combined Practice Test';
-        document.getElementById('combineSelectedCount').textContent = '0';
-        document.getElementById('combineTotalQuestionsCount').textContent = '0';
+        document.getElementById('combinedPageTestNameInput').value = 'Combined Practice Test';
+        document.getElementById('combinePageSelectedCount').textContent = '0';
+        document.getElementById('combinePageTotalQuestionsCount').textContent = '0';
         
-        document.getElementById('combineTestsModal').classList.remove('hidden');
     } catch (e) {
-        console.error("Error opening combine modal:", e);
-        alert("Failed to load tests.");
+        console.error("Error loading combine page checklist:", e);
     }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const combineModal = document.getElementById('combineTestsModal');
     const combineTestsBtn = document.getElementById('combineTestsBtn');
-    const sidebarCombineTestsBtn = document.getElementById('sidebarCombineTestsBtn');
-    const closeBtn = document.getElementById('closeCombineTestsModalBtn');
-    const cancelBtn = document.getElementById('cancelCombineTestsModalBtn');
-    const confirmBtn = document.getElementById('confirmCombineTestsBtn');
+    const confirmBtn = document.getElementById('confirmCombinePageTestsBtn');
     
-    function hideModal() {
-        if (combineModal) combineModal.classList.add('hidden');
+    if (combineTestsBtn) {
+        combineTestsBtn.addEventListener('click', () => {
+            if (typeof window.switchDashView === 'function') {
+                window.switchDashView('combineView');
+            }
+        });
     }
-    
-    if (combineTestsBtn) combineTestsBtn.addEventListener('click', openCombineTestsModal);
-    if (sidebarCombineTestsBtn) sidebarCombineTestsBtn.addEventListener('click', openCombineTestsModal);
-    if (closeBtn) closeBtn.addEventListener('click', hideModal);
-    if (cancelBtn) cancelBtn.addEventListener('click', hideModal);
     
     if (confirmBtn) {
         confirmBtn.addEventListener('click', async () => {
-            const selectedBoxes = document.querySelectorAll('.combine-test-checkbox:checked');
+            const selectedBoxes = document.querySelectorAll('.combine-page-checkbox:checked');
             if (selectedBoxes.length < 2) {
                 alert("Please select at least 2 tests to combine.");
                 return;
             }
             
-            const customTitle = document.getElementById('combinedTestNameInput').value.trim() || 'Combined Practice Test';
+            const customTitle = document.getElementById('combinedPageTestNameInput').value.trim() || 'Combined Practice Test';
             
             try {
                 let combinedImages = [];
@@ -5199,7 +5195,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const cleanTitle = session.title ? session.title.replace(/[\[\]]/g, '') : `Test #${session.id}`;
                         const prefix = cleanTitle.substring(0, 15);
                         
-                        // Copy images and prefix exercise label to avoid collisons
+                        // Merge images & prep prefix
                         session.extractedImages.forEach((img, idx) => {
                             const originalLabel = img.label || `Q${idx+1}`;
                             const prefixedLabel = originalLabel.includes(' - ') 
@@ -5218,7 +5214,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const totalQ = combinedImages.length;
                 const mins = (typeof getCalculatedTimeMinutes === 'function') ? getCalculatedTimeMinutes(totalQ) : 60;
                 
-                const practiceState = {
+                // Fresh practiceState for combined test launch
+                practiceState = {
                     activeIndices: combinedImages.map((_, i) => i),
                     currentIndex: 0,
                     theme: 'nta',
@@ -5249,15 +5246,37 @@ document.addEventListener('DOMContentLoaded', () => {
                     isCommunity: false
                 };
                 
+                // Save combined session to DB
                 await saveSessionToDB(combinedSession);
-                hideModal();
-                alert(`Successfully created combined test: "${customTitle}"!`);
-                if (typeof renderHistory === 'function') {
-                    renderHistory();
+                
+                // Switch global extractedImages
+                extractedImages = combinedImages;
+                currentSessionId = combinedSession.id;
+                window.currentPdfFilename = customTitle;
+                
+                // Switch to CBT practice screen instantly (give them on the go)
+                const uploadContainer = document.getElementById('uploadContainer');
+                const historyContainer = document.getElementById('historyContainer');
+                const configContainer = document.getElementById('configContainer');
+                const practiceSetupContainer = document.getElementById('practiceSetupContainer');
+                const analysisContainer = document.getElementById('analysisContainer');
+                const liveResultsDashboard = document.getElementById('liveResultsDashboard');
+                const combineViewContainer = document.getElementById('combineViewContainer');
+                
+                if(uploadContainer) uploadContainer.classList.add('hidden');
+                if(historyContainer) historyContainer.classList.add('hidden');
+                if(configContainer) configContainer.classList.add('hidden');
+                if(practiceSetupContainer) practiceSetupContainer.classList.add('hidden');
+                if(analysisContainer) analysisContainer.classList.add('hidden');
+                if(liveResultsDashboard) liveResultsDashboard.classList.add('hidden');
+                if(combineViewContainer) combineViewContainer.classList.add('hidden');
+                
+                if (typeof startPracticeSession === 'function') {
+                    startPracticeSession(practiceState.activeIndices);
                 }
             } catch (err) {
                 console.error("Combine operation failed:", err);
-                alert("Failed to combine tests.");
+                alert("Failed to combine and launch tests.");
             }
         });
     }
