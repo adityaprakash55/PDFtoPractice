@@ -1081,6 +1081,8 @@ function endDrag() {
 // =============================================================
 // MAIN SCAN LOOP
 // =============================================================
+let fakeLoadInterval = null;
+
 startFinalScanBtn.addEventListener('click', async () => {
     // Basic validation
     if (qConfig.startPage < 1 || qConfig.endPage < qConfig.startPage || qConfig.endPage > pdfDoc.numPages) {
@@ -1090,8 +1092,25 @@ startFinalScanBtn.addEventListener('click', async () => {
         alert('Invalid page range for Answers PDF.'); return;
     }
 
+    if (fakeLoadInterval) {
+        clearInterval(fakeLoadInterval);
+        fakeLoadInterval = null;
+    }
+
+    // Randomized loading time between 15 and 30 seconds
+    const targetDurationSec = Math.floor(Math.random() * (30 - 15 + 1)) + 15;
+    const scanStartTime = Date.now();
+
     configContainer.classList.add('hidden');
     progressContainer.classList.remove('hidden');
+
+    // Attempt to push/render AdSense ad inside loading screen
+    try {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+    } catch (e) {
+        // AdSense might already be initialized or blocked by adblocker
+    }
+
     extractedImages = [];
     extractedAnswers = [];
     extractedAnswerPages = [];
@@ -1113,7 +1132,7 @@ startFinalScanBtn.addEventListener('click', async () => {
 
         for (let pg = qConfig.startPage; pg <= qConfig.endPage; pg++) {
             progressText.textContent = `Processing Questions: page ${pg} / ${qConfig.endPage}…`;
-            progressBar.style.width  = `${5 + (doneQ / totalQ) * 45}%`;
+            progressBar.style.width  = `${5 + (doneQ / totalQ) * 40}%`;
             await processPage(pg, qConfig.startPage, qConfig.endPage, null, pdfDoc, qConfig);
             doneQ++;
         }
@@ -1127,17 +1146,61 @@ startFinalScanBtn.addEventListener('click', async () => {
             let doneA = 0;
             for (let pg = aConfig.startPage; pg <= aConfig.endPage; pg++) {
                 progressText.textContent = `Processing Answers: page ${pg} / ${aConfig.endPage}…`;
-                progressBar.style.width  = `${50 + (doneA / totalA) * 45}%`;
+                progressBar.style.width  = `${45 + (doneA / totalA) * 40}%`;
                 await processAnswerKeyPage(pg, aConfig, pdfDocAnswers);
                 doneA++;
             }
         }
 
+        linkQuestionsAndAnswers();
+
+        // --- 3. VARIABLE FAKE LOADING TIME (15 - 30 seconds total) ---
+        const fakeMessages = [
+            "Optimizing OCR question layout & image quality...",
+            "Matching question numbers with answer key data...",
+            "Preparing interactive CBT examination environment...",
+            "Finalizing paper slicing & metadata generation..."
+        ];
+
+        let startWidth = parseFloat(progressBar.style.width) || 85;
+        if (startWidth > 92) startWidth = 85;
+
+        const targetMs = targetDurationSec * 1000;
+        let elapsedMs = Date.now() - scanStartTime;
+        let remainingMs = Math.max(500, targetMs - elapsedMs);
+
+        // Smoothly progress remaining bar percentage up to 100% over targetMs
+        const updateInterval = 100;
+        let stepCount = 0;
+
+        await new Promise((resolve) => {
+            fakeLoadInterval = setInterval(() => {
+                stepCount++;
+                const curElapsed = Date.now() - scanStartTime;
+                const ratio = Math.min(1, curElapsed / targetMs);
+                
+                const curWidth = startWidth + (100 - startWidth) * ratio;
+                progressBar.style.width = `${Math.min(99, curWidth).toFixed(1)}%`;
+
+                const msgIndex = Math.min(fakeMessages.length - 1, Math.floor(ratio * fakeMessages.length));
+                const currentMsg = fakeMessages[msgIndex];
+                
+                progressText.textContent = `${currentMsg} (${Math.floor(curWidth)}%)`;
+
+                if (curElapsed >= targetMs) {
+                    clearInterval(fakeLoadInterval);
+                    fakeLoadInterval = null;
+                    resolve();
+                }
+            }, updateInterval);
+        });
+
         progressBar.style.width  = '100%';
         progressText.textContent = `Done! Found ${extractedImages.length} questions and ${extractedAnswers.length} answers.`;
         
-        linkQuestionsAndAnswers();
-        
+        // Brief pause at 100% for smooth UX
+        await new Promise(r => setTimeout(r, 400));
+
         progressContainer.classList.add('hidden');
         if (extractedImages.length > 0) {
             showPracticeSetup();
@@ -1147,6 +1210,10 @@ startFinalScanBtn.addEventListener('click', async () => {
         }
 
     } catch (err) {
+        if (fakeLoadInterval) {
+            clearInterval(fakeLoadInterval);
+            fakeLoadInterval = null;
+        }
         console.error(err);
         alert('Processing failed: ' + err.message);
         configContainer.classList.remove('hidden');
