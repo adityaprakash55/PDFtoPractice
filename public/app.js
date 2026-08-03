@@ -1756,6 +1756,18 @@ function showPracticeSetup() {
 }
 
 function logQuestionJourney(realIndex, action, details = {}) {
+    if (!practiceState.stats) practiceState.stats = {};
+    if (!practiceState.stats[realIndex]) {
+        practiceState.stats[realIndex] = {
+            timeSpent: 0,
+            attempted: false,
+            evaluation: null,
+            exercise: 'Exercise 1',
+            activeSectionNumber: (realIndex || 0) + 1,
+            ntaStatus: 'not_visited',
+            journey: []
+        };
+    }
     if (!practiceState.stats[realIndex].journey) {
         practiceState.stats[realIndex].journey = [];
     }
@@ -3350,9 +3362,23 @@ function updateQuestionStopwatchDisplayNta() {
 }
 
 function renderNtaQuestion(index) {
+    if (!practiceState.activeIndices || index < 0 || index >= practiceState.activeIndices.length) return;
     practiceState.currentIndex = index;
     const realIndex = practiceState.activeIndices[index];
-    const q = extractedImages[realIndex];
+    const q = extractedImages[realIndex] || {};
+    
+    if (!practiceState.stats) practiceState.stats = {};
+    if (!practiceState.stats[realIndex]) {
+        practiceState.stats[realIndex] = {
+            timeSpent: 0,
+            attempted: false,
+            evaluation: null,
+            exercise: q.exercise || 'Exercise 1',
+            activeSectionNumber: index + 1,
+            ntaStatus: 'not_visited',
+            journey: []
+        };
+    }
     const stat = practiceState.stats[realIndex];
     
     if (stat.ntaStatus === 'not_visited') {
@@ -3384,6 +3410,8 @@ function renderNtaQuestion(index) {
         }
     };
     
+    if (!practiceState.answers) practiceState.answers = {};
+    
     // Setup Radio buttons
     const options = document.querySelectorAll('input[name="ntaOption"]');
     options.forEach(opt => {
@@ -3394,6 +3422,7 @@ function renderNtaQuestion(index) {
         
         opt.onchange = (e) => {
             if (e.target.checked) {
+                if (!practiceState.answers) practiceState.answers = {};
                 practiceState.answers[realIndex] = e.target.value;
             }
         };
@@ -3463,46 +3492,98 @@ ntaCorrectBtn.addEventListener('click', () => {
     updateNtaPaletteColors();
 });
 
+ntaCorrectBtn.addEventListener('click', () => {
+    const realIndex = practiceState.activeIndices[practiceState.currentIndex];
+    const s = practiceState.stats[realIndex];
+    s.ntaStatus = 'answered';
+    s.attempted = true;
+    s.evaluation = 'correct';
+    if (!practiceState.answers[realIndex]) practiceState.answers[realIndex] = 'correct';
+    logQuestionJourney(realIndex, 'correct');
+    updateNtaPaletteColors();
+});
+
 ntaIncorrectBtn.addEventListener('click', () => {
     const realIndex = practiceState.activeIndices[practiceState.currentIndex];
-    practiceState.stats[realIndex].ntaStatus = 'answered';
-    practiceState.stats[realIndex].evaluation = 'incorrect';
+    const s = practiceState.stats[realIndex];
+    s.ntaStatus = 'answered';
+    s.attempted = true;
+    s.evaluation = 'incorrect';
+    if (!practiceState.answers[realIndex]) practiceState.answers[realIndex] = 'incorrect';
     logQuestionJourney(realIndex, 'incorrect');
     updateNtaPaletteColors();
 });
 
 ntaSaveNextBtn.addEventListener('click', () => {
+    if (!practiceState.activeIndices || practiceState.activeIndices.length === 0) return;
     const realIndex = practiceState.activeIndices[practiceState.currentIndex];
-    const s = practiceState.stats[realIndex];
-    if (practiceState.answers[realIndex]) {
-        s.ntaStatus = 'answered';
-        s.attempted = true;
-        logQuestionJourney(realIndex, 'answered');
-    } else {
-        s.ntaStatus = 'not_answered';
-        logQuestionJourney(realIndex, 'not_answered');
+    if (!practiceState.stats) practiceState.stats = {};
+    if (!practiceState.stats[realIndex]) {
+        practiceState.stats[realIndex] = {
+            timeSpent: 0,
+            attempted: false,
+            evaluation: null,
+            exercise: 'Exercise 1',
+            activeSectionNumber: practiceState.currentIndex + 1,
+            ntaStatus: 'not_visited',
+            journey: []
+        };
     }
+    const s = practiceState.stats[realIndex];
+    s.ntaStatus = 'answered';
+    s.attempted = true;
+    logQuestionJourney(realIndex, 'answered');
     updateNtaPaletteColors();
     if (practiceState.currentIndex < practiceState.activeIndices.length - 1) {
         renderNtaQuestion(practiceState.currentIndex + 1);
+    } else if (typeof triggerExamSummary === 'function') {
+        triggerExamSummary();
     }
 });
 
 if (document.getElementById('ntaSaveReviewBtn')) {
     document.getElementById('ntaSaveReviewBtn').addEventListener('click', () => {
+        if (!practiceState.activeIndices || practiceState.activeIndices.length === 0) return;
         const realIndex = practiceState.activeIndices[practiceState.currentIndex];
+        if (!practiceState.stats) practiceState.stats = {};
+        if (!practiceState.stats[realIndex]) {
+            practiceState.stats[realIndex] = {
+                timeSpent: 0,
+                attempted: false,
+                evaluation: null,
+                exercise: 'Exercise 1',
+                activeSectionNumber: practiceState.currentIndex + 1,
+                ntaStatus: 'not_visited',
+                journey: []
+            };
+        }
         const s = practiceState.stats[realIndex];
         s.ntaStatus = s.attempted ? 'answered_marked' : 'marked';
         logQuestionJourney(realIndex, s.ntaStatus);
         updateNtaPaletteColors();
         if (practiceState.currentIndex < practiceState.activeIndices.length - 1) {
             renderNtaQuestion(practiceState.currentIndex + 1);
+        } else if (typeof triggerExamSummary === 'function') {
+            triggerExamSummary();
         }
     });
 }
 
 ntaClearBtn.addEventListener('click', () => {
+    if (!practiceState.activeIndices || practiceState.activeIndices.length === 0) return;
     const realIndex = practiceState.activeIndices[practiceState.currentIndex];
+    if (!practiceState.stats) practiceState.stats = {};
+    if (!practiceState.stats[realIndex]) {
+        practiceState.stats[realIndex] = {
+            timeSpent: 0,
+            attempted: false,
+            evaluation: null,
+            exercise: 'Exercise 1',
+            activeSectionNumber: practiceState.currentIndex + 1,
+            ntaStatus: 'not_answered',
+            journey: []
+        };
+    }
     const s = practiceState.stats[realIndex];
     s.ntaStatus = 'not_answered';
     s.attempted = false;
@@ -3511,21 +3592,32 @@ ntaClearBtn.addEventListener('click', () => {
     practiceState.isAnswerRevealed = false;
     logQuestionJourney(realIndex, 'cleared');
     updateNtaPaletteColors();
-    renderNtaQuestion(practiceState.currentIndex); // Re-render to clear radio buttons
+    renderNtaQuestion(practiceState.currentIndex);
 });
 
 ntaMarkReviewBtn.addEventListener('click', () => {
+    if (!practiceState.activeIndices || practiceState.activeIndices.length === 0) return;
     const realIndex = practiceState.activeIndices[practiceState.currentIndex];
-    const s = practiceState.stats[realIndex];
-    if (practiceState.answers[realIndex]) {
-        s.ntaStatus = 'answered_marked';
-        s.attempted = true;
-    } else {
-        s.ntaStatus = 'marked';
+    if (!practiceState.stats) practiceState.stats = {};
+    if (!practiceState.stats[realIndex]) {
+        practiceState.stats[realIndex] = {
+            timeSpent: 0,
+            attempted: false,
+            evaluation: null,
+            exercise: 'Exercise 1',
+            activeSectionNumber: practiceState.currentIndex + 1,
+            ntaStatus: 'not_visited',
+            journey: []
+        };
     }
+    const s = practiceState.stats[realIndex];
+    s.ntaStatus = s.attempted ? 'answered_marked' : 'marked';
+    logQuestionJourney(realIndex, s.ntaStatus);
     updateNtaPaletteColors();
     if (practiceState.currentIndex < practiceState.activeIndices.length - 1) {
         renderNtaQuestion(practiceState.currentIndex + 1);
+    } else if (typeof triggerExamSummary === 'function') {
+        triggerExamSummary();
     }
 });
 

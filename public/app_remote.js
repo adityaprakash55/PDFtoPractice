@@ -1787,20 +1787,6 @@ function startQuestionStopwatch() {
         }
     }, 1000);
 }
-
-function updateQuestionStopwatchDisplay() {
-    questionStopwatch.textContent = formatTime(practiceState.qSecondsSpent);
-}
-
-function renderPracticeQuestion(index) {
-    practiceState.currentIndex = index;
-    const realIndex = practiceState.activeIndices[index];
-    const q = extractedImages[realIndex];
-    currentQNum.textContent = index + 1;
-    const typeBadge = q.type ? `<span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800 dark:bg-blue-900/70 dark:text-blue-200 border border-blue-200 dark:border-blue-700 shadow-sm">${q.type}</span>` : '';
-    practiceQLabel.innerHTML = `Question ${q.label} ${typeBadge}`;
-    
-    practiceQImage.src = q.dataUrl;
     practiceQImage.onload = () => {
         const container = document.getElementById('practiceQImageContainer');
         const scaleRatio = practiceQImage.clientWidth / practiceQImage.naturalWidth;
@@ -3125,54 +3111,6 @@ ntaSaveNextBtn.addEventListener('click', () => {
     const s = practiceState.stats[realIndex];
     if (practiceState.answers[realIndex]) {
         s.ntaStatus = 'answered';
-        s.attempted = true;
-    } else {
-        s.ntaStatus = 'not_answered';
-    }
-    updateNtaPaletteColors();
-    if (practiceState.currentIndex < practiceState.activeIndices.length - 1) {
-        renderNtaQuestion(practiceState.currentIndex + 1);
-    }
-});
-
-if (document.getElementById('ntaSaveReviewBtn')) {
-    document.getElementById('ntaSaveReviewBtn').addEventListener('click', () => {
-        const realIndex = practiceState.activeIndices[practiceState.currentIndex];
-        const s = practiceState.stats[realIndex];
-        s.ntaStatus = s.attempted ? 'answered_marked' : 'marked';
-        updateNtaPaletteColors();
-        if (practiceState.currentIndex < practiceState.activeIndices.length - 1) {
-            renderNtaQuestion(practiceState.currentIndex + 1);
-        }
-    });
-}
-
-ntaClearBtn.addEventListener('click', () => {
-    const realIndex = practiceState.activeIndices[practiceState.currentIndex];
-    const s = practiceState.stats[realIndex];
-    s.ntaStatus = 'not_answered';
-    s.attempted = false;
-    s.evaluation = null;
-    delete practiceState.answers[realIndex];
-    practiceState.isAnswerRevealed = false;
-    updateNtaPaletteColors();
-    renderNtaQuestion(practiceState.currentIndex); // Re-render to clear radio buttons
-});
-
-ntaMarkReviewBtn.addEventListener('click', () => {
-    const realIndex = practiceState.activeIndices[practiceState.currentIndex];
-    const s = practiceState.stats[realIndex];
-    if (practiceState.answers[realIndex]) {
-        s.ntaStatus = 'answered_marked';
-        s.attempted = true;
-    } else {
-        s.ntaStatus = 'marked';
-    }
-    updateNtaPaletteColors();
-    if (practiceState.currentIndex < practiceState.activeIndices.length - 1) {
-        renderNtaQuestion(practiceState.currentIndex + 1);
-    }
-});
 
 ntaBackBtn.addEventListener('click', () => {
     if (practiceState.currentIndex > 0) {
@@ -3191,6 +3129,7 @@ ntaSubmitBtn.addEventListener('click', () => {
     const sectionCounts = {};
     practiceState.activeIndices.forEach(realIndex => {
         const stat = practiceState.stats[realIndex];
+        if (!stat) return;
         counts[stat.ntaStatus]++;
         const ex = stat.exercise || 'Exercise 1';
         if (!sectionCounts[ex]) sectionCounts[ex] = { answered: 0, not_answered: 0, not_visited: 0, marked: 0, answered_marked: 0 };
@@ -3302,18 +3241,6 @@ ntaToggleScratchpadBtn.addEventListener('click', () => {
 
 ntaCloseScratchpadBtn.addEventListener('click', () => {
     ntaScratchpad.classList.add('hidden');
-    ntaScratchpad.classList.add('translate-x-full');
-});
-
-
-let noteSaveTimeout = null;
-ntaScratchpadInput.addEventListener('input', (e) => {
-    const realIndex = practiceState.activeIndices[practiceState.currentIndex];
-    const text = e.target.value;
-    practiceState.scratchpadNotes[realIndex] = text;
-    saveSession();
-    
-    // Save to global notes DB
     clearTimeout(noteSaveTimeout);
     noteSaveTimeout = setTimeout(async () => {
         let q;

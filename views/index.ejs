@@ -149,7 +149,6 @@
             backdrop-filter: blur(16px) !important;
             -webkit-backdrop-filter: blur(16px) !important;
             border: 1px solid rgba(255, 255, 255, 0.08) !important;
-            box-shadow: none !important;
         }
         @media print {
             body * {
@@ -207,6 +206,7 @@
     <meta name="twitter:image" content="https://pdftopractice.in/logo-light.png">
     <meta property="og:image" content="https://pdftopractice.in/logo-light.png">
 
+    <link rel="preload" href="logo.png" as="image">
 </head>
 <body class="font-sans relative min-h-screen overflow-x-hidden">
     
@@ -220,27 +220,27 @@
 
 
     <header class="header-bar border-b-[3.5px] border-black sticky top-0 z-50 transition-colors">
-        <div class="max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-1.5 sm:gap-4">
-            <div class="flex items-center space-x-1.5 sm:space-x-3 min-w-0">
-                <button id="mobileSidebarToggleBtn" aria-label="Toggle Navigation" class="md:hidden p-2 rounded-none bg-gray-100 dark: hover:bg-gray-200 dark:hover:bg-navy-700 transition-colors shrink-0">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2 sm:gap-4">
+            <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+                <button id="mobileSidebarToggleBtn" aria-label="Toggle Navigation" class="md:hidden p-1.5 sm:p-2 rounded-none bg-yellow-400 dark:bg-yellow-500 text-black border-[2px] sm:border-[2.5px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] hover:bg-yellow-300 transition-all cursor-pointer flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 </button>
-                <a href="/" class="flex items-center space-x-1.5 sm:space-x-3 group cursor-pointer hover:opacity-90 transition-opacity min-w-0" title="PDF to PRACTICE - Home">
-                    <img src="logo-light.png" alt="Logo" class="w-8 h-8 sm:w-10 sm:h-10 rounded-none dark:hidden shrink-0">
-                    <img src="logo-dark.png" alt="Logo" class="w-8 h-8 sm:w-10 sm:h-10 rounded-none hidden dark:block shrink-0">
-                    <h1 class="text-xs min-[380px]:text-sm sm:text-xl font-black dark: tracking-tight truncate max-w-[100px] min-[380px]:max-w-[150px] sm:max-w-none uppercase">PDF to PRACTICE</h1>
+                <a href="/" class="flex items-center gap-2 sm:gap-3 group cursor-pointer hover:opacity-90 transition-opacity min-w-0" title="PDF to PRACTICE - Home">
+                    <img src="logo-light.png" alt="Logo" class="w-8 h-8 sm:w-9 sm:h-9 object-contain rounded-none dark:hidden shrink-0">
+                    <img src="logo-dark.png" alt="Logo" class="w-8 h-8 sm:w-9 sm:h-9 object-contain rounded-none hidden dark:block shrink-0">
+                    <h1 class="text-xs min-[380px]:text-sm sm:text-lg lg:text-xl font-black text-slate-900 dark:text-white tracking-tight truncate uppercase">PDF to PRACTICE</h1>
                 </a>
             </div>
-            <div class="flex items-center space-x-1.5 sm:space-x-4 shrink-0">
-                <button id="themeToggleBtn" aria-label="Toggle Theme" class="p-2 brutal-card border-[2.5px] border-black shadow-[2px_2px_0px_0px_#000] sm:shadow-[3px_3px_0px_0px_#000] text-yellow-500 dark:text-yellow-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all cursor-pointer active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000]" title="Toggle Theme">
+            <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
+                <button id="themeToggleBtn" aria-label="Toggle Theme" class="p-1.5 sm:p-2 rounded-none bg-slate-100 dark:bg-slate-800 text-yellow-500 dark:text-yellow-400 border-[2px] sm:border-[2.5px] border-black shadow-[2px_2px_0px_0px_#000] sm:shadow-[3px_3px_0px_0px_#000] hover:bg-slate-200 dark:hover:bg-slate-700 transition-all cursor-pointer active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] flex items-center justify-center" title="Toggle Theme">
                     <svg id="themeIconSun" class="w-4 h-4 sm:w-5 sm:h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                     <svg id="themeIconMoon" class="w-4 h-4 sm:w-5 sm:h-5 block dark:hidden text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
                 </button>
-                <a href="/contact" class="p-2 sm:px-4 sm:py-2 bg-emerald-400 hover:bg-emerald-300 border-[2.5px] border-black shadow-[2px_2px_0px_0px_#000] sm:shadow-[3px_3px_0px_0px_#000] font-black uppercase text-xs hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all flex items-center gap-1" title="Contact Us">
+                <a href="/contact" class="p-1.5 sm:px-3.5 sm:py-2 rounded-none bg-emerald-400 hover:bg-emerald-300 border-[2px] sm:border-[2.5px] border-black shadow-[2px_2px_0px_0px_#000] sm:shadow-[3px_3px_0px_0px_#000] font-black uppercase text-xs hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all flex items-center gap-1.5" title="Contact Us">
                     <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
                     <span class="hidden sm:inline">Contact Us</span>
                 </a>
-                <a href="/donate" class="p-2 sm:px-4 sm:py-2 bg-pink-400 hover:bg-pink-300 border-[2.5px] border-black shadow-[2px_2px_0px_0px_#000] sm:shadow-[3px_3px_0px_0px_#000] font-black uppercase text-xs hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all flex items-center gap-1" title="Support/Donate">
+                <a href="/donate" class="p-1.5 sm:px-3.5 sm:py-2 rounded-none bg-pink-400 hover:bg-pink-300 border-[2px] sm:border-[2.5px] border-black shadow-[2px_2px_0px_0px_#000] sm:shadow-[3px_3px_0px_0px_#000] font-black uppercase text-xs hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all flex items-center gap-1.5" title="Support/Donate">
                     <svg class="w-4 h-4 text-black" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>
                     <span class="hidden sm:inline">Support/Donate</span>
                 </a>

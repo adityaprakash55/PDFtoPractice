@@ -6,9 +6,11 @@
   --font-sans: "Inter", sans-serif;
 }
 
-@source "../views";
-@source "../public";
-@source "../views/*.ejs";
+@source "../views/index.ejs";
+@source "../views/contact.ejs";
+@source "../views/donate.ejs";
+@source "../views/privacy.ejs";
+@source "../views/terms.ejs";
 
 /* ============================================================
    ROOT THEME VARIABLES  auto-switch via .dark class
@@ -281,6 +283,41 @@
 header, .header-bar {
   background-color: var(--bg-card);
   color: var(--text-primary);
+}
+
+#mobileSidebarToggleBtn {
+  background-color: #FFE600 !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+  box-shadow: 2px 2px 0px 0px #000000 !important;
+}
+
+#mobileSidebarToggleBtn:hover {
+  background-color: #ffd600 !important;
+}
+
+#mobileSidebarToggleBtn:active {
+  transform: translate(1px, 1px) !important;
+  box-shadow: 1px 1px 0px 0px #000000 !important;
+}
+
+#themeToggleBtn {
+  border: 2px solid #000000 !important;
+  box-shadow: 2px 2px 0px 0px #000000 !important;
+}
+
+#themeToggleBtn:active {
+  transform: translate(1px, 1px) !important;
+  box-shadow: 1px 1px 0px 0px #000000 !important;
+}
+
+.dark #themeToggleBtn {
+  background-color: #1e293b !important;
+  color: #facc15 !important;
+}
+
+header h1 {
+  color: var(--text-primary) !important;
 }
 
 /* ============================================================
