@@ -71,6 +71,7 @@ function initPeerJS() {
                       
                       // Show Lobby instead of waiting container
                       liveLobbyContainer.classList.remove('hidden');
+                      try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch(e) {}
             const sb2 = document.getElementById('landingSidebar');
             if(sb2) { sb2.classList.remove('md:flex'); sb2.classList.add('hidden', '!hidden'); }
             document.querySelectorAll('.dash-view').forEach(v => v.classList.add('hidden'));
@@ -172,6 +173,7 @@ if (createLiveRoomBtn) {
             
             document.getElementById('practiceSetupContainer').classList.add('hidden');
             liveLobbyContainer.classList.remove('hidden');
+            try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch(e) {}
             const sb2 = document.getElementById('landingSidebar');
             if(sb2) { sb2.classList.remove('md:flex'); sb2.classList.add('hidden', '!hidden'); }
             document.querySelectorAll('.dash-view').forEach(v => v.classList.add('hidden'));
