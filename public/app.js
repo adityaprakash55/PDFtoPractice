@@ -4162,6 +4162,71 @@ const JEE_MAIN_PERCENTILE_DATA = [
     { minPct: 0.00,  maxPct: 3.33,   minPctl: 0.8435177,   maxPctl: 9.6954066 }
 ];
 
+function predictJeeMainPercentile(scorePercent) {
+    const rawPct = Math.max(0, Math.min(100, scorePercent));
+    let predictedPctl = 0;
+    let rangeStr = "";
+    let bracketInfo = "";
+    let activeIndex = -1;
+
+    for (let i = 0; i < JEE_MAIN_PERCENTILE_DATA.length; i++) {
+        const row = JEE_MAIN_PERCENTILE_DATA[i];
+        if (rawPct >= row.minPct && rawPct <= row.maxPct) {
+            activeIndex = i;
+            const fraction = row.maxPct === row.minPct ? 1 : (rawPct - row.minPct) / (row.maxPct - row.minPct);
+            predictedPctl = row.minPctl + fraction * (row.maxPctl - row.minPctl);
+            rangeStr = row.minPctl.toFixed(4) + "% - " + row.maxPctl.toFixed(4) + "%ile";
+            bracketInfo = `JEE Main score range: ${row.minPct.toFixed(2)}% - ${row.maxPct.toFixed(2)}%`;
+            break;
+        }
+    }
+
+    if (activeIndex === -1) {
+        if (rawPct >= 100) {
+            activeIndex = 0;
+            predictedPctl = 100.0000;
+            rangeStr = "99.9999% - 100.0000%ile";
+            bracketInfo = "Perfect 100% Score";
+        } else if (rawPct <= 0) {
+            activeIndex = JEE_MAIN_PERCENTILE_DATA.length - 1;
+            predictedPctl = 0.8435;
+            rangeStr = "0.8435% - 9.6954%ile";
+            bracketInfo = "0% Score";
+        } else {
+            for (let i = 0; i < JEE_MAIN_PERCENTILE_DATA.length - 1; i++) {
+                const upperRow = JEE_MAIN_PERCENTILE_DATA[i];
+                const lowerRow = JEE_MAIN_PERCENTILE_DATA[i + 1];
+                if (rawPct < upperRow.minPct && rawPct > lowerRow.maxPct) {
+                    activeIndex = i;
+                    const fraction = (rawPct - lowerRow.maxPct) / (upperRow.minPct - lowerRow.maxPct);
+                    predictedPctl = lowerRow.maxPctl + fraction * (upperRow.minPctl - lowerRow.maxPctl);
+                    rangeStr = lowerRow.maxPctl.toFixed(4) + "% - " + upperRow.minPctl.toFixed(4) + "%ile";
+                    bracketInfo = `Between ${lowerRow.maxPct.toFixed(2)}% and ${upperRow.minPct.toFixed(2)}% bracket`;
+                    break;
+                }
+            }
+        }
+    }
+
+    let tier = "Standard";
+    if (predictedPctl >= 99.9) tier = "🔥 Outstanding (Top 0.1%)";
+    else if (predictedPctl >= 99.0) tier = "🌟 Excellent (Top 1%)";
+    else if (predictedPctl >= 95.0) tier = "🎯 Very Good (Top 5%)";
+    else if (predictedPctl >= 90.0) tier = "👍 Good (Top 10%)";
+    else if (predictedPctl >= 80.0) tier = "📈 Above Average (Top 20%)";
+    else if (predictedPctl >= 50.0) tier = "⚡ Average";
+    else tier = "💪 Needs Improvement";
+
+    return {
+        scorePercent: rawPct,
+        predictedPercentile: predictedPctl,
+        rangeStr: rangeStr,
+        bracketInfo: bracketInfo,
+        tier: tier,
+        activeIndex: activeIndex
+    };
+}
+
 const NEET_RANK_DATA = [
     { minPct: 97.36, maxPct: 100.00, minRank: 1,       maxRank: 766 },
     { minPct: 93.89, maxPct: 97.22,  minRank: 783,     maxRank: 5935 },
