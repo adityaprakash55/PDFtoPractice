@@ -6,29 +6,109 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %></title>
     <link rel="canonical" href="<%= canonical %>">
+    
     <!-- Favicon & Icons -->
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png">
     <link rel="shortcut icon" href="/favicon.ico">
     <link rel="apple-touch-icon" href="/favicon.png">
-    <!-- SEO & Meta Tags -->
+
+    <!-- SEO & Search Engine Optimization Meta Tags -->
     <meta name="description" content="<%= description %>">
-    <meta name="keywords" content="JEE Main, NEET, Mock Test Simulator, PDF question extractor, auto slice questions, CBT practice, IIT JEE prep, NEET prep">
-    <meta name="author" content="JEE/NEET Prep Tools">
-    <meta property="og:title" content="JEE/NEET Auto PDF Mock Test Simulator">
-    <meta property="og:description" content="Turn your PDFs into interactive Computer Based Tests (CBT). Client-side, serverless, secure.">
+    <meta name="keywords" content="pdf to cbt, pdf to test, pdf to practice, jee mock cbt, neet mock cbt, dpp to practice, dpp to mock, pdf to cbt test generator, nta cbt simulator, dpp to cbt test, convert pdf to online test, free jee main cbt mock test, free neet cbt mock test, pdf to online exam, coaching pdf to cbt, pdf question slicer, jee main percentile predictor, neet rank predictor">
+    <meta name="author" content="PDF to PRACTICE Team">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+
+    <!-- OpenGraph / Social Media Meta -->
+    <meta property="og:site_name" content="PDF to PRACTICE">
+    <meta property="og:title" content="PDF to CBT Test Generator | Free Online JEE & NEET Mock Practice">
+    <meta property="og:description" content="Turn any question paper PDF, DPP, or coaching module into an interactive NTA CBT mock test online for free. Features JEE Main Percentile & NEET AIR Predictor.">
     <meta property="og:type" content="website">
+    <meta property="og:url" content="https://pdftopractice.in/">
+    <meta property="og:image" content="https://pdftopractice.in/logo-light.png">
+
+    <!-- Twitter Card Meta -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="PDF to CBT Test Generator | Free Online JEE & NEET Mock Practice">
+    <meta name="twitter:description" content="Turn any question paper PDF, DPP, or coaching module into an interactive NTA CBT mock test online for free. Features JEE Main Percentile & NEET AIR Predictor.">
+    <meta name="twitter:image" content="https://pdftopractice.in/logo-light.png">
+
+    <!-- JSON-LD Structured Data Schema Markup (Google Search Rich Results) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "PDF to PRACTICE - PDF to CBT Test Generator",
+      "url": "https://pdftopractice.in/",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "All",
+      "browserRequirements": "Requires JavaScript and HTML5",
+      "description": "Convert question paper PDFs, DPPs, and coaching modules into interactive online NTA CBT mock tests for JEE Main, JEE Advanced, and NEET UG practice.",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "INR"
+      },
+      "featureList": [
+        "PDF to CBT Test Converter",
+        "PDF to Practice & Test Slicer",
+        "JEE Mock CBT Practice Test",
+        "NEET Mock CBT Practice Test",
+        "DPP to Mock Test Generator",
+        "Official NTA CBT Interface Simulation",
+        "JEE Main Percentile Predictor",
+        "NEET UG All India Rank Predictor"
+      ]
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I convert a PDF to CBT mock test online?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Upload your question paper PDF or DPP to PDF to PRACTICE, set question margin bounds using our auto-slicer, and launch a real NTA-style Computer Based Test (CBT) mock exam directly in your browser for free."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I convert DPPs (Daily Practice Problems) into mock CBT tests?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes! PDF to PRACTICE allows you to upload any DPP or coaching module PDF and convert it into a timed DPP to Mock or DPP to Practice CBT test with instant accuracy and score analysis."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is PDF to PRACTICE free for JEE Main and NEET UG CBT practice?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, PDF to PRACTICE is 100% free with no login required. You can convert unlimited PDFs to CBT tests for JEE Main, JEE Advanced, and NEET UG practice."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does PDF to PRACTICE simulate the official NTA CBT exam interface?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, the test interface matches the official NTA CBT palette, question palette buttons (Save & Next, Mark for Review), countdown timer, subject navigation, and detailed score report analytics."
+          }
+        }
+      ]
+    }
+    </script>
 
     <!-- Vercel Speed Insights -->
-    <script>
-        window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
-    </script>
     <script defer src="/_vercel/speed-insights/script.js"></script>
 
     <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2869777724597680" crossorigin="anonymous"></script>
 
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -2337,10 +2417,125 @@
             <div id="reviewContainer" class="hidden mt-8 border-t border-black pt-6">
                 <h3 id="reviewTitle" class="text-2xl font-bold mb-4">Reviewing Questions</h3>
                 <div id="reviewList" class="space-y-6 max-h-[600px] overflow-y-auto pr-4 custom-scrollbar">
-                    <!-- Review cards injected here -->
+              <!-- SERVER-SIDE RENDERED (SSR) SEO FEATURE & FAQ SECTION -->
+        <section class="max-w-7xl mx-auto px-4 sm:px-6 my-16 font-sans">
+            <!-- SEO Headline & Tagline -->
+            <div class="brutal-card rounded-none p-6 sm:p-10 mb-10 text-center relative overflow-hidden border-2 border-amber-500/80">
+                <div class="inline-flex items-center gap-2 px-3 py-1 bg-amber-500 text-black font-black uppercase text-xs tracking-widest mb-4 border border-black shadow-[2px_2px_0px_0px_#000]">
+                    ⚡ Free Online NTA CBT Test Simulator
+                </div>
+                <h1 class="text-3xl sm:text-5xl font-black uppercase tracking-tight mb-4" style="color: var(--text-primary);">
+                    PDF to CBT Test Generator &amp; Online Practice
+                </h1>
+                <p class="text-base sm:text-xl font-bold max-w-3xl mx-auto leading-relaxed" style="color: var(--text-muted);">
+                    Convert any question paper PDF, coaching module, or Daily Practice Problem (DPP) into a timed, interactive <strong class="text-amber-400">NTA CBT Mock Test</strong>. Designed specifically for <strong class="text-cyan-400">JEE Main</strong>, <strong class="text-blue-400">JEE Advanced</strong>, and <strong class="text-emerald-400">NEET UG</strong> aspirants.
+                </p>
+
+                <!-- High-Intent Target Keyword Badges -->
+                <div class="flex flex-wrap items-center justify-center gap-2 mt-6">
+                    <span class="px-2.5 py-1 text-xs font-bold bg-blue-950 text-blue-300 border border-blue-700/60">📄 PDF to CBT</span>
+                    <span class="px-2.5 py-1 text-xs font-bold bg-purple-950 text-purple-300 border border-purple-700/60">🎯 PDF to Test</span>
+                    <span class="px-2.5 py-1 text-xs font-bold bg-emerald-950 text-emerald-300 border border-emerald-700/60">⚡ PDF to Practice</span>
+                    <span class="px-2.5 py-1 text-xs font-bold bg-amber-950 text-amber-300 border border-amber-700/60">🚀 JEE Mock CBT</span>
+                    <span class="px-2.5 py-1 text-xs font-bold bg-teal-950 text-teal-300 border border-teal-700/60">🩺 NEET Mock CBT</span>
+                    <span class="px-2.5 py-1 text-xs font-bold bg-rose-950 text-rose-300 border border-rose-700/60">📚 DPP to Practice</span>
+                    <span class="px-2.5 py-1 text-xs font-bold bg-yellow-950 text-yellow-300 border border-yellow-700/60">🧪 DPP to Mock</span>
                 </div>
             </div>
-        </div>
+
+            <!-- SEO Feature Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <!-- Card 1 -->
+                <div class="brutal-card p-6 rounded-none flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded bg-amber-500/20 text-amber-400 border border-amber-500/40 flex items-center justify-center font-black text-2xl mb-4">📄</div>
+                        <h2 class="text-xl font-black uppercase mb-2" style="color: var(--text-primary);">Instant PDF to CBT Conversion</h2>
+                        <p class="text-sm font-medium leading-relaxed" style="color: var(--text-muted);">
+                            Upload any offline test PDF, PYQ compilation, or coaching test series paper. Our intelligent client-side parser slices questions automatically, turning static documents into interactive <strong>PDF to Test</strong> online exams.
+                        </p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-gray-800 text-xs font-bold text-amber-400">
+                        ✓ Works with Allen, Resonance, FIITJEE, Physics Wallah PDFs
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="brutal-card p-6 rounded-none flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 flex items-center justify-center font-black text-2xl mb-4">🎯</div>
+                        <h2 class="text-xl font-black uppercase mb-2" style="color: var(--text-primary);">JEE &amp; NEET Mock CBT Simulator</h2>
+                        <p class="text-sm font-medium leading-relaxed" style="color: var(--text-muted);">
+                            Experience the official NTA Computer Based Test layout. Complete with Question Palette navigation, Save &amp; Next, Mark for Review, countdown clock, and instant <strong>JEE Main Percentile</strong> and <strong>NEET AIR Rank Predictor</strong>.
+                        </p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-gray-800 text-xs font-bold text-cyan-400">
+                        ✓ Official NTA Marking Scheme (+4 / -1)
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="brutal-card p-6 rounded-none flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center font-black text-2xl mb-4">📚</div>
+                        <h2 class="text-xl font-black uppercase mb-2" style="color: var(--text-primary);">DPP to Practice &amp; Mock Tests</h2>
+                        <p class="text-sm font-medium leading-relaxed" style="color: var(--text-muted);">
+                            Turn Daily Practice Problems (DPPs) into rapid-fire mock sessions. Solve questions under real exam pressure with subject-wise analytics, time-per-question metrics, and detailed question review mode.
+                        </p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-gray-800 text-xs font-bold text-emerald-400">
+                        ✓ 100% Free, Private &amp; Client-Side
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEO FAQ Section -->
+            <div class="brutal-card rounded-none p-6 sm:p-8">
+                <h2 class="text-2xl font-black uppercase tracking-tight mb-6 flex items-center gap-2" style="color: var(--text-primary);">
+                    <span>❓ Frequently Asked Questions (FAQ)</span>
+                </h2>
+                <div class="space-y-4">
+                    <details class="group brutal-card p-4 rounded-none cursor-pointer">
+                        <summary class="font-bold text-base flex items-center justify-between" style="color: var(--text-primary);">
+                            <span>How do I convert my PDF into a CBT mock test online?</span>
+                            <span class="text-amber-400 group-open:rotate-180 transition-transform">▼</span>
+                        </summary>
+                        <p class="text-sm font-medium mt-3 leading-relaxed" style="color: var(--text-muted);">
+                            Simply upload your question paper PDF on the PDF to PRACTICE home dashboard. Use our visual margin slicer to demarcate question boundaries, set your desired total questions and exam time, and click "Start Test Now". You can practice in authentic NTA CBT interface immediately.
+                        </p>
+                    </details>
+
+                    <details class="group brutal-card p-4 rounded-none cursor-pointer">
+                        <summary class="font-bold text-base flex items-center justify-between" style="color: var(--text-primary);">
+                            <span>Can I convert DPPs (Daily Practice Problems) into timed CBT tests?</span>
+                            <span class="text-amber-400 group-open:rotate-180 transition-transform">▼</span>
+                        </summary>
+                        <p class="text-sm font-medium mt-3 leading-relaxed" style="color: var(--text-muted);">
+                            Yes! PDF to PRACTICE is optimized for <strong>DPP to Practice</strong> and <strong>DPP to Mock</strong> conversion. Upload any single-page or multi-page DPP PDF, set a quick 15-30 minute timer, and practice questions under timed exam conditions.
+                        </p>
+                    </details>
+
+                    <details class="group brutal-card p-4 rounded-none cursor-pointer">
+                        <summary class="font-bold text-base flex items-center justify-between" style="color: var(--text-primary);">
+                            <span>Is PDF to PRACTICE free for JEE Main and NEET CBT preparation?</span>
+                            <span class="text-amber-400 group-open:rotate-180 transition-transform">▼</span>
+                        </summary>
+                        <p class="text-sm font-medium mt-3 leading-relaxed" style="color: var(--text-muted);">
+                            PDF to PRACTICE is 100% free for all students. There are no subscriptions, mandatory signups, or paywalls. All processing happens locally in your browser for total privacy and high-speed execution.
+                        </p>
+                    </details>
+
+                    <details class="group brutal-card p-4 rounded-none cursor-pointer">
+                        <summary class="font-bold text-base flex items-center justify-between" style="color: var(--text-primary);">
+                            <span>How does the JEE Main Percentile &amp; NEET Rank Predictor work?</span>
+                            <span class="text-amber-400 group-open:rotate-180 transition-transform">▼</span>
+                        </summary>
+                        <p class="text-sm font-medium mt-3 leading-relaxed" style="color: var(--text-muted);">
+                            Our Score Analysis engine uses official NTA benchmark data to map your percentage score directly to predicted JEE Main percentiles and NEET UG All India Ranks (AIR). You can analyze individual tests or multi-select custom test combinations.
+                        </p>
+                    </details>
+                </div>
+            </div>
+        </section>
 
         <!-- Neo-Brutalist Theme-Aware Footer -->
         <footer class="w-full mt-16 relative z-10" style="background-color: var(--bg-card); color: var(--text-primary); border-top: 4px solid var(--border-color);">
