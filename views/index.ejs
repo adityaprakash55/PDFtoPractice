@@ -1441,8 +1441,9 @@
 
             <!-- Main Content -->
             <main class="flex-1 overflow-y-auto brutal-card">
+
                 <!-- OVERVIEW PANEL -->
-                <div id="lrdOverview" class="lrd-panel hidden p-4 md:p-8 max-w-6xl mx-auto">
+                <div id="lrdOverview" class="lrd-panel p-4 md:p-8 max-w-6xl mx-auto">
                     <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
                         <div>
                             <h1 class="text-2xl sm:text-3xl font-bold">Performance Overview</h1>
@@ -1606,42 +1607,52 @@
                 </div>
 
                 <!-- TIME ANALYSIS PANEL -->
-                <div id="lrdTimeAnalysis" class="lrd-panel hidden p-6 md:p-8 max-w-6xl mx-auto">
-                    <h1 class="text-3xl font-bold mb-1">Time Analysis</h1>
-                    <p id="lrdTimeMeta" class="text-sm uppercase tracking-widest mb-6">AVG PACE: — · TOTAL: —</p>
-                    <div class="grid grid-cols-2 gap-4 mb-6">
+                <div id="lrdTimeAnalysis" class="lrd-panel hidden p-6 md:p-8 max-w-6xl mx-auto text-white">
+                    <h1 class="text-3xl font-bold mb-1 text-white">Time Analysis</h1>
+                    <p id="lrdTimeMeta" class="text-sm uppercase tracking-widest mb-6 opacity-80">AVG PACE: — · TOTAL: —</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                         <div class="brutal-card rounded-none p-5">
                             <div class="text-sm font-bold text-green-400 uppercase tracking-widest mb-2">Fast &amp; Correct</div>
-                            <div id="lrdFastCorrect" class="text-5xl font-black mb-1">0</div>
-                            <p class="text-sm">Quick wins — strong conceptual clarity.</p>
+                            <div id="lrdFastCorrect" class="text-4xl font-black mb-1 text-green-400">0</div>
+                            <p class="text-xs opacity-80">Quick wins — strong conceptual clarity.</p>
                         </div>
                         <div class="brutal-card rounded-none p-5">
-                            <div class="text-sm font-bold text-red-400 uppercase tracking-widest mb-2">Fast &amp; Incorrect</div>
-                            <div id="lrdFastIncorrect" class="text-5xl font-black mb-1">0</div>
-                            <p class="text-sm">Rushed answers. Slow down on similar questions.</p>
+                            <div class="text-sm font-bold text-emerald-400 uppercase tracking-widest mb-2">At Par &amp; Correct</div>
+                            <div id="lrdAtParCorrect" class="text-4xl font-black mb-1 text-emerald-400">0</div>
+                            <p class="text-xs opacity-80">Steady pace — optimal time allocation.</p>
                         </div>
                         <div class="brutal-card rounded-none p-5">
                             <div class="text-sm font-bold text-blue-400 uppercase tracking-widest mb-2">Slow &amp; Correct</div>
-                            <div id="lrdSlowCorrect" class="text-5xl font-black mb-1">0</div>
-                            <p class="text-sm">Got there, but at a time cost — needs faster recall.</p>
+                            <div id="lrdSlowCorrect" class="text-4xl font-black mb-1 text-blue-400">0</div>
+                            <p class="text-xs opacity-80">Got there, but at a time cost — needs faster recall.</p>
+                        </div>
+                        <div class="brutal-card rounded-none p-5">
+                            <div class="text-sm font-bold text-rose-400 uppercase tracking-widest mb-2">Fast &amp; Incorrect</div>
+                            <div id="lrdFastIncorrect" class="text-4xl font-black mb-1 text-rose-400">0</div>
+                            <p class="text-xs opacity-80">Rushed answers. Slow down on similar questions.</p>
+                        </div>
+                        <div class="brutal-card rounded-none p-5">
+                            <div class="text-sm font-bold text-amber-400 uppercase tracking-widest mb-2">At Par &amp; Incorrect</div>
+                            <div id="lrdAtParIncorrect" class="text-4xl font-black mb-1 text-amber-400">0</div>
+                            <p class="text-xs opacity-80">Average pace error — re-read concepts.</p>
                         </div>
                         <div class="brutal-card rounded-none p-5">
                             <div class="text-sm font-bold text-orange-400 uppercase tracking-widest mb-2">Slow &amp; Incorrect</div>
-                            <div id="lrdSlowIncorrect" class="text-5xl font-black mb-1">0</div>
-                            <p class="text-sm">Highest priority to revise — time wasted on wrong answers.</p>
+                            <div id="lrdSlowIncorrect" class="text-4xl font-black mb-1 text-orange-400">0</div>
+                            <p class="text-xs opacity-80">Highest priority to revise — time wasted on wrong answers.</p>
                         </div>
                     </div>
                     <div class="brutal-card rounded-none p-5">
-                        <div class="text-sm font-bold uppercase tracking-widest mb-1">All Questions — Time Graph</div>
+                        <div class="text-sm font-bold uppercase tracking-widest mb-1 text-white">All Questions — Time Graph</div>
                         <p id="lrdAvgLabel" class="text-sm text-blue-400 mb-4">- - - - Avg: —</p>
-                        <div style="position:relative; height:120px;"><canvas id="lrdTimeChart"></canvas></div>
+                        <div style="position:relative; height:140px;"><canvas id="lrdTimeChart"></canvas></div>
                     </div>
                 </div>
 
                 <!-- PEER COMPARE PANEL -->
-                <div id="lrdPeerCompare" class="lrd-panel hidden p-6 md:p-8 max-w-6xl mx-auto">
-                    <h1 class="text-3xl font-black uppercase tracking-tight mb-1" style="color: var(--text-primary);">Peer Comparison</h1>
-                    <p class="text-sm font-semibold uppercase tracking-widest mb-6" style="color: var(--text-muted);">Compare with Top 10%ile and Top 25%ile</p>
+                <div id="lrdPeerCompare" class="lrd-panel hidden p-6 md:p-8 max-w-6xl mx-auto text-white">
+                    <h1 class="text-3xl font-black uppercase tracking-tight mb-1 text-white">Peer Comparison</h1>
+                    <p class="text-sm font-semibold uppercase tracking-widest mb-6 opacity-80">Compare with Top 10%ile and Top 25%ile</p>
                     
                     <div id="lrdPeerCompareSolo" class="hidden brutal-card p-10 text-center max-w-2xl mx-auto my-8 bg-yellow-400 text-black">
                         <svg class="w-16 h-16 mx-auto mb-4 text-black" fill="none" stroke="#000000" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
@@ -1711,41 +1722,41 @@
                 </div>
 
                 <!-- INSIGHTS PANEL -->
-                <div id="lrdInsights" class="lrd-panel hidden p-6 md:p-8 max-w-6xl mx-auto">
-                    <h1 class="text-3xl font-bold mb-1">Performance Insights</h1>
-                    <p class="text-sm uppercase tracking-widest mb-6">Diagnostic Analysis of Your Exam Patterns</p>
-                    <div class="grid grid-cols-3 gap-4 mb-4">
+                <div id="lrdInsights" class="lrd-panel hidden p-6 md:p-8 max-w-6xl mx-auto text-white">
+                    <h1 class="text-3xl font-bold mb-1 text-white">Performance Insights</h1>
+                    <p class="text-sm uppercase tracking-widest mb-6 opacity-80">Diagnostic Analysis of Your Exam Patterns</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-4">
                         <div class="brutal-card rounded-none p-5">
                             <div class="flex items-center gap-2 mb-3"><svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg><span class="text-sm font-semibold">Negative Marks</span></div>
                             <div id="lrdNegMarks" class="text-5xl font-black text-red-400 mb-2">0</div>
-                            <div class="text-sm mb-3">marks lost to wrong answers</div>
+                            <div class="text-sm mb-3 opacity-90">marks lost to wrong answers</div>
                             <div class="h-1 bg-gray-700 rounded-full"><div id="lrdNegBar" class="h-1 bg-red-500 rounded-full" style="width:0%; transition: width 1s ease"></div></div>
                             <div id="lrdNegPct" class="text-sm mt-1">0% earned marks negated</div>
                         </div>
                         <div class="brutal-card rounded-none p-5">
                             <div class="flex items-center gap-2 mb-3"><svg class="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/></svg><span class="text-sm font-semibold">Streaks</span></div>
                             <div class="text-sm text-green-400 font-semibold mb-1">Best correct streak</div>
-                            <div id="lrdBestStreak" class="text-3xl font-black mb-3">0 <span class="text-lg">Q</span></div>
+                            <div id="lrdBestStreak" class="text-3xl font-black mb-3 text-green-400">0 <span class="text-lg">Q</span></div>
                             <div class="text-sm text-red-400 font-semibold mb-1">Longest wrong run</div>
-                            <div id="lrdWrongRun" class="text-3xl font-black">0 <span class="text-lg">Q</span></div>
+                            <div id="lrdWrongRun" class="text-3xl font-black text-red-400">0 <span class="text-lg">Q</span></div>
                         </div>
                         <div class="brutal-card rounded-none p-5">
                             <div class="flex items-center gap-2 mb-3"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg><span class="text-sm font-semibold">Blind Guesses (&lt;15s)</span></div>
                             <div id="lrdBlindGuesses" class="text-5xl font-black mb-2">0</div>
-                            <div class="text-sm mb-2">instant wrong answers</div>
+                            <div class="text-sm mb-2 opacity-90">instant wrong answers</div>
                             <div id="lrdBlindNote" class="text-sm text-green-400">None. Well considered.</div>
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="brutal-card rounded-none p-5">
                             <div class="flex items-center gap-2 mb-1"><svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4"/></svg><span class="text-sm font-semibold">Accuracy Per Part</span></div>
-                            <p class="text-sm uppercase tracking-widest mb-4">How your accuracy evolved across the exam's four quarters</p>
+                            <p class="text-sm uppercase tracking-widest mb-4 opacity-80">How your accuracy evolved across the exam's four quarters</p>
                             <div id="lrdAccParts" class="flex items-end justify-around gap-2 mb-2" style="height:80px"></div>
                             <div class="flex justify-around text-sm"><span>Part 1</span><span>Part 2</span><span>Part 3</span><span>Part 4</span></div>
                         </div>
                         <div class="brutal-card rounded-none p-5">
                             <div class="flex items-center gap-2 mb-4"><svg class="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span class="text-sm font-semibold">Marks per Minute</span></div>
-                            <p class="text-sm mb-4">Which subject gave the best return on time</p>
+                            <p class="text-sm mb-4 opacity-80">Which subject gave the best return on time</p>
                             <div id="lrdMarksPerMin" class="space-y-3"></div>
                         </div>
                     </div>
