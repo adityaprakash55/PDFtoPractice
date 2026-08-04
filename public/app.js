@@ -3960,139 +3960,140 @@ let _lrdNavWired = false;
 let _lrdChartTime = null, _lrdChartScoreQ = null, _lrdChartScoreT = null;
 
 function showResultsDashboard() {
-    // Exit fullscreen mode on test complete
     try {
-        if (document.fullscreenElement) {
-            document.exitFullscreen().catch(err => console.log("Exit fullscreen failed:", err));
-        }
-    } catch(err) {
-        console.error("Fullscreen exit error:", err);
-    }
-
-    // Stop all timers
-    if (practiceState.totalTimerInterval) clearInterval(practiceState.totalTimerInterval);
-    if (practiceState.qTimerInterval) clearInterval(practiceState.qTimerInterval);
-    if (practiceState.countdownInterval) clearInterval(practiceState.countdownInterval);
-
-    // Hide all other views
-    const ntaEl = document.getElementById('ntaInterfaceContainer');
-    if (ntaEl) ntaEl.classList.add('hidden');
-    if (summaryContainer) summaryContainer.classList.add('hidden');
-
-    const dash = document.getElementById('liveResultsDashboard');
-    if (!dash) { showSummary(); return; }
-    dash.classList.remove('hidden');
-
-    // Gather stats from practiceState
-    const scorePerQ = practiceState.scorePerQ || 4;
-    const hasNeg = practiceState.negativeMarking !== false;
-    const indices = practiceState.activeIndices || [];
-    const totalQ = indices.length;
-    let totalSeconds = 0, correctCount = 0, incorrectCount = 0, attemptedCount = 0;
-
-    indices.forEach(ri => {
-        const s = practiceState.stats[ri];
-        if (!s) return;
-        
-        const ans = practiceState.answers ? practiceState.answers[ri] : undefined;
-        const q = (typeof extractedImages !== 'undefined' && extractedImages) ? extractedImages[ri] : undefined;
-        
-        if (ans !== undefined && ans !== null && ans !== '') {
-            s.attempted = true;
-            if (s.ntaStatus === 'not_visited' || s.ntaStatus === 'not_answered') {
-                s.ntaStatus = 'answered';
+        // Exit fullscreen mode on test complete
+        try {
+            if (document.fullscreenElement) {
+                document.exitFullscreen().catch(err => console.log("Exit fullscreen failed:", err));
             }
-        } else if (s.ntaStatus === 'answered' || s.ntaStatus === 'answered_marked') {
-            s.attempted = true;
+        } catch(err) {
+            console.error("Fullscreen exit error:", err);
         }
 
-        if (s.evaluation === null) {
-            if (s.attempted) {
-                if (q && (q.correctAnswer || q.answer)) {
-                    const normAns = String(ans).trim().toUpperCase();
-                    const normCorrect = String(q.correctAnswer || q.answer).trim().toUpperCase();
-                    s.evaluation = (normAns === normCorrect) ? 'correct' : 'incorrect';
-                } else {
-                    // Default attempted question to 'correct' for practice/live mode if no official key embedded
-                    s.evaluation = 'correct';
+        const ps = (typeof practiceState !== 'undefined' && practiceState) ? practiceState : {};
+        const statsMap = ps.stats || {};
+        const indices = ps.activeIndices || [];
+
+        // Stop all timers
+        if (ps.totalTimerInterval) clearInterval(ps.totalTimerInterval);
+        if (ps.qTimerInterval) clearInterval(ps.qTimerInterval);
+        if (ps.countdownInterval) clearInterval(ps.countdownInterval);
+
+        // Hide all other views
+        const ntaEl = document.getElementById('ntaInterfaceContainer');
+        if (ntaEl) ntaEl.classList.add('hidden');
+        const summaryContainer = document.getElementById('summaryContainer');
+        if (summaryContainer) summaryContainer.classList.add('hidden');
+
+        const dash = document.getElementById('liveResultsDashboard');
+        if (!dash) { if (typeof showSummary === 'function') showSummary(); return; }
+        dash.classList.remove('hidden');
+
+        // Gather stats from practiceState safely
+        const scorePerQ = ps.scorePerQ || 4;
+        const hasNeg = ps.negativeMarking !== false;
+        const totalQ = indices.length;
+        let totalSeconds = 0, correctCount = 0, incorrectCount = 0, attemptedCount = 0;
+
+        indices.forEach(ri => {
+            const s = statsMap[ri];
+            if (!s) return;
+            
+            const ans = ps.answers ? ps.answers[ri] : undefined;
+            const q = (typeof extractedImages !== 'undefined' && extractedImages) ? extractedImages[ri] : undefined;
+            
+            if (ans !== undefined && ans !== null && ans !== '') {
+                s.attempted = true;
+                if (s.ntaStatus === 'not_visited' || s.ntaStatus === 'not_answered') {
+                    s.ntaStatus = 'answered';
+                }
+            } else if (s.ntaStatus === 'answered' || s.ntaStatus === 'answered_marked') {
+                s.attempted = true;
+            }
+
+            if (s.evaluation === null || s.evaluation === undefined) {
+                if (s.attempted) {
+                    if (q && (q.correctAnswer || q.answer)) {
+                        const normAns = String(ans).trim().toUpperCase();
+                        const normCorrect = String(q.correctAnswer || q.answer).trim().toUpperCase();
+                        s.evaluation = (normAns === normCorrect) ? 'correct' : 'incorrect';
+                    } else {
+                        s.evaluation = 'correct';
+                    }
                 }
             }
-        }
 
-        totalSeconds += (s.timeSpent || 0);
-        if (s.attempted) attemptedCount++;
-        if (s.evaluation === 'correct') correctCount++;
-        if (s.evaluation === 'incorrect') incorrectCount++;
-    });
-
-    const skippedCount = totalQ - attemptedCount;
-    const markedCount = indices.filter(ri => practiceState.stats[ri]?.ntaStatus === 'marked' || practiceState.stats[ri]?.ntaStatus === 'answered_marked').length;
-    const lrdMarkedText = document.getElementById('lrdMarkedText');
-    if (lrdMarkedText) lrdMarkedText.textContent = `Marked for Review (${markedCount})`;
-    const maxScore = totalQ * scorePerQ;
-    const score = (correctCount * scorePerQ) - (hasNeg ? incorrectCount : 0);
-    const scorePercent = maxScore > 0 ? Math.max(score, 0) / maxScore * 100 : 0;
-    const accuracy = attemptedCount > 0 ? correctCount / attemptedCount * 100 : 0;
-    const avgTimePerQ = totalQ > 0 ? Math.round(totalSeconds / totalQ) : 0;
-
-    const stats = { scorePerQ, hasNeg, totalQ, totalSeconds, correctCount, incorrectCount, attemptedCount, skippedCount, maxScore, score, scorePercent, accuracy, avgTimePerQ };
-
-    // Role badge & Live tags
-    const inLive = typeof isLiveMode !== 'undefined' && isLiveMode;
-    const roleBadge = document.getElementById('lrdRoleBadge');
-    if (roleBadge) {
-        if (inLive) {
-            const amHost = typeof isHost !== 'undefined' && isHost;
-            roleBadge.textContent = amHost ? 'Host' : 'Participant';
-        } else {
-            roleBadge.textContent = 'Solo Practice';
-        }
-    }
-
-    document.querySelectorAll('.lrd-live-tag').forEach(tag => {
-        if (!inLive) {
-            tag.classList.remove('hidden');
-        } else {
-            tag.classList.add('hidden');
-        }
-    });
-
-    // Wire nav once
-    if (!_lrdNavWired) {
-        _lrdNavWired = true;
-        document.querySelectorAll('.lrd-nav').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.lrd-nav').forEach(b => {
-                    b.style.backgroundColor = '';
-                    b.style.color = '';
-                });
-                btn.style.backgroundColor = '#FFE600';
-                btn.style.color = '#000000';
-                document.querySelectorAll('.lrd-panel').forEach(p => p.classList.add('hidden'));
-                const panel = document.getElementById('lrd' + btn.dataset.panel);
-                if (panel) panel.classList.remove('hidden');
-            });
+            totalSeconds += (s.timeSpent || 0);
+            if (s.attempted) attemptedCount++;
+            if (s.evaluation === 'correct') correctCount++;
+            if (s.evaluation === 'incorrect') incorrectCount++;
         });
 
-        const exitBtn = document.getElementById('lrdExitBtn');
-        if (exitBtn) {
-            exitBtn.onclick = () => {
-                window.location.href = '/';
-            };
+        const skippedCount = totalQ - attemptedCount;
+        const markedCount = indices.filter(ri => statsMap[ri]?.ntaStatus === 'marked' || statsMap[ri]?.ntaStatus === 'answered_marked').length;
+        const lrdMarkedText = document.getElementById('lrdMarkedText');
+        if (lrdMarkedText) lrdMarkedText.textContent = `Marked for Review (${markedCount})`;
+        const maxScore = totalQ * scorePerQ;
+        const score = (correctCount * scorePerQ) - (hasNeg ? incorrectCount : 0);
+        const scorePercent = maxScore > 0 ? Math.max(score, 0) / maxScore * 100 : 0;
+        const accuracy = attemptedCount > 0 ? correctCount / attemptedCount * 100 : 0;
+        const avgTimePerQ = totalQ > 0 ? Math.round(totalSeconds / totalQ) : 0;
+
+        const stats = { scorePerQ, hasNeg, totalQ, totalSeconds, correctCount, incorrectCount, attemptedCount, skippedCount, maxScore, score, scorePercent, accuracy, avgTimePerQ };
+
+        // Role badge & Live tags
+        const inLive = typeof isLiveMode !== 'undefined' && isLiveMode;
+        const roleBadge = document.getElementById('lrdRoleBadge');
+        if (roleBadge) {
+            if (inLive) {
+                const amHost = typeof isHost !== 'undefined' && isHost;
+                roleBadge.textContent = amHost ? 'Host' : 'Participant';
+            } else {
+                roleBadge.textContent = 'Solo Practice';
+            }
         }
-    }
 
-    // Preserve active panel if user is currently inspecting a tab, or set default
-    const currentlyActivePanel = Array.from(document.querySelectorAll('.lrd-panel')).find(p => !p.classList.contains('hidden'));
-    const amSpectatorHost = inLive && (typeof isHost !== 'undefined' && isHost) && (typeof hostParticipating !== 'undefined' && !hostParticipating);
+        document.querySelectorAll('.lrd-live-tag').forEach(tag => {
+            if (!inLive) {
+                tag.classList.remove('hidden');
+            } else {
+                tag.classList.add('hidden');
+            }
+        });
 
-    if (!currentlyActivePanel || amSpectatorHost) {
+        // Wire nav once
+        if (!_lrdNavWired) {
+            _lrdNavWired = true;
+            document.querySelectorAll('.lrd-nav').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.lrd-nav').forEach(b => {
+                        b.style.backgroundColor = '';
+                        b.style.color = '';
+                    });
+                    btn.style.backgroundColor = '#FFE600';
+                    btn.style.color = '#000000';
+                    document.querySelectorAll('.lrd-panel').forEach(p => p.classList.add('hidden'));
+                    const panel = document.getElementById('lrd' + btn.dataset.panel);
+                    if (panel) panel.classList.remove('hidden');
+                });
+            });
+
+            const exitBtn = document.getElementById('lrdExitBtn');
+            if (exitBtn) {
+                exitBtn.onclick = () => {
+                    window.location.href = '/';
+                };
+            }
+        }
+
+        // Activate Overview or Leaderboard panel cleanly
         document.querySelectorAll('.lrd-nav').forEach(b => {
             b.style.backgroundColor = '';
             b.style.color = '';
         });
         document.querySelectorAll('.lrd-panel').forEach(p => p.classList.add('hidden'));
-        
+
+        const amSpectatorHost = inLive && (typeof isHost !== 'undefined' && isHost) && (typeof hostParticipating !== 'undefined' && !hostParticipating);
         const targetPanelId = amSpectatorHost ? 'lrdLeaderboard' : 'lrdOverview';
         const targetNavPanel = amSpectatorHost ? 'Leaderboard' : 'Overview';
 
@@ -4103,27 +4104,29 @@ function showResultsDashboard() {
             targetBtn.style.backgroundColor = '#FFE600';
             targetBtn.style.color = '#000000';
         }
-    }
 
-    // Populate all panels
-    _lrdFillOverview(stats);
-    _lrdFillTimeAnalysis(stats);
-    _lrdFillInsights(stats);
-    _lrdFillPeerCompare(stats);
-    _lrdFillScoreProgress(stats);
-    _lrdFillLeaderboard();
+        // Populate all panels safely
+        try { _lrdFillOverview(stats); } catch(e) { console.error("Error in _lrdFillOverview:", e); }
+        try { _lrdFillTimeAnalysis(stats); } catch(e) { console.error("Error in _lrdFillTimeAnalysis:", e); }
+        try { _lrdFillInsights(stats); } catch(e) { console.error("Error in _lrdFillInsights:", e); }
+        try { _lrdFillPeerCompare(stats); } catch(e) { console.error("Error in _lrdFillPeerCompare:", e); }
+        try { _lrdFillScoreProgress(stats); } catch(e) { console.error("Error in _lrdFillScoreProgress:", e); }
+        try { _lrdFillLeaderboard(); } catch(e) { console.error("Error in _lrdFillLeaderboard:", e); }
 
-    // Submit live score if applicable
-    if (typeof window.liveRoomSubmit === 'function') {
-        window.liveRoomSubmit(score, accuracy);
-    }
+        // Submit live score if applicable
+        if (typeof window.liveRoomSubmit === 'function') {
+            window.liveRoomSubmit(score, accuracy);
+        }
 
-    // Save session (solo mode)
-    if (typeof saveCurrentSession === 'function') {
-        try { saveCurrentSession(totalSeconds, correctCount, incorrectCount, skippedCount); } catch(e) {}
-    }
-    if (typeof clearSession === 'function') {
-        try { clearSession(); } catch(e) {}
+        // Save session (solo mode)
+        if (typeof saveCurrentSession === 'function') {
+            try { saveCurrentSession(totalSeconds, correctCount, incorrectCount, skippedCount); } catch(e) {}
+        }
+        if (typeof clearSession === 'function') {
+            try { clearSession(); } catch(e) {}
+        }
+    } catch(globalErr) {
+        console.error("Critical error in showResultsDashboard:", globalErr);
     }
 }
 
@@ -4562,8 +4565,11 @@ function _lrdFillOverview(s) {
     const { correctCount, incorrectCount, skippedCount, totalQ, score, maxScore, scorePercent, accuracy, totalSeconds, avgTimePerQ, scorePerQ, hasNeg } = s;
     const el = id => document.getElementById(id);
     const mins = Math.floor(totalSeconds / 60), secs = totalSeconds % 60;
+    const ps = (typeof practiceState !== 'undefined' && practiceState) ? practiceState : {};
+    const statsMap = ps.stats || {};
+    const activeIndices = ps.activeIndices || [];
 
-    _updateJeePredictorUI(scorePercent);
+    try { _updateJeePredictorUI(scorePercent); } catch(e) {}
 
     if (el('lrdOverviewMeta')) el('lrdOverviewMeta').textContent = totalQ + ' QS · ' + mins + 'M ' + secs + 'S TIME';
 
@@ -4622,8 +4628,8 @@ function _lrdFillOverview(s) {
     const qMap = el('lrdQMap');
     if (qMap) {
         qMap.innerHTML = '';
-        (practiceState.activeIndices || []).forEach((ri, i) => {
-            const stat = practiceState.stats[ri];
+        activeIndices.forEach((ri, i) => {
+            const stat = statsMap[ri];
             if (!stat) return;
             let bg = 'bg-gray-800  ';
             if (stat.evaluation === 'correct') bg = 'bg-green-600';
@@ -4642,6 +4648,9 @@ function _lrdFillTimeAnalysis(s) {
     const { totalSeconds, totalQ, avgTimePerQ } = s;
     const el = id => document.getElementById(id);
     const mins = Math.floor(totalSeconds / 60), secs = totalSeconds % 60;
+    const ps = (typeof practiceState !== 'undefined' && practiceState) ? practiceState : {};
+    const statsMap = ps.stats || {};
+    const activeIndices = ps.activeIndices || [];
 
     if (el('lrdTimeMeta')) el('lrdTimeMeta').textContent = 'AVG PACE: ' + avgTimePerQ + 'S/Q · TOTAL: ' + mins + 'M ' + secs + 'S';
     if (el('lrdAvgLabel')) el('lrdAvgLabel').textContent = '- - - - Avg: ' + avgTimePerQ + 's/Q';
@@ -4651,8 +4660,8 @@ function _lrdFillTimeAnalysis(s) {
     let slowCorrect = 0, slowIncorrect = 0;
     const timeData = [], colorData = [];
 
-    (practiceState.activeIndices || []).forEach(ri => {
-        const stat = practiceState.stats[ri];
+    activeIndices.forEach(ri => {
+        const stat = statsMap[ri];
         if (!stat) return;
         const t = stat.timeSpent || 0;
         timeData.push(t);
@@ -4693,7 +4702,7 @@ function _lrdFillTimeAnalysis(s) {
         _lrdChartTime = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: (practiceState.activeIndices || []).map((_, i) => i + 1),
+                labels: activeIndices.map((_, i) => i + 1),
                 datasets: [{ data: timeData, backgroundColor: colorData, Width: 0, Radius: 2 }]
             },
             options: {
@@ -4734,7 +4743,6 @@ function _lrdFillPeerCompare(s) {
     const youPace = attemptedCount > 0 ? Math.round(totalSeconds / attemptedCount) : 0;
 
     // Simulate Top 10%ile and Top 25%ile based on current test's complexity 
-    // (In reality, this would be fetched from a backend, but we're simulating here)
     const top10Acc = Math.min(95, Math.max(youAcc + 15, 80));
     const top25Acc = Math.min(85, Math.max(youAcc + 5, 65));
 
@@ -4774,6 +4782,9 @@ function _lrdFillInsights(s) {
     const { correctCount, incorrectCount, totalQ, maxScore, hasNeg, scorePerQ } = s;
     const el = id => document.getElementById(id);
     const neg = hasNeg ? incorrectCount : 0;
+    const ps = (typeof practiceState !== 'undefined' && practiceState) ? practiceState : {};
+    const statsMap = ps.stats || {};
+    const activeIndices = ps.activeIndices || [];
 
     if (el('lrdNegMarks')) el('lrdNegMarks').textContent = neg > 0 ? '-' + neg : '0';
     const earned = correctCount * scorePerQ;
@@ -4783,8 +4794,8 @@ function _lrdFillInsights(s) {
 
     // Streaks and blind guesses
     let bestStreak = 0, curStreak = 0, worstRun = 0, curWrong = 0, blindGuesses = 0;
-    (practiceState.activeIndices || []).forEach(ri => {
-        const stat = practiceState.stats[ri];
+    activeIndices.forEach(ri => {
+        const stat = statsMap[ri];
         if (!stat) return;
         if (stat.evaluation === 'correct') {
             curStreak++; curWrong = 0;
@@ -4808,13 +4819,13 @@ function _lrdFillInsights(s) {
     const accParts = el('lrdAccParts');
     if (accParts) {
         accParts.innerHTML = '';
-        const partSize = Math.ceil(totalQ / 4);
+        const partSize = Math.max(1, Math.ceil(totalQ / 4));
         for (let p = 0; p < 4; p++) {
             let pC = 0, pA = 0;
             for (let i = p * partSize; i < Math.min((p+1)*partSize, totalQ); i++) {
-                const ri = (practiceState.activeIndices || [])[i];
+                const ri = activeIndices[i];
                 if (ri === undefined) continue;
-                const stat = practiceState.stats[ri];
+                const stat = statsMap[ri];
                 if (!stat) continue;
                 if (stat.evaluation === 'correct') { pC++; pA++; }
                 else if (stat.evaluation === 'incorrect') pA++;
@@ -4824,7 +4835,7 @@ function _lrdFillInsights(s) {
             bar.className = 'flex-1 flex flex-col items-center gap-1';
             const barH = Math.max(pAcc * 0.7, 4);
             const barColor = pAcc > 60 ? '#8b5cf6' : pAcc > 30 ? '#6366f1' : '#4f46e5';
-            bar.innerHTML = '<span class="text-[10px]">' + pAcc + '%</span><div style="width:100%; height:' + barH + 'px; background:' + barColor + '; -radius:3px 3px 0 0;"></div>';
+            bar.innerHTML = '<span class="text-[10px]">' + pAcc + '%</span><div style="width:100%; height:' + barH + 'px; background:' + barColor + '; border-radius:3px 3px 0 0;"></div>';
             accParts.appendChild(bar);
         }
     }
@@ -4833,8 +4844,8 @@ function _lrdFillInsights(s) {
     const mpmEl = el('lrdMarksPerMin');
     if (mpmEl) {
         const subjectData = {};
-        (practiceState.activeIndices || []).forEach(ri => {
-            const stat = practiceState.stats[ri];
+        activeIndices.forEach(ri => {
+            const stat = statsMap[ri];
             if (!stat) return;
             const ex = stat.exercise || 'Overall';
             if (!subjectData[ex]) subjectData[ex] = { marks: 0, seconds: 0 };
@@ -4846,7 +4857,7 @@ function _lrdFillInsights(s) {
         let rank = 1;
         const entries = Object.entries(subjectData);
         if (entries.length === 0) {
-            mpmEl.innerHTML = '<div class="text-xs">No data available</div>';
+            mpmEl.innerHTML = '<div class="text-xs text-gray-400">No subject data available</div>';
         } else {
             entries.forEach(([name, d]) => {
                 const mpm = d.seconds > 0 ? (d.marks / (d.seconds / 60)).toFixed(2) : '0.00';
@@ -4866,8 +4877,10 @@ function _lrdFillInsights(s) {
 function _lrdFillScoreProgress(s) {
     const { scorePerQ, hasNeg, maxScore } = s;
     const el = id => document.getElementById(id);
+    const ps = (typeof practiceState !== 'undefined' && practiceState) ? practiceState : {};
+    const statsMap = ps.stats || {};
+    const activeIndices = ps.activeIndices || [];
 
-    const activeIndices = practiceState.activeIndices || [];
     if (activeIndices.length === 0) return;
 
     // Detailed question data tracking
