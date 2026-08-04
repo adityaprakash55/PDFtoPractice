@@ -4268,6 +4268,47 @@ function _updateJeePredictorUI(scorePercent) {
     }
 }
 
+function _updateSaPagePredictorUI(scorePercent) {
+    const res = predictJeeMainPercentile(scorePercent);
+    const el = id => document.getElementById(id);
+
+    if (el('saPagePredPercentile')) {
+        el('saPagePredPercentile').textContent = res.predictedPercentile.toFixed(2) + '%ile';
+    }
+    if (el('saPagePredScorePct')) {
+        el('saPagePredScorePct').textContent = res.scorePercent.toFixed(1) + '%';
+    }
+    if (el('saPagePredRange')) {
+        el('saPagePredRange').textContent = res.rangeStr;
+    }
+    if (el('saPagePredBracketInfo')) {
+        el('saPagePredBracketInfo').textContent = res.bracketInfo;
+    }
+    if (el('saPagePredTier')) {
+        el('saPagePredTier').textContent = res.tier;
+    }
+    if (el('saPagePredBar')) {
+        const barPct = Math.max(0, Math.min(100, res.predictedPercentile));
+        el('saPagePredBar').style.width = barPct + '%';
+    }
+    if (el('saPagePredBarPct')) {
+        el('saPagePredBarPct').textContent = res.predictedPercentile.toFixed(1) + '%ile';
+    }
+
+    const tableBody = el('saPageBenchmarkTableBody');
+    if (tableBody) {
+        tableBody.innerHTML = JEE_MAIN_PERCENTILE_DATA.map((row, idx) => {
+            const isMatch = (idx === res.activeIndex);
+            const rowBg = isMatch ? 'bg-amber-500/20 text-amber-200 font-bold' : 'hover:bg-gray-800/30 text-gray-300';
+            const badge = isMatch ? ' <span class="ml-2 px-1.5 py-0.5 text-[9px] uppercase bg-amber-500 text-black font-black rounded">Your Bracket</span>' : '';
+            return `<tr class="${rowBg} transition-colors">
+                <td class="py-2 px-2">${row.minPct.toFixed(2)}% - ${row.maxPct.toFixed(2)}%${badge}</td>
+                <td class="py-2 px-2">${row.minPctl.toFixed(6)} - ${row.maxPctl.toFixed(8)} %ile</td>
+            </tr>`;
+        }).join('');
+    }
+}
+
 function _lrdFillOverview(s) {
     const { correctCount, incorrectCount, skippedCount, totalQ, score, maxScore, scorePercent, accuracy, totalSeconds, avgTimePerQ, scorePerQ, hasNeg } = s;
     const el = id => document.getElementById(id);
@@ -5308,6 +5349,48 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         }
+
+        // Populate test selector dropdown for percentile predictor
+        const testSelector = document.getElementById('saPageTestSelector');
+        const sessionPctMap = {};
+        let totalOverallScore = 0;
+        let totalOverallMax = 0;
+
+        sessions.forEach(s => {
+            const attempted = (s.correctCount || 0) + (s.incorrectCount || 0);
+            const total = attempted + (s.unansweredCount || 0);
+            const scorePerQ = s.practiceState?.scorePerQ || 4;
+            const hasNeg = s.practiceState?.negativeMarking !== false;
+            const penalty = hasNeg ? (s.incorrectCount || 0) : 0;
+            const score = ((s.correctCount || 0) * scorePerQ) - penalty;
+            const maxScore = total * scorePerQ;
+            const scorePct = maxScore > 0 ? (score / maxScore) * 100 : 0;
+
+            sessionPctMap[s.id] = scorePct;
+            totalOverallScore += score;
+            totalOverallMax += maxScore;
+        });
+
+        const overallAvgPct = totalOverallMax > 0 ? (totalOverallScore / totalOverallMax) * 100 : (chartScores.length > 0 ? chartScores.reduce((a,b)=>a+b,0)/chartScores.length : 0);
+        sessionPctMap['all'] = overallAvgPct;
+
+        if (testSelector) {
+            testSelector.innerHTML = `<option value="all">📊 All Tests Average (Overall - ${overallAvgPct.toFixed(1)}%)</option>` +
+                [...sessions].reverse().map(s => {
+                    const dateStr = s.date ? s.date.split(',')[0] : '';
+                    const rawTitle = s.title || `Mock Test Session #${s.id}`;
+                    const pct = sessionPctMap[s.id] !== undefined ? sessionPctMap[s.id].toFixed(1) : '0.0';
+                    return `<option value="${s.id}">${rawTitle} ${dateStr ? '(' + dateStr + ')' : ''} — ${pct}%</option>`;
+                }).join('');
+
+            testSelector.onchange = function() {
+                const val = testSelector.value;
+                const pct = sessionPctMap[val] !== undefined ? sessionPctMap[val] : overallAvgPct;
+                _updateSaPagePredictorUI(pct);
+            };
+        }
+
+        _updateSaPagePredictorUI(overallAvgPct);
 
         // List rendering
         if (saHistoricalList) {
