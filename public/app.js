@@ -4162,21 +4162,53 @@ const JEE_MAIN_PERCENTILE_DATA = [
     { minPct: 0.00,  maxPct: 3.33,   minPctl: 0.8435177,   maxPctl: 9.6954066 }
 ];
 
-function predictJeeMainPercentile(scorePercent) {
+const NEET_RANK_DATA = [
+    { minPct: 97.36, maxPct: 100.00, minRank: 1,       maxRank: 766 },
+    { minPct: 93.89, maxPct: 97.22,  minRank: 783,     maxRank: 5935 },
+    { minPct: 90.42, maxPct: 93.75,  minRank: 5936,    maxRank: 11107 },
+    { minPct: 86.94, maxPct: 90.28,  minRank: 11251,   maxRank: 21974 },
+    { minPct: 83.47, maxPct: 86.81,  minRank: 21975,   maxRank: 32956 },
+    { minPct: 80.00, maxPct: 83.33,  minRank: 33155,   maxRank: 49827 },
+    { minPct: 76.53, maxPct: 79.86,  minRank: 49828,   maxRank: 68133 },
+    { minPct: 73.06, maxPct: 76.39,  minRank: 68374,   maxRank: 89150 },
+    { minPct: 69.58, maxPct: 72.92,  minRank: 89151,   maxRank: 113593 },
+    { minPct: 66.11, maxPct: 69.44,  minRank: 113594,  maxRank: 144253 },
+    { minPct: 62.64, maxPct: 65.97,  minRank: 144254,  maxRank: 176914 },
+    { minPct: 59.17, maxPct: 62.50,  minRank: 177244,  maxRank: 214948 },
+    { minPct: 55.69, maxPct: 59.03,  minRank: 214949,  maxRank: 251986 },
+    { minPct: 52.22, maxPct: 55.56,  minRank: 252409,  maxRank: 296813 },
+    { minPct: 48.75, maxPct: 52.08,  minRank: 296814,  maxRank: 342219 },
+    { minPct: 45.28, maxPct: 48.61,  minRank: 342713,  maxRank: 397300 },
+    { minPct: 41.81, maxPct: 45.14,  minRank: 397301,  maxRank: 453555 },
+    { minPct: 38.33, maxPct: 41.67,  minRank: 454234,  maxRank: 522396 },
+    { minPct: 34.86, maxPct: 38.19,  minRank: 522397,  maxRank: 595558 },
+    { minPct: 31.39, maxPct: 34.72,  minRank: 596378,  maxRank: 685813 },
+    { minPct: 27.92, maxPct: 31.25,  minRank: 685814,  maxRank: 778582 },
+    { minPct: 24.44, maxPct: 27.78,  minRank: 779698,  maxRank: 896875 },
+    { minPct: 20.97, maxPct: 24.31,  minRank: 896876,  maxRank: 1019054 },
+    { minPct: 17.50, maxPct: 20.83,  minRank: 1019055, maxRank: 1151232 },
+    { minPct: 14.03, maxPct: 17.36,  minRank: 1151233, maxRank: 1300077 },
+    { minPct: 10.56, maxPct: 13.89,  minRank: 1300078, maxRank: 1483333 },
+    { minPct: 7.08,  maxPct: 10.42,  minRank: 1483334, maxRank: 1693333 },
+    { minPct: 3.61,  maxPct: 6.94,   minRank: 1693334, maxRank: 1883333 },
+    { minPct: 0.00,  maxPct: 3.47,   minRank: 1883334, maxRank: 2049331 }
+];
+
+function predictNeetRank(scorePercent) {
     const rawPct = Math.max(0, Math.min(100, scorePercent));
-    let predictedPctl = 0;
+    let predictedRank = 1;
     let rangeStr = "";
     let bracketInfo = "";
     let activeIndex = -1;
 
-    for (let i = 0; i < JEE_MAIN_PERCENTILE_DATA.length; i++) {
-        const row = JEE_MAIN_PERCENTILE_DATA[i];
+    for (let i = 0; i < NEET_RANK_DATA.length; i++) {
+        const row = NEET_RANK_DATA[i];
         if (rawPct >= row.minPct && rawPct <= row.maxPct) {
             activeIndex = i;
             const fraction = row.maxPct === row.minPct ? 1 : (rawPct - row.minPct) / (row.maxPct - row.minPct);
-            predictedPctl = row.minPctl + fraction * (row.maxPctl - row.minPctl);
-            rangeStr = row.minPctl.toFixed(4) + "% - " + row.maxPctl.toFixed(4) + "%ile";
-            bracketInfo = `JEE Main score range: ${row.minPct.toFixed(2)}% - ${row.maxPct.toFixed(2)}%`;
+            predictedRank = Math.round(row.maxRank - fraction * (row.maxRank - row.minRank));
+            rangeStr = "AIR " + row.minRank.toLocaleString() + " - " + row.maxRank.toLocaleString();
+            bracketInfo = `NEET score range: ${row.minPct.toFixed(2)}% - ${row.maxPct.toFixed(2)}%`;
             break;
         }
     }
@@ -4184,23 +4216,23 @@ function predictJeeMainPercentile(scorePercent) {
     if (activeIndex === -1) {
         if (rawPct >= 100) {
             activeIndex = 0;
-            predictedPctl = 100.0000;
-            rangeStr = "99.9999% - 100.0000%ile";
+            predictedRank = 1;
+            rangeStr = "AIR 1 - 766";
             bracketInfo = "Perfect 100% Score";
         } else if (rawPct <= 0) {
-            activeIndex = JEE_MAIN_PERCENTILE_DATA.length - 1;
-            predictedPctl = 0.8435;
-            rangeStr = "0.8435% - 9.6954%ile";
+            activeIndex = NEET_RANK_DATA.length - 1;
+            predictedRank = 2049331;
+            rangeStr = "AIR 1,883,334 - 2,049,331";
             bracketInfo = "0% Score";
         } else {
-            for (let i = 0; i < JEE_MAIN_PERCENTILE_DATA.length - 1; i++) {
-                const upperRow = JEE_MAIN_PERCENTILE_DATA[i];
-                const lowerRow = JEE_MAIN_PERCENTILE_DATA[i + 1];
+            for (let i = 0; i < NEET_RANK_DATA.length - 1; i++) {
+                const upperRow = NEET_RANK_DATA[i];
+                const lowerRow = NEET_RANK_DATA[i + 1];
                 if (rawPct < upperRow.minPct && rawPct > lowerRow.maxPct) {
                     activeIndex = i;
                     const fraction = (rawPct - lowerRow.maxPct) / (upperRow.minPct - lowerRow.maxPct);
-                    predictedPctl = lowerRow.maxPctl + fraction * (upperRow.minPctl - lowerRow.maxPctl);
-                    rangeStr = lowerRow.maxPctl.toFixed(4) + "% - " + upperRow.minPctl.toFixed(4) + "%ile";
+                    predictedRank = Math.round(lowerRow.minRank - fraction * (lowerRow.minRank - upperRow.maxRank));
+                    rangeStr = "AIR " + upperRow.maxRank.toLocaleString() + " - " + lowerRow.minRank.toLocaleString();
                     bracketInfo = `Between ${lowerRow.maxPct.toFixed(2)}% and ${upperRow.minPct.toFixed(2)}% bracket`;
                     break;
                 }
@@ -4209,17 +4241,16 @@ function predictJeeMainPercentile(scorePercent) {
     }
 
     let tier = "Standard";
-    if (predictedPctl >= 99.9) tier = "🔥 Outstanding (Top 0.1%)";
-    else if (predictedPctl >= 99.0) tier = "🌟 Excellent (Top 1%)";
-    else if (predictedPctl >= 95.0) tier = "🎯 Very Good (Top 5%)";
-    else if (predictedPctl >= 90.0) tier = "👍 Good (Top 10%)";
-    else if (predictedPctl >= 80.0) tier = "📈 Above Average (Top 20%)";
-    else if (predictedPctl >= 50.0) tier = "⚡ Average";
-    else tier = "💪 Needs Improvement";
+    if (predictedRank <= 1000) tier = "🔥 Top Govt Medical College AIR (Under 1,000)";
+    else if (predictedRank <= 10000) tier = "🌟 Top MBBS Seat AIR (Under 10,000)";
+    else if (predictedRank <= 25000) tier = "🩺 Govt Medical Seat Contender";
+    else if (predictedRank <= 50000) tier = "🎯 Competitive Medical AIR";
+    else if (predictedRank <= 150000) tier = "📈 Semi-Govt / Private Medical Range";
+    else tier = "⚡ Medical Qualification Range";
 
     return {
         scorePercent: rawPct,
-        predictedPercentile: predictedPctl,
+        predictedRank: predictedRank,
         rangeStr: rangeStr,
         bracketInfo: bracketInfo,
         tier: tier,
@@ -4227,87 +4258,232 @@ function predictJeeMainPercentile(scorePercent) {
     };
 }
 
-function _updateJeePredictorUI(scorePercent) {
-    const res = predictJeeMainPercentile(scorePercent);
+window._activeLrdPredictorMode = 'jee';
+window._activeSaPredictorMode = 'jee';
+window._latestLrdScorePercent = 0;
+window._latestSaScorePercent = 0;
+
+function _updateJeePredictorUI(scorePercent, mode) {
+    if (typeof scorePercent === 'number') window._latestLrdScorePercent = scorePercent;
+    else scorePercent = window._latestLrdScorePercent || 0;
+
+    if (mode) window._activeLrdPredictorMode = mode;
+    const currentMode = window._activeLrdPredictorMode || 'jee';
     const el = id => document.getElementById(id);
 
-    if (el('jeePredPercentile')) {
-        el('jeePredPercentile').textContent = res.predictedPercentile.toFixed(2) + '%ile';
-    }
-    if (el('jeePredScorePct')) {
-        el('jeePredScorePct').textContent = res.scorePercent.toFixed(1) + '%';
-    }
-    if (el('jeePredRange')) {
-        el('jeePredRange').textContent = res.rangeStr;
-    }
-    if (el('jeePredBracketInfo')) {
-        el('jeePredBracketInfo').textContent = res.bracketInfo;
-    }
-    if (el('jeePredTier')) {
-        el('jeePredTier').textContent = res.tier;
-    }
-    if (el('jeePredBar')) {
-        const barPct = Math.max(0, Math.min(100, res.predictedPercentile));
-        el('jeePredBar').style.width = barPct + '%';
-    }
-    if (el('jeePredBarPct')) {
-        el('jeePredBarPct').textContent = res.predictedPercentile.toFixed(1) + '%ile';
+    const tabJee = el('lrdPredTabJee');
+    const tabNeet = el('lrdPredTabNeet');
+    if (tabJee && tabNeet) {
+        if (currentMode === 'jee') {
+            tabJee.className = "px-3 py-1.5 text-xs font-bold rounded-none bg-amber-500 text-black border border-black shadow cursor-pointer transition-all";
+            tabNeet.className = "px-3 py-1.5 text-xs font-bold rounded-none text-gray-300 hover:text-white border border-transparent cursor-pointer transition-all";
+        } else {
+            tabNeet.className = "px-3 py-1.5 text-xs font-bold rounded-none bg-emerald-500 text-black border border-black shadow cursor-pointer transition-all";
+            tabJee.className = "px-3 py-1.5 text-xs font-bold rounded-none text-gray-300 hover:text-white border border-transparent cursor-pointer transition-all";
+        }
     }
 
-    const tableBody = el('jeeBenchmarkTableBody');
-    if (tableBody) {
-        tableBody.innerHTML = JEE_MAIN_PERCENTILE_DATA.map((row, idx) => {
-            const isMatch = (idx === res.activeIndex);
-            const rowBg = isMatch ? 'bg-amber-500/20 text-amber-200 font-bold' : 'hover:bg-gray-800/30 text-gray-300';
-            const badge = isMatch ? ' <span class="ml-2 px-1.5 py-0.5 text-[9px] uppercase bg-amber-500 text-black font-black rounded">Your Bracket</span>' : '';
-            return `<tr class="${rowBg} transition-colors">
-                <td class="py-2 px-2">${row.minPct.toFixed(2)}% - ${row.maxPct.toFixed(2)}%${badge}</td>
-                <td class="py-2 px-2">${row.minPctl.toFixed(6)} - ${row.maxPctl.toFixed(8)} %ile</td>
-            </tr>`;
-        }).join('');
+    if (currentMode === 'neet') {
+        const res = predictNeetRank(scorePercent);
+        if (el('lrdPredIcon')) el('lrdPredIcon').textContent = '🩺';
+        if (el('lrdPredTitle')) el('lrdPredTitle').textContent = 'NEET UG All India Rank Predictor';
+        if (el('lrdPredBadge')) {
+            el('lrdPredBadge').textContent = 'NEET UG AIR';
+            el('lrdPredBadge').className = 'text-[10px] uppercase font-black px-2 py-0.5 rounded bg-emerald-600 text-white tracking-widest border border-emerald-400';
+        }
+        if (el('lrdPredSubtitle')) el('lrdPredSubtitle').textContent = 'Calculates predicted All India Rank (AIR) based on official NEET percentage v/s rank benchmark';
+        if (el('jeePredBox1Header')) el('jeePredBox1Header').textContent = 'Predicted NEET All India Rank';
+        if (el('jeePredBox2Header')) el('jeePredBox2Header').textContent = 'Expected AIR Rank Range';
+        if (el('jeeGaugeMin')) el('jeeGaugeMin').textContent = 'AIR 1';
+        if (el('jeeGaugeMax')) el('jeeGaugeMax').textContent = 'AIR 2M+';
+        if (el('lrdTableTitle')) el('lrdTableTitle').innerHTML = '<svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg> View Official NEET Percentage v/s All India Rank Reference Data';
+        if (el('lrdTh1')) el('lrdTh1').textContent = 'NEET Percentage';
+        if (el('lrdTh2')) el('lrdTh2').textContent = 'Average AIR Rank Range';
+
+        if (el('jeePredPercentile')) el('jeePredPercentile').textContent = 'AIR ' + res.predictedRank.toLocaleString();
+        if (el('jeePredScorePct')) el('jeePredScorePct').textContent = res.scorePercent.toFixed(1) + '%';
+        if (el('jeePredRange')) el('jeePredRange').textContent = res.rangeStr;
+        if (el('jeePredBracketInfo')) el('jeePredBracketInfo').textContent = res.bracketInfo;
+        if (el('jeePredTier')) el('jeePredTier').textContent = res.tier;
+
+        if (el('jeePredBar')) {
+            const pctPosition = Math.max(0, Math.min(100, res.scorePercent));
+            el('jeePredBar').style.width = pctPosition + '%';
+        }
+        if (el('jeePredBarPct')) el('jeePredBarPct').textContent = 'AIR ' + res.predictedRank.toLocaleString();
+
+        const tableBody = el('jeeBenchmarkTableBody');
+        if (tableBody) {
+            tableBody.innerHTML = NEET_RANK_DATA.map((row, idx) => {
+                const isMatch = (idx === res.activeIndex);
+                const rowBg = isMatch ? 'bg-emerald-500/20 text-emerald-200 font-bold' : 'hover:bg-gray-800/30 text-gray-300';
+                const badge = isMatch ? ' <span class="ml-2 px-1.5 py-0.5 text-[9px] uppercase bg-emerald-500 text-black font-black rounded">Your Bracket</span>' : '';
+                return `<tr class="${rowBg} transition-colors">
+                    <td class="py-2 px-2">${row.minPct.toFixed(2)}% - ${row.maxPct.toFixed(2)}%${badge}</td>
+                    <td class="py-2 px-2">AIR ${row.minRank.toLocaleString()} - ${row.maxRank.toLocaleString()}</td>
+                </tr>`;
+            }).join('');
+        }
+    } else {
+        const res = predictJeeMainPercentile(scorePercent);
+        if (el('lrdPredIcon')) el('lrdPredIcon').textContent = '🎯';
+        if (el('lrdPredTitle')) el('lrdPredTitle').textContent = 'JEE Main Percentile Predictor';
+        if (el('lrdPredBadge')) {
+            el('lrdPredBadge').textContent = 'JEE Main';
+            el('lrdPredBadge').className = 'text-[10px] uppercase font-black px-2 py-0.5 rounded bg-blue-600 text-white tracking-widest border border-blue-400';
+        }
+        if (el('lrdPredSubtitle')) el('lrdPredSubtitle').textContent = 'Estimated based on official JEE Main percentage v/s percentile standard benchmark';
+        if (el('jeePredBox1Header')) el('jeePredBox1Header').textContent = 'Predicted JEE Main Percentile';
+        if (el('jeePredBox2Header')) el('jeePredBox2Header').textContent = 'Expected Percentile Bracket';
+        if (el('jeeGaugeMin')) el('jeeGaugeMin').textContent = '0%ile';
+        if (el('jeeGaugeMax')) el('jeeGaugeMax').textContent = '100%ile';
+        if (el('lrdTableTitle')) el('lrdTableTitle').innerHTML = '<svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg> View Official JEE Main Percentage v/s Percentile Reference Data';
+        if (el('lrdTh1')) el('lrdTh1').textContent = 'JEE Main Percentage';
+        if (el('lrdTh2')) el('lrdTh2').textContent = 'JEE Main Percentile Range';
+
+        if (el('jeePredPercentile')) el('jeePredPercentile').textContent = res.predictedPercentile.toFixed(2) + '%ile';
+        if (el('jeePredScorePct')) el('jeePredScorePct').textContent = res.scorePercent.toFixed(1) + '%';
+        if (el('jeePredRange')) el('jeePredRange').textContent = res.rangeStr;
+        if (el('jeePredBracketInfo')) el('jeePredBracketInfo').textContent = res.bracketInfo;
+        if (el('jeePredTier')) el('jeePredTier').textContent = res.tier;
+
+        if (el('jeePredBar')) {
+            const barPct = Math.max(0, Math.min(100, res.predictedPercentile));
+            el('jeePredBar').style.width = barPct + '%';
+        }
+        if (el('jeePredBarPct')) el('jeePredBarPct').textContent = res.predictedPercentile.toFixed(1) + '%ile';
+
+        const tableBody = el('jeeBenchmarkTableBody');
+        if (tableBody) {
+            tableBody.innerHTML = JEE_MAIN_PERCENTILE_DATA.map((row, idx) => {
+                const isMatch = (idx === res.activeIndex);
+                const rowBg = isMatch ? 'bg-amber-500/20 text-amber-200 font-bold' : 'hover:bg-gray-800/30 text-gray-300';
+                const badge = isMatch ? ' <span class="ml-2 px-1.5 py-0.5 text-[9px] uppercase bg-amber-500 text-black font-black rounded">Your Bracket</span>' : '';
+                return `<tr class="${rowBg} transition-colors">
+                    <td class="py-2 px-2">${row.minPct.toFixed(2)}% - ${row.maxPct.toFixed(2)}%${badge}</td>
+                    <td class="py-2 px-2">${row.minPctl.toFixed(6)} - ${row.maxPctl.toFixed(8)} %ile</td>
+                </tr>`;
+            }).join('');
+        }
     }
 }
 
-function _updateSaPagePredictorUI(scorePercent) {
-    const res = predictJeeMainPercentile(scorePercent);
+function _updateSaPagePredictorUI(scorePercent, mode) {
+    if (typeof scorePercent === 'number') window._latestSaScorePercent = scorePercent;
+    else scorePercent = window._latestSaScorePercent || 0;
+
+    if (mode) window._activeSaPredictorMode = mode;
+    const currentMode = window._activeSaPredictorMode || 'jee';
     const el = id => document.getElementById(id);
 
-    if (el('saPagePredPercentile')) {
-        el('saPagePredPercentile').textContent = res.predictedPercentile.toFixed(2) + '%ile';
-    }
-    if (el('saPagePredScorePct')) {
-        el('saPagePredScorePct').textContent = res.scorePercent.toFixed(1) + '%';
-    }
-    if (el('saPagePredRange')) {
-        el('saPagePredRange').textContent = res.rangeStr;
-    }
-    if (el('saPagePredBracketInfo')) {
-        el('saPagePredBracketInfo').textContent = res.bracketInfo;
-    }
-    if (el('saPagePredTier')) {
-        el('saPagePredTier').textContent = res.tier;
-    }
-    if (el('saPagePredBar')) {
-        const barPct = Math.max(0, Math.min(100, res.predictedPercentile));
-        el('saPagePredBar').style.width = barPct + '%';
-    }
-    if (el('saPagePredBarPct')) {
-        el('saPagePredBarPct').textContent = res.predictedPercentile.toFixed(1) + '%ile';
+    const tabJee = el('saPredTabJee');
+    const tabNeet = el('saPredTabNeet');
+    if (tabJee && tabNeet) {
+        if (currentMode === 'jee') {
+            tabJee.className = "px-3 py-1.5 text-xs font-bold rounded-none bg-amber-500 text-black border border-black shadow cursor-pointer transition-all";
+            tabNeet.className = "px-3 py-1.5 text-xs font-bold rounded-none text-gray-300 hover:text-white border border-transparent cursor-pointer transition-all";
+        } else {
+            tabNeet.className = "px-3 py-1.5 text-xs font-bold rounded-none bg-emerald-500 text-black border border-black shadow cursor-pointer transition-all";
+            tabJee.className = "px-3 py-1.5 text-xs font-bold rounded-none text-gray-300 hover:text-white border border-transparent cursor-pointer transition-all";
+        }
     }
 
-    const tableBody = el('saPageBenchmarkTableBody');
-    if (tableBody) {
-        tableBody.innerHTML = JEE_MAIN_PERCENTILE_DATA.map((row, idx) => {
-            const isMatch = (idx === res.activeIndex);
-            const rowBg = isMatch ? 'bg-amber-500/20 text-amber-200 font-bold' : 'hover:bg-gray-800/30 text-gray-300';
-            const badge = isMatch ? ' <span class="ml-2 px-1.5 py-0.5 text-[9px] uppercase bg-amber-500 text-black font-black rounded">Your Bracket</span>' : '';
-            return `<tr class="${rowBg} transition-colors">
-                <td class="py-2 px-2">${row.minPct.toFixed(2)}% - ${row.maxPct.toFixed(2)}%${badge}</td>
-                <td class="py-2 px-2">${row.minPctl.toFixed(6)} - ${row.maxPctl.toFixed(8)} %ile</td>
-            </tr>`;
-        }).join('');
+    if (currentMode === 'neet') {
+        const res = predictNeetRank(scorePercent);
+        if (el('saPredIcon')) el('saPredIcon').textContent = '🩺';
+        if (el('saPredTitle')) el('saPredTitle').textContent = 'NEET UG All India Rank Predictor';
+        if (el('saPredBadge')) {
+            el('saPredBadge').textContent = 'NEET UG AIR';
+            el('saPredBadge').className = 'text-[10px] uppercase font-black px-2 py-0.5 rounded bg-emerald-600 text-white tracking-widest border border-emerald-400';
+        }
+        if (el('saPredSubtitle')) el('saPredSubtitle').textContent = 'Calculates predicted All India Rank (AIR) based on official NEET percentage v/s rank benchmark';
+        if (el('saPagePredBox1Header')) el('saPagePredBox1Header').textContent = 'Predicted NEET All India Rank';
+        if (el('saPagePredBox2Header')) el('saPagePredBox2Header').textContent = 'Expected AIR Rank Range';
+        if (el('saPageGaugeMin')) el('saPageGaugeMin').textContent = 'AIR 1';
+        if (el('saPageGaugeMax')) el('saPageGaugeMax').textContent = 'AIR 2M+';
+        if (el('saPageTableTitle')) el('saPageTableTitle').innerHTML = '<svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg> View Official NEET Percentage v/s All India Rank Reference Data';
+        if (el('saPageTh1')) el('saPageTh1').textContent = 'NEET Percentage';
+        if (el('saPageTh2')) el('saPageTh2').textContent = 'Average AIR Rank Range';
+
+        if (el('saPagePredPercentile')) el('saPagePredPercentile').textContent = 'AIR ' + res.predictedRank.toLocaleString();
+        if (el('saPagePredScorePct')) el('saPagePredScorePct').textContent = res.scorePercent.toFixed(1) + '%';
+        if (el('saPagePredRange')) el('saPagePredRange').textContent = res.rangeStr;
+        if (el('saPagePredBracketInfo')) el('saPagePredBracketInfo').textContent = res.bracketInfo;
+        if (el('saPagePredTier')) el('saPagePredTier').textContent = res.tier;
+
+        if (el('saPagePredBar')) {
+            const pctPosition = Math.max(0, Math.min(100, res.scorePercent));
+            el('saPagePredBar').style.width = pctPosition + '%';
+        }
+        if (el('saPagePredBarPct')) el('saPagePredBarPct').textContent = 'AIR ' + res.predictedRank.toLocaleString();
+
+        const tableBody = el('saPageBenchmarkTableBody');
+        if (tableBody) {
+            tableBody.innerHTML = NEET_RANK_DATA.map((row, idx) => {
+                const isMatch = (idx === res.activeIndex);
+                const rowBg = isMatch ? 'bg-emerald-500/20 text-emerald-200 font-bold' : 'hover:bg-gray-800/30 text-gray-300';
+                const badge = isMatch ? ' <span class="ml-2 px-1.5 py-0.5 text-[9px] uppercase bg-emerald-500 text-black font-black rounded">Your Bracket</span>' : '';
+                return `<tr class="${rowBg} transition-colors">
+                    <td class="py-2 px-2">${row.minPct.toFixed(2)}% - ${row.maxPct.toFixed(2)}%${badge}</td>
+                    <td class="py-2 px-2">AIR ${row.minRank.toLocaleString()} - ${row.maxRank.toLocaleString()}</td>
+                </tr>`;
+            }).join('');
+        }
+    } else {
+        const res = predictJeeMainPercentile(scorePercent);
+        if (el('saPredIcon')) el('saPredIcon').textContent = '🎯';
+        if (el('saPredTitle')) el('saPredTitle').textContent = 'JEE Main Percentile Predictor';
+        if (el('saPredBadge')) {
+            el('saPredBadge').textContent = 'JEE Main';
+            el('saPredBadge').className = 'text-[10px] uppercase font-black px-2 py-0.5 rounded bg-blue-600 text-white tracking-widest border border-blue-400';
+        }
+        if (el('saPredSubtitle')) el('saPredSubtitle').textContent = 'Calculates predicted percentile based on JEE Main percentage v/s percentile standard benchmark';
+        if (el('saPagePredBox1Header')) el('saPagePredBox1Header').textContent = 'Predicted JEE Main Percentile';
+        if (el('saPagePredBox2Header')) el('saPagePredBox2Header').textContent = 'Expected Percentile Bracket';
+        if (el('saPageGaugeMin')) el('saPageGaugeMin').textContent = '0%ile';
+        if (el('saPageGaugeMax')) el('saPageGaugeMax').textContent = '100%ile';
+        if (el('saPageTableTitle')) el('saPageTableTitle').innerHTML = '<svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg> View Official JEE Main Percentage v/s Percentile Reference Data';
+        if (el('saPageTh1')) el('saPageTh1').textContent = 'JEE Main Percentage';
+        if (el('saPageTh2')) el('saPageTh2').textContent = 'JEE Main Percentile Range';
+
+        if (el('saPagePredPercentile')) el('saPagePredPercentile').textContent = res.predictedPercentile.toFixed(2) + '%ile';
+        if (el('saPagePredScorePct')) el('saPagePredScorePct').textContent = res.scorePercent.toFixed(1) + '%';
+        if (el('saPagePredRange')) el('saPagePredRange').textContent = res.rangeStr;
+        if (el('saPagePredBracketInfo')) el('saPagePredBracketInfo').textContent = res.bracketInfo;
+        if (el('saPagePredTier')) el('saPagePredTier').textContent = res.tier;
+
+        if (el('saPagePredBar')) {
+            const barPct = Math.max(0, Math.min(100, res.predictedPercentile));
+            el('saPagePredBar').style.width = barPct + '%';
+        }
+        if (el('saPagePredBarPct')) el('saPagePredBarPct').textContent = res.predictedPercentile.toFixed(1) + '%ile';
+
+        const tableBody = el('saPageBenchmarkTableBody');
+        if (tableBody) {
+            tableBody.innerHTML = JEE_MAIN_PERCENTILE_DATA.map((row, idx) => {
+                const isMatch = (idx === res.activeIndex);
+                const rowBg = isMatch ? 'bg-amber-500/20 text-amber-200 font-bold' : 'hover:bg-gray-800/30 text-gray-300';
+                const badge = isMatch ? ' <span class="ml-2 px-1.5 py-0.5 text-[9px] uppercase bg-amber-500 text-black font-black rounded">Your Bracket</span>' : '';
+                return `<tr class="${rowBg} transition-colors">
+                    <td class="py-2 px-2">${row.minPct.toFixed(2)}% - ${row.maxPct.toFixed(2)}%${badge}</td>
+                    <td class="py-2 px-2">${row.minPctl.toFixed(6)} - ${row.maxPctl.toFixed(8)} %ile</td>
+                </tr>`;
+            }).join('');
+        }
     }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const lrdTabJee = document.getElementById('lrdPredTabJee');
+    const lrdTabNeet = document.getElementById('lrdPredTabNeet');
+    if (lrdTabJee) lrdTabJee.addEventListener('click', () => _updateJeePredictorUI(null, 'jee'));
+    if (lrdTabNeet) lrdTabNeet.addEventListener('click', () => _updateJeePredictorUI(null, 'neet'));
+
+    const saTabJee = document.getElementById('saPredTabJee');
+    const saTabNeet = document.getElementById('saPredTabNeet');
+    if (saTabJee) saTabJee.addEventListener('click', () => _updateSaPagePredictorUI(null, 'jee'));
+    if (saTabNeet) saTabNeet.addEventListener('click', () => _updateSaPagePredictorUI(null, 'neet'));
+});
 
 function _lrdFillOverview(s) {
     const { correctCount, incorrectCount, skippedCount, totalQ, score, maxScore, scorePercent, accuracy, totalSeconds, avgTimePerQ, scorePerQ, hasNeg } = s;

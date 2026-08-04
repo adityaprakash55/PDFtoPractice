@@ -898,55 +898,61 @@
         </div>
     </div>
 
-    <!-- JEE MAIN PERCENTILE PREDICTOR & TEST SELECTOR CARD -->
+    <!-- JEE MAIN / NEET UG PREDICTOR & TEST SELECTOR CARD -->
     <div class="brutal-card rounded-none p-4 sm:p-6 mb-8 relative overflow-hidden">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-5 pb-4 border-b border-gray-800">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded bg-amber-500/20 text-amber-400 border border-amber-500/40 flex items-center justify-center font-bold text-lg">🎯</div>
+            <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+                <div id="saPredIcon" class="w-10 h-10 rounded bg-amber-500/20 text-amber-400 border border-amber-500/40 flex items-center justify-center font-bold text-lg shrink-0">🎯</div>
                 <div>
-                    <h3 class="text-lg font-bold tracking-tight flex items-center gap-2">
-                        JEE Main Percentile Predictor
-                        <span class="text-[10px] uppercase font-black px-2 py-0.5 rounded bg-blue-600 text-white tracking-widest border border-blue-400">JEE Main Only</span>
+                    <h3 class="text-lg font-bold tracking-tight flex items-center gap-2 flex-wrap">
+                        <span id="saPredTitle">JEE Main Percentile Predictor</span>
+                        <span id="saPredBadge" class="text-[10px] uppercase font-black px-2 py-0.5 rounded bg-blue-600 text-white tracking-widest border border-blue-400">JEE Main</span>
                     </h3>
-                    <p class="text-xs text-gray-400 mt-0.5">Calculates predicted percentile based on JEE Main percentage v/s percentile standard benchmark</p>
+                    <p id="saPredSubtitle" class="text-xs text-gray-400 mt-0.5">Calculates predicted percentile based on JEE Main percentage v/s percentile standard benchmark</p>
                 </div>
-                  <!-- CUSTOM MULTI-SELECT SCOPE PICKER -->
-            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-                <span class="text-xs font-bold uppercase tracking-wider text-gray-300 shrink-0 flex items-center gap-1">
-                    <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
-                    Select Scope:
-                </span>
-                <div class="relative min-w-[240px] sm:min-w-[320px] w-full sm:w-auto" id="saScopeDropdownWrapper">
-                    <button type="button" id="saScopeTriggerBtn" class="w-full flex items-center justify-between gap-3 px-3.5 py-2.5 bg-gray-900 border-2 border-amber-500/80 text-xs font-bold text-amber-300 hover:bg-gray-800/90 transition-all cursor-pointer brutal-card rounded-none">
-                        <span class="flex items-center gap-2 truncate" id="saScopeLabel">
-                            <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse shrink-0"></span>
-                            <span>📊 All Tests Average (Overall)</span>
-                        </span>
-                        <svg class="w-4 h-4 text-amber-400 shrink-0 transition-transform duration-200" id="saScopeArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
-                    </button>
+            </div>
 
-                    <!-- Multi-Select Dropdown Menu -->
-                    <div id="saScopeDropdownMenu" class="hidden absolute right-0 mt-1 w-full sm:w-96 bg-gray-950 border-2 border-amber-500/90 shadow-2xl z-50 p-3 brutal-card rounded-none max-h-80 overflow-y-auto">
-                        <div class="flex items-center justify-between pb-2 mb-2 border-b border-gray-800 text-[11px]">
-                            <span class="font-bold text-amber-400 uppercase tracking-wider">Multi-Select Tests</span>
-                            <div class="flex items-center gap-2">
-                                <button type="button" id="saScopeSelectAllBtn" class="text-amber-300 hover:text-amber-200 font-bold hover:underline cursor-pointer">Select All</button>
-                                <span class="text-gray-600">•</span>
-                                <button type="button" id="saScopeClearAllBtn" class="text-gray-400 hover:text-white font-bold hover:underline cursor-pointer">Clear All</button>
+            <!-- EXAM MODE SWITCHER & SCOPE PICKER -->
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <!-- Mode Toggle -->
+                <div class="flex items-center gap-1 bg-gray-900 border border-gray-800 p-1 rounded-none shrink-0 brutal-card">
+                    <button type="button" id="saPredTabJee" class="px-3 py-1.5 text-xs font-bold rounded-none bg-amber-500 text-black border border-black shadow cursor-pointer transition-all">🎯 JEE Main</button>
+                    <button type="button" id="saPredTabNeet" class="px-3 py-1.5 text-xs font-bold rounded-none text-gray-300 hover:text-white border border-transparent cursor-pointer transition-all">🩺 NEET UG</button>
+                </div>
+
+                <!-- Custom Multi-Select Scope Picker -->
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                    <div class="relative min-w-[220px] sm:min-w-[280px] w-full sm:w-auto" id="saScopeDropdownWrapper">
+                        <button type="button" id="saScopeTriggerBtn" class="w-full flex items-center justify-between gap-3 px-3 py-2 bg-gray-900 border-2 border-amber-500/80 text-xs font-bold text-amber-300 hover:bg-gray-800/90 transition-all cursor-pointer brutal-card rounded-none">
+                            <span class="flex items-center gap-2 truncate" id="saScopeLabel">
+                                <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse shrink-0"></span>
+                                <span>📊 All Tests Average (Overall)</span>
+                            </span>
+                            <svg class="w-4 h-4 text-amber-400 shrink-0 transition-transform duration-200" id="saScopeArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+
+                        <!-- Multi-Select Dropdown Menu -->
+                        <div id="saScopeDropdownMenu" class="hidden absolute right-0 mt-1 w-full sm:w-96 bg-gray-950 border-2 border-amber-500/90 shadow-2xl z-50 p-3 brutal-card rounded-none max-h-80 overflow-y-auto">
+                            <div class="flex items-center justify-between pb-2 mb-2 border-b border-gray-800 text-[11px]">
+                                <span class="font-bold text-amber-400 uppercase tracking-wider">Multi-Select Tests</span>
+                                <div class="flex items-center gap-2">
+                                    <button type="button" id="saScopeSelectAllBtn" class="text-amber-300 hover:text-amber-200 font-bold hover:underline cursor-pointer">Select All</button>
+                                    <span class="text-gray-600">•</span>
+                                    <button type="button" id="saScopeClearAllBtn" class="text-gray-400 hover:text-white font-bold hover:underline cursor-pointer">Clear All</button>
+                                </div>
                             </div>
-                        </div>
 
-                        <div id="saScopeOptionsList" class="flex flex-col gap-1">
-                            <!-- Populated dynamically -->
+                            <div id="saScopeOptionsList" class="flex flex-col gap-1">
+                                <!-- Populated dynamically -->
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            <!-- Predicted Percentile Box -->
+            <!-- Box 1 -->
             <div class="brutal-card rounded-none p-4 bg-amber-500/10 border-amber-500/30">
                 <div class="text-[11px] uppercase tracking-widest text-amber-400 font-bold mb-1">Predicted JEE Main Percentile</div>
                 <div id="saPagePredPercentile" class="text-3xl sm:text-4xl font-black text-amber-300 tracking-tight">—</div>
@@ -1494,46 +1500,41 @@
                             <div class="text-xs uppercase tracking-widest mb-1 sm:mb-2">TIME / Q</div>
                             <div id="lrdTimePerQ" class="text-2xl sm:text-4xl font-black mb-0.5">0s</div>
                             <div id="lrdTotalTime" class="text-xs sm:text-sm">0m total</div>
-                        </div>
-                    </div>
-
-                    <!-- JEE MAIN PERCENTILE PREDICTOR CARD -->
+                           <!-- JEE MAIN / NEET UG PREDICTOR CARD -->
                     <div class="brutal-card rounded-none p-4 sm:p-6 mb-4 relative overflow-hidden">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-gray-800">
                             <div class="flex items-center gap-2.5">
-                                <div class="w-8 h-8 rounded bg-amber-500/20 text-amber-400 border border-amber-500/40 flex items-center justify-center font-bold text-sm">🎯</div>
+                                <div id="lrdPredIcon" class="w-8 h-8 rounded bg-amber-500/20 text-amber-400 border border-amber-500/40 flex items-center justify-center font-bold text-sm shrink-0">🎯</div>
                                 <div>
-                                    <h3 class="text-base sm:text-lg font-bold tracking-tight flex items-center gap-2">
-                                        JEE Main Percentile Predictor
-                                        <span class="text-[10px] uppercase font-black px-2 py-0.5 rounded bg-blue-600 text-white tracking-widest border border-blue-400">JEE Main Only</span>
+                                    <h3 class="text-base sm:text-lg font-bold tracking-tight flex items-center gap-2 flex-wrap">
+                                        <span id="lrdPredTitle">JEE Main Percentile Predictor</span>
+                                        <span id="lrdPredBadge" class="text-[10px] uppercase font-black px-2 py-0.5 rounded bg-blue-600 text-white tracking-widest border border-blue-400">JEE Main</span>
                                     </h3>
-                                    <p class="text-xs text-gray-400 mt-0.5">Estimated based on official JEE Main percentage v/s percentile standard benchmark</p>
+                                    <p id="lrdPredSubtitle" class="text-xs text-gray-400 mt-0.5">Estimated based on official JEE Main percentage v/s percentile standard benchmark</p>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-2 text-xs">
-                                <span class="px-2.5 py-1 rounded bg-amber-500/10 text-amber-300 font-semibold border border-amber-500/30 flex items-center gap-1.5">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
-                                    NEET Rank Predictor Coming Soon
-                                </span>
+                            <div class="flex items-center gap-1 bg-gray-900 border border-gray-800 p-1 rounded-none brutal-card shrink-0">
+                                <button type="button" id="lrdPredTabJee" class="px-3 py-1.5 text-xs font-bold rounded-none bg-amber-500 text-black border border-black shadow cursor-pointer transition-all">🎯 JEE Main</button>
+                                <button type="button" id="lrdPredTabNeet" class="px-3 py-1.5 text-xs font-bold rounded-none text-gray-300 hover:text-white border border-transparent cursor-pointer transition-all">🩺 NEET UG</button>
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                            <!-- Predicted Percentile Box -->
+                            <!-- Box 1 -->
                             <div class="brutal-card rounded-none p-4 bg-amber-500/10 border-amber-500/30">
-                                <div class="text-[11px] uppercase tracking-widest text-amber-400 font-bold mb-1">Predicted JEE Main Percentile</div>
+                                <div id="jeePredBox1Header" class="text-[11px] uppercase tracking-widest text-amber-400 font-bold mb-1">Predicted JEE Main Percentile</div>
                                 <div id="jeePredPercentile" class="text-3xl sm:text-4xl font-black text-amber-300 tracking-tight">—</div>
                                 <div id="jeePredPercentileSub" class="text-xs text-amber-400/90 mt-1 font-medium">Scored percentage: <span id="jeePredScorePct">—</span></div>
                             </div>
 
-                            <!-- Percentile Bracket Box -->
+                            <!-- Box 2 -->
                             <div class="brutal-card rounded-none p-4">
-                                <div class="text-[11px] uppercase tracking-widest text-gray-400 font-bold mb-1">Expected Percentile Bracket</div>
+                                <div id="jeePredBox2Header" class="text-[11px] uppercase tracking-widest text-gray-400 font-bold mb-1">Expected Percentile Bracket</div>
                                 <div id="jeePredRange" class="text-xl sm:text-2xl font-bold tracking-tight mt-1">—</div>
                                 <div id="jeePredBracketInfo" class="text-xs text-gray-400 mt-2">Benchmark JEE Main percentage range</div>
                             </div>
 
-                            <!-- Percentile Position Gauge / Stat -->
+                            <!-- Box 3 -->
                             <div class="brutal-card rounded-none p-4 flex flex-col justify-between">
                                 <div>
                                     <div class="text-[11px] uppercase tracking-widest text-gray-400 font-bold mb-1">Performance Tier</div>
@@ -1541,9 +1542,9 @@
                                 </div>
                                 <div class="mt-3">
                                     <div class="flex justify-between text-[11px] text-gray-400 mb-1 font-mono">
-                                        <span>0%ile</span>
+                                        <span id="jeeGaugeMin">0%ile</span>
                                         <span id="jeePredBarPct" class="font-bold text-amber-400">0%</span>
-                                        <span>100%ile</span>
+                                        <span id="jeeGaugeMax">100%ile</span>
                                     </div>
                                     <div class="w-full h-2.5 bg-gray-800 rounded-full overflow-hidden border border-gray-700">
                                         <div id="jeePredBar" class="h-full bg-gradient-to-r from-amber-500 to-emerald-400 rounded-full transition-all duration-1000" style="width: 0%"></div>
@@ -1552,10 +1553,10 @@
                             </div>
                         </div>
 
-                        <!-- Toggleable JEE Main Benchmark Table -->
+                        <!-- Toggleable Reference Table -->
                         <details class="group text-xs border border-gray-800 rounded-none bg-gray-950/40">
                             <summary class="p-3 font-semibold text-gray-300 cursor-pointer hover:bg-gray-800/40 flex items-center justify-between transition-colors">
-                                <span class="flex items-center gap-2">
+                                <span class="flex items-center gap-2" id="lrdTableTitle">
                                     <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                                     View Official JEE Main Percentage v/s Percentile Reference Data
                                 </span>
@@ -1565,8 +1566,8 @@
                                 <table class="w-full text-left text-gray-300 border-collapse">
                                     <thead>
                                         <tr class="border-b border-gray-800 text-[11px] uppercase tracking-wider text-gray-400">
-                                            <th class="py-2 px-2 font-bold">JEE Main Percentage</th>
-                                            <th class="py-2 px-2 font-bold">JEE Main Percentile Range</th>
+                                            <th class="py-2 px-2 font-bold" id="lrdTh1">JEE Main Percentage</th>
+                                            <th class="py-2 px-2 font-bold" id="lrdTh2">JEE Main Percentile Range</th>
                                         </tr>
                                     </thead>
                                     <tbody id="jeeBenchmarkTableBody" class="divide-y divide-gray-800/50">
