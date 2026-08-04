@@ -5350,12 +5350,16 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Populate test selector dropdown for percentile predictor
-        const testSelector = document.getElementById('saPageTestSelector');
-        const sessionPctMap = {};
-        let totalOverallScore = 0;
-        let totalOverallMax = 0;
+        // Populate custom multi-select scope picker for percentile predictor
+        const triggerBtn = document.getElementById('saScopeTriggerBtn');
+        const dropdownMenu = document.getElementById('saScopeDropdownMenu');
+        const arrowEl = document.getElementById('saScopeArrow');
+        const labelEl = document.getElementById('saScopeLabel');
+        const optionsList = document.getElementById('saScopeOptionsList');
+        const selectAllBtn = document.getElementById('saScopeSelectAllBtn');
+        const clearAllBtn = document.getElementById('saScopeClearAllBtn');
 
+        const sessionMap = {};
         sessions.forEach(s => {
             const attempted = (s.correctCount || 0) + (s.incorrectCount || 0);
             const total = attempted + (s.unansweredCount || 0);
@@ -5366,31 +5370,131 @@ document.addEventListener('DOMContentLoaded', () => {
             const maxScore = total * scorePerQ;
             const scorePct = maxScore > 0 ? (score / maxScore) * 100 : 0;
 
-            sessionPctMap[s.id] = scorePct;
-            totalOverallScore += score;
-            totalOverallMax += maxScore;
+            sessionMap[s.id] = {
+                id: s.id,
+                title: s.title || `Mock Test Session #${s.id}`,
+                date: s.date ? s.date.split(',')[0] : '',
+                score: score,
+                maxScore: maxScore,
+                scorePct: scorePct
+            };
         });
 
-        const overallAvgPct = totalOverallMax > 0 ? (totalOverallScore / totalOverallMax) * 100 : (chartScores.length > 0 ? chartScores.reduce((a,b)=>a+b,0)/chartScores.length : 0);
-        sessionPctMap['all'] = overallAvgPct;
+        // Set of selected session IDs (default: ALL selected)
+        let selectedIds = new Set(sessions.map(s => String(s.id)));
 
-        if (testSelector) {
-            testSelector.innerHTML = `<option value="all">📊 All Tests Average (Overall - ${overallAvgPct.toFixed(1)}%)</option>` +
-                [...sessions].reverse().map(s => {
-                    const dateStr = s.date ? s.date.split(',')[0] : '';
-                    const rawTitle = s.title || `Mock Test Session #${s.id}`;
-                    const pct = sessionPctMap[s.id] !== undefined ? sessionPctMap[s.id].toFixed(1) : '0.0';
-                    return `<option value="${s.id}">${rawTitle} ${dateStr ? '(' + dateStr + ')' : ''} — ${pct}%</option>`;
-                }).join('');
+        function recalculateMultiSelectPredictor() {
+            const totalCount = sessions.length;
+            const selectedCount = selectedIds.size;
 
-            testSelector.onchange = function() {
-                const val = testSelector.value;
-                const pct = sessionPctMap[val] !== undefined ? sessionPctMap[val] : overallAvgPct;
-                _updateSaPagePredictorUI(pct);
+            if (selectedCount === 0) {
+                if (labelEl) labelEl.innerHTML = '<span class="w-2 h-2 rounded-full bg-red-400"></span><span class="text-red-400 font-bold">⚠️ No Tests Selected</span>';
+                _updateSaPagePredictorUI(0);
+                return;
+            }
+
+            let sumScore = 0;
+            let sumMax = 0;
+            selectedIds.forEach(id => {
+                const sObj = sessionMap[id];
+                if (sObj) {
+                    sumScore += sObj.score;
+                    sumMax += sObj.maxScore;
+                }
+            });
+
+            const combinedPct = sumMax > 0 ? (sumScore / sumMax) * 100 : 0;
+
+            if (selectedCount === totalCount) {
+                if (labelEl) labelEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse shrink-0"></span><span>📊 All Tests Average (Overall — ${combinedPct.toFixed(1)}%)</span>`;
+            } else if (selectedCount === 1) {
+                const singleId = Array.from(selectedIds)[0];
+                const sObj = sessionMap[singleId];
+                const name = sObj ? sObj.title : `Test #${singleId}`;
+                if (labelEl) labelEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-blue-400 shrink-0"></span><span class="truncate">🎯 1 Test: ${name} (${combinedPct.toFixed(1)}%)</span>`;
+            } else {
+                if (labelEl) labelEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span><span>⚡ ${selectedCount} Tests Selected (Avg: ${combinedPct.toFixed(1)}%)</span>`;
+            }
+
+            _updateSaPagePredictorUI(combinedPct);
+        }
+
+        if (optionsList) {
+            optionsList.innerHTML = [...sessions].reverse().map(s => {
+                const sObj = sessionMap[s.id];
+                const rawTitle = sObj ? sObj.title : `Test #${s.id}`;
+                const isChecked = selectedIds.has(String(s.id)) ? 'checked' : '';
+                return `
+                <label class="flex items-center gap-2.5 p-2 bg-gray-900/60 hover:bg-amber-500/10 cursor-pointer transition-colors border border-gray-800/80 hover:border-amber-500/40 brutal-card rounded-none group">
+                    <input type="checkbox" class="sa-scope-cb w-4 h-4 accent-amber-500 cursor-pointer shrink-0" data-id="${s.id}" ${isChecked} />
+                    <div class="flex-1 min-w-0">
+                        <div class="text-xs font-bold text-gray-200 group-hover:text-amber-300 truncate">${rawTitle}</div>
+                        <div class="text-[10px] text-gray-400 flex items-center justify-between mt-0.5 font-mono">
+                            <span>${(sObj && sObj.date) ? sObj.date : 'Saved Test'}</span>
+                            <span class="text-amber-400 font-bold">${sObj ? sObj.scorePct.toFixed(1) : 0}%</span>
+                        </div>
+                    </div>
+                </label>`;
+            }).join('');
+
+            optionsList.querySelectorAll('.sa-scope-cb').forEach(cb => {
+                cb.addEventListener('change', (e) => {
+                    const idStr = String(cb.getAttribute('data-id'));
+                    if (cb.checked) {
+                        selectedIds.add(idStr);
+                    } else {
+                        selectedIds.delete(idStr);
+                    }
+                    recalculateMultiSelectPredictor();
+                });
+            });
+        }
+
+        if (triggerBtn && dropdownMenu) {
+            triggerBtn.onclick = function(e) {
+                e.stopPropagation();
+                const isOpen = !dropdownMenu.classList.contains('hidden');
+                if (isOpen) {
+                    dropdownMenu.classList.add('hidden');
+                    if (arrowEl) arrowEl.style.transform = 'rotate(0deg)';
+                } else {
+                    dropdownMenu.classList.remove('hidden');
+                    if (arrowEl) arrowEl.style.transform = 'rotate(180deg)';
+                }
+            };
+
+            document.addEventListener('click', function closeScopeDropdown(e) {
+                const wrapper = document.getElementById('saScopeDropdownWrapper');
+                if (wrapper && !wrapper.contains(e.target)) {
+                    if (dropdownMenu) dropdownMenu.classList.add('hidden');
+                    if (arrowEl) arrowEl.style.transform = 'rotate(0deg)';
+                }
+            });
+        }
+
+        if (selectAllBtn) {
+            selectAllBtn.onclick = function(e) {
+                e.stopPropagation();
+                selectedIds = new Set(sessions.map(s => String(s.id)));
+                if (optionsList) {
+                    optionsList.querySelectorAll('.sa-scope-cb').forEach(cb => cb.checked = true);
+                }
+                recalculateMultiSelectPredictor();
             };
         }
 
-        _updateSaPagePredictorUI(overallAvgPct);
+        if (clearAllBtn) {
+            clearAllBtn.onclick = function(e) {
+                e.stopPropagation();
+                selectedIds.clear();
+                if (optionsList) {
+                    optionsList.querySelectorAll('.sa-scope-cb').forEach(cb => cb.checked = false);
+                }
+                recalculateMultiSelectPredictor();
+            };
+        }
+
+        recalculateMultiSelectPredictor();
 
         // List rendering
         if (saHistoricalList) {

@@ -910,14 +910,38 @@
                     </h3>
                     <p class="text-xs text-gray-400 mt-0.5">Calculates predicted percentile based on JEE Main percentage v/s percentile standard benchmark</p>
                 </div>
-            </div>
+                  <!-- CUSTOM MULTI-SELECT SCOPE PICKER -->
+            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-gray-300 shrink-0 flex items-center gap-1">
+                    <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+                    Select Scope:
+                </span>
+                <div class="relative min-w-[240px] sm:min-w-[320px] w-full sm:w-auto" id="saScopeDropdownWrapper">
+                    <button type="button" id="saScopeTriggerBtn" class="w-full flex items-center justify-between gap-3 px-3.5 py-2.5 bg-gray-900 border-2 border-amber-500/80 text-xs font-bold text-amber-300 hover:bg-gray-800/90 transition-all cursor-pointer brutal-card rounded-none">
+                        <span class="flex items-center gap-2 truncate" id="saScopeLabel">
+                            <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse shrink-0"></span>
+                            <span>📊 All Tests Average (Overall)</span>
+                        </span>
+                        <svg class="w-4 h-4 text-amber-400 shrink-0 transition-transform duration-200" id="saScopeArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
 
-            <!-- TEST SELECTOR DROPDOWN -->
-            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                <label for="saPageTestSelector" class="text-xs font-bold uppercase tracking-wider text-gray-300 shrink-0">Select Scope:</label>
-                <select id="saPageTestSelector" class="px-3 py-2 text-xs font-bold bg-gray-900 text-amber-300 border-2 border-amber-500/60 rounded-none focus:outline-none focus:border-amber-400 cursor-pointer">
-                    <option value="all">📊 All Tests Average (Overall Performance)</option>
-                </select>
+                    <!-- Multi-Select Dropdown Menu -->
+                    <div id="saScopeDropdownMenu" class="hidden absolute right-0 mt-1 w-full sm:w-96 bg-gray-950 border-2 border-amber-500/90 shadow-2xl z-50 p-3 brutal-card rounded-none max-h-80 overflow-y-auto">
+                        <div class="flex items-center justify-between pb-2 mb-2 border-b border-gray-800 text-[11px]">
+                            <span class="font-bold text-amber-400 uppercase tracking-wider">Multi-Select Tests</span>
+                            <div class="flex items-center gap-2">
+                                <button type="button" id="saScopeSelectAllBtn" class="text-amber-300 hover:text-amber-200 font-bold hover:underline cursor-pointer">Select All</button>
+                                <span class="text-gray-600">•</span>
+                                <button type="button" id="saScopeClearAllBtn" class="text-gray-400 hover:text-white font-bold hover:underline cursor-pointer">Clear All</button>
+                            </div>
+                        </div>
+
+                        <div id="saScopeOptionsList" class="flex flex-col gap-1">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
             </div>
         </div>
 
