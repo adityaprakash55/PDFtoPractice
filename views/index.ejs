@@ -916,8 +916,8 @@
             <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                 <!-- Mode Toggle -->
                 <div class="flex items-center gap-1 bg-gray-900 border border-gray-800 p-1 rounded-none shrink-0 brutal-card">
-                    <button type="button" id="saPredTabJee" class="px-3 py-1.5 text-xs font-bold rounded-none bg-amber-500 text-black border border-black shadow cursor-pointer transition-all">🎯 JEE Main</button>
-                    <button type="button" id="saPredTabNeet" class="px-3 py-1.5 text-xs font-bold rounded-none text-gray-300 hover:text-white border border-transparent cursor-pointer transition-all">🩺 NEET UG</button>
+                    <button type="button" id="saPredTabJee" onclick="window.switchSaPredictorMode('jee')" class="px-3 py-1.5 text-xs font-bold rounded-none bg-amber-500 text-black border border-black shadow cursor-pointer transition-all">🎯 JEE Main</button>
+                    <button type="button" id="saPredTabNeet" onclick="window.switchSaPredictorMode('neet')" class="px-3 py-1.5 text-xs font-bold rounded-none text-gray-300 hover:text-white border border-transparent cursor-pointer transition-all">🩺 NEET UG</button>
                 </div>
 
                 <!-- Custom Multi-Select Scope Picker -->
@@ -954,14 +954,14 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <!-- Box 1 -->
             <div class="brutal-card rounded-none p-4 bg-amber-500/10 border-amber-500/30">
-                <div class="text-[11px] uppercase tracking-widest text-amber-400 font-bold mb-1">Predicted JEE Main Percentile</div>
+                <div id="saPagePredBox1Header" class="text-[11px] uppercase tracking-widest text-amber-400 font-bold mb-1">Predicted JEE Main Percentile</div>
                 <div id="saPagePredPercentile" class="text-3xl sm:text-4xl font-black text-amber-300 tracking-tight">—</div>
                 <div id="saPagePredPercentileSub" class="text-xs text-amber-400/90 mt-1 font-medium">Scored percentage: <span id="saPagePredScorePct">—</span></div>
             </div>
 
             <!-- Percentile Bracket Box -->
             <div class="brutal-card rounded-none p-4">
-                <div class="text-[11px] uppercase tracking-widest text-gray-400 font-bold mb-1">Expected Percentile Bracket</div>
+                <div id="saPagePredBox2Header" class="text-[11px] uppercase tracking-widest text-gray-400 font-bold mb-1">Expected Percentile Bracket</div>
                 <div id="saPagePredRange" class="text-xl sm:text-2xl font-bold tracking-tight mt-1">—</div>
                 <div id="saPagePredBracketInfo" class="text-xs text-gray-400 mt-2">Benchmark JEE Main percentage range</div>
             </div>
@@ -974,9 +974,9 @@
                 </div>
                 <div class="mt-3">
                     <div class="flex justify-between text-[11px] text-gray-400 mb-1 font-mono">
-                        <span>0%ile</span>
+                        <span id="saPageGaugeMin">0%ile</span>
                         <span id="saPagePredBarPct" class="font-bold text-amber-400">0%</span>
-                        <span>100%ile</span>
+                        <span id="saPageGaugeMax">100%ile</span>
                     </div>
                     <div class="w-full h-2.5 bg-gray-800 rounded-full overflow-hidden border border-gray-700">
                         <div id="saPagePredBar" class="h-full bg-gradient-to-r from-amber-500 to-emerald-400 rounded-full transition-all duration-1000" style="width: 0%"></div>
@@ -988,7 +988,7 @@
         <!-- Toggleable JEE Main Benchmark Table -->
         <details class="group text-xs border border-gray-800 rounded-none bg-gray-950/40">
             <summary class="p-3 font-semibold text-gray-300 cursor-pointer hover:bg-gray-800/40 flex items-center justify-between transition-colors">
-                <span class="flex items-center gap-2">
+                <span class="flex items-center gap-2" id="saPageTableTitle">
                     <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                     View Official JEE Main Percentage v/s Percentile Reference Data
                 </span>
@@ -998,8 +998,8 @@
                 <table class="w-full text-left text-gray-300 border-collapse">
                     <thead>
                         <tr class="border-b border-gray-800 text-[11px] uppercase tracking-wider text-gray-400">
-                            <th class="py-2 px-2 font-bold">JEE Main Percentage</th>
-                            <th class="py-2 px-2 font-bold">JEE Main Percentile Range</th>
+                            <th class="py-2 px-2 font-bold" id="saPageTh1">JEE Main Percentage</th>
+                            <th class="py-2 px-2 font-bold" id="saPageTh2">JEE Main Percentile Range</th>
                         </tr>
                     </thead>
                     <tbody id="saPageBenchmarkTableBody" class="divide-y divide-gray-800/50">
@@ -1514,8 +1514,8 @@
                                 </div>
                             </div>
                             <div class="flex items-center gap-1 bg-gray-900 border border-gray-800 p-1 rounded-none brutal-card shrink-0">
-                                <button type="button" id="lrdPredTabJee" class="px-3 py-1.5 text-xs font-bold rounded-none bg-amber-500 text-black border border-black shadow cursor-pointer transition-all">🎯 JEE Main</button>
-                                <button type="button" id="lrdPredTabNeet" class="px-3 py-1.5 text-xs font-bold rounded-none text-gray-300 hover:text-white border border-transparent cursor-pointer transition-all">🩺 NEET UG</button>
+                                <button type="button" id="lrdPredTabJee" onclick="window.switchLrdPredictorMode('jee')" class="px-3 py-1.5 text-xs font-bold rounded-none bg-amber-500 text-black border border-black shadow cursor-pointer transition-all">🎯 JEE Main</button>
+                                <button type="button" id="lrdPredTabNeet" onclick="window.switchLrdPredictorMode('neet')" class="px-3 py-1.5 text-xs font-bold rounded-none text-gray-300 hover:text-white border border-transparent cursor-pointer transition-all">🩺 NEET UG</button>
                             </div>
                         </div>
 

@@ -4473,6 +4473,14 @@ function _updateSaPagePredictorUI(scorePercent, mode) {
     }
 }
 
+window.switchLrdPredictorMode = function(mode) {
+    _updateJeePredictorUI(null, mode);
+};
+
+window.switchSaPredictorMode = function(mode) {
+    _updateSaPagePredictorUI(null, mode);
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     const lrdTabJee = document.getElementById('lrdPredTabJee');
     const lrdTabNeet = document.getElementById('lrdPredTabNeet');
