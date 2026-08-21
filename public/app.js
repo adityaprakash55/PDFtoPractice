@@ -7327,62 +7327,72 @@ async function launchModuleSolverTest() {
     const customTitle = (titleInput && titleInput.value.trim()) || `${session.title || 'Module'} - Practice Set`;
     const customTimeMinutes = (timeInput && parseInt(timeInput.value, 10)) || Math.max(10, selectedQuestions.length * 2);
 
-    // Build standalone mock session linked to parent module
-    const parentModuleId = session.id;
-    const testSession = {
-        id: Date.now(),
-        parentModuleId: parentModuleId,
-        title: customTitle,
-        pdfFilename: session.pdfFilename || 'Module',
-        createdAt: new Date().toISOString(),
-        extractedImages: selectedQuestions,
-        totalQuestions: selectedQuestions.length,
-        timeLimitMinutes: customTimeMinutes,
-        score: 0,
-        userAnswers: {},
-        questionStatus: {},
-        markedForReview: [],
-        practiceState: {
-            timeRemaining: customTimeMinutes * 60,
-            currentQuestionIndex: 0,
-            activeIndices: selectedQuestions.map((_, i) => i),
-            selectedOriginalIndices: selectedOriginalIndices,
-            stats: selectedQuestions.map((q, idx) => ({
-                id: idx,
-                status: 'not_visited',
-                selectedOption: null,
-                numericalAnswer: '',
-                isMarkedForReview: false,
-                timeSpent: 0,
-                page: q.page || 1,
-                label: q.label || `Q. ${idx + 1}`,
-                originalModuleIndex: selectedOriginalIndices[idx]
-            }))
-        }
-    };
-
-    // Save test session to IndexedDB
     try {
-        await saveSessionToDB(testSession);
-        
-        // Hide Module Solver and switch to practice container
+        currentSessionId = Date.now();
+        window.currentPdfFilename = customTitle;
+        window.currentParentModuleId = session.id;
+        window.currentSelectedOriginalIndices = selectedOriginalIndices;
+
+        // Set global extractedImages to the selected questions subset
+        extractedImages = JSON.parse(JSON.stringify(selectedQuestions));
+
+        // Initialize practiceState
+        practiceState.totalSecondsRemaining = customTimeMinutes * 60;
+        practiceState.scorePerQ = 4;
+        practiceState.negativeMarking = true;
+        practiceState.targetTime = 0;
+        practiceState.parentModuleId = session.id;
+        practiceState.selectedOriginalIndices = selectedOriginalIndices;
+        practiceState.activeIndices = extractedImages.map((_, i) => i);
+        practiceState.currentIndex = 0;
+        practiceState.theme = 'nta';
+
+        practiceState.stats = extractedImages.map((q, idx) => {
+            let ex = 'Exercise 1';
+            if (q.label && q.label.includes(' - ')) ex = q.label.split(' - ')[0];
+            return {
+                index: idx,
+                timeSpent: 0,
+                targetTime: 0,
+                attempted: false,
+                evaluation: null,
+                ntaStatus: 'not_visited',
+                exercise: ex,
+                originalModuleIndex: selectedOriginalIndices[idx]
+            };
+        });
+
+        // Hide all views except practice interface
         document.querySelectorAll('.dash-view').forEach(v => v.classList.add('hidden'));
         document.getElementById('moduleSolverContainer')?.classList.add('hidden');
-        
-        // Load into practice engine
-        currentSessionId = testSession.id;
-        window.currentParentModuleId = parentModuleId;
-        window.currentSelectedOriginalIndices = selectedOriginalIndices;
-        
-        practiceState = JSON.parse(JSON.stringify(testSession.practiceState));
-        extractedImages = JSON.parse(JSON.stringify(selectedQuestions));
-        
-        // Open Practice View
-        document.getElementById('practiceContainer')?.classList.remove('hidden');
-        initPracticeExamUI(testSession);
+        uploadContainer?.classList.add('hidden');
+        configContainer?.classList.add('hidden');
+        practiceSetupContainer?.classList.add('hidden');
+        summaryContainer?.classList.add('hidden');
+
+        // Save session state to IndexedDB
+        const testSession = {
+            id: currentSessionId,
+            parentModuleId: session.id,
+            title: customTitle,
+            pdfFilename: session.pdfFilename || 'Module',
+            createdAt: new Date().toISOString(),
+            extractedImages: extractedImages,
+            totalQuestions: extractedImages.length,
+            timeLimitMinutes: customTimeMinutes,
+            practiceState: JSON.parse(JSON.stringify(practiceState))
+        };
+        try {
+            await saveSessionToDB(testSession);
+        } catch(e) {
+            console.warn("Non-fatal session save error:", e);
+        }
+
+        // Start NTA practice test
+        startPracticeSession(extractedImages.map((_, i) => i));
     } catch(err) {
         console.error("Failed to start module test session:", err);
-        alert("Error launching module test. Please try again.");
+        alert("Error launching module test: " + (err.message || err));
     }
 }
 
