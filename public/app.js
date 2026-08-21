@@ -7346,12 +7346,32 @@ async function launchModuleSolverTest() {
 
 // Initialize all Module Solver DOM Events
 function initModuleSolverEvents() {
+    // Nav & Hero buttons
+    document.getElementById('homeModuleSolverBtn')?.addEventListener('click', () => {
+        window.openModuleSolverView();
+    });
+
+    document.querySelectorAll('.dash-nav-btn[data-target="moduleSolverView"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            window.openModuleSolverView();
+        });
+    });
+
+    // Upload Module PDF button
+    const directInput = document.getElementById('msDirectFileInput');
+    const uploadBtn = document.getElementById('msUploadNewPdfBtn');
+
+    if (uploadBtn && directInput) {
+        uploadBtn.addEventListener('click', () => {
+            window.isModuleSolverScanMode = true;
+            directInput.click();
+        });
+    }
+
     // Dropzone drag-and-drop & file click
     const dropZone = document.getElementById('msDropZone');
-    const directInput = document.getElementById('msDirectFileInput');
 
-    if (dropZone && directInput) {
-        dropZone.addEventListener('click', () => directInput.click());
+    if (directInput) {
         directInput.addEventListener('change', (e) => {
             if (e.target.files && e.target.files[0]) {
                 const file = e.target.files[0];
@@ -7362,6 +7382,13 @@ function initModuleSolverEvents() {
                     alert('Please select a valid PDF file.');
                 }
             }
+        });
+    }
+
+    if (dropZone && directInput) {
+        dropZone.addEventListener('click', () => {
+            window.isModuleSolverScanMode = true;
+            directInput.click();
         });
 
         ['dragenter', 'dragover'].forEach(eventName => {
