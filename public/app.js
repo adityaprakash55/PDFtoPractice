@@ -7045,7 +7045,7 @@ function renderModuleQuestionsGrid() {
                     </div>
                     <div class="flex items-center gap-1 shrink-0">
                         <span class="text-[10px] font-bold px-1.5 py-0.5 bg-black/10 dark:bg-white/10 rounded">P.${q.page || 1}</span>
-                        <button type="button" class="ms-preview-btn p-1.5 hover:bg-black/10 dark:hover:bg-white/10 rounded transition-colors flex items-center justify-center cursor-pointer" data-idx="${q.originalIndex}" title="Preview Question">
+                        <button type="button" class="ms-preview-btn p-1.5 hover:bg-black/10 dark:hover:bg-white/10 rounded transition-colors flex items-center justify-center cursor-pointer border border-transparent hover:border-black/20" onclick="event.preventDefault(); event.stopPropagation(); window.openModuleQuestionPreview(${q.originalIndex});" data-idx="${q.originalIndex}" title="Preview Question">
                             <svg class="w-4 h-4 text-black dark:text-white pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                         </button>
                     </div>
@@ -7064,13 +7064,6 @@ function renderModuleQuestionsGrid() {
                     window.selectedModuleQuestions.add(q.originalIndex);
                 }
                 renderActiveModuleSolver();
-            });
-
-            // Preview click opens preview modal
-            card.querySelector('.ms-preview-btn')?.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                window.openModuleQuestionPreview(q.originalIndex);
             });
 
             gridDiv.appendChild(card);
@@ -7179,72 +7172,85 @@ function handleQuickQuestionNumbers(queryStr) {
 
 // Open Question Preview Modal with full navigation
 window.openModuleQuestionPreview = function(qIndex) {
-    const session = window.currentModuleSession;
-    if (!session || !session.extractedImages || !session.extractedImages[qIndex]) {
-        console.warn("Session or question not found at index", qIndex);
-        return;
-    }
-
-    window.moduleActivePreviewIndex = qIndex;
-    const q = session.extractedImages[qIndex];
-
-    const modal = document.getElementById('msQuestionPreviewModal');
-    const imgEl = document.getElementById('msModalQImage');
-    const titleEl = document.getElementById('msModalQTitle');
-    const statusBadge = document.getElementById('msModalQStatusBadge');
-    const metaEl = document.getElementById('msModalQMeta');
-    const toggleBtn = document.getElementById('msModalToggleSelectBtn');
-
-    const cleanNumber = formatCleanQuestionNumber(q.label, qIndex);
-
-    if (imgEl) imgEl.src = q.dataUrl || q.answerDataUrl || '';
-    if (titleEl) titleEl.textContent = cleanNumber;
-
-    const st = (session.moduleQuestionStatus && session.moduleQuestionStatus[qIndex]) || 'unattempted';
-    if (statusBadge) {
-        if (st === 'correct') {
-            statusBadge.className = 'px-2.5 py-0.5 text-xs font-black uppercase bg-emerald-400 text-black border border-black';
-            statusBadge.textContent = '🟢 Previously Correct (+4)';
-        } else if (st === 'incorrect') {
-            statusBadge.className = 'px-2.5 py-0.5 text-xs font-black uppercase bg-rose-500 text-white border border-black';
-            statusBadge.textContent = '🔴 Previously Wrong (-1)';
-        } else {
-            statusBadge.className = 'px-2.5 py-0.5 text-xs font-black uppercase bg-amber-400 text-black border border-black';
-            statusBadge.textContent = '🟡 Not Attempted';
+    try {
+        const session = window.currentModuleSession;
+        if (!session || !session.extractedImages || !session.extractedImages[qIndex]) {
+            console.warn("Session or question not found at index", qIndex);
+            return;
         }
-    }
 
-    if (metaEl) {
-        metaEl.textContent = `Page ${q.page || 1} • Question #${qIndex + 1} of ${session.extractedImages.length}`;
-    }
+        window.moduleActivePreviewIndex = qIndex;
+        const q = session.extractedImages[qIndex];
 
-    function updateToggleBtnText() {
-        if (toggleBtn) {
-            const isSelected = window.selectedModuleQuestions.has(qIndex);
-            toggleBtn.textContent = isSelected ? '✓ Selected (Click to Remove)' : '+ Select This Question';
-            toggleBtn.className = isSelected 
-                ? 'px-5 py-2 ms-btn-red font-black uppercase text-xs border-[2px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer'
-                : 'px-5 py-2 ms-btn-purple font-black uppercase text-xs border-[2px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer';
+        const modal = document.getElementById('msQuestionPreviewModal');
+        if (!modal) {
+            console.error("msQuestionPreviewModal element not found in DOM");
+            return;
         }
-    }
-    updateToggleBtnText();
 
-    if (toggleBtn) {
-        toggleBtn.onclick = () => {
-            if (window.selectedModuleQuestions.has(qIndex)) {
-                window.selectedModuleQuestions.delete(qIndex);
+        const imgEl = document.getElementById('msModalQImage');
+        const titleEl = document.getElementById('msModalQTitle');
+        const statusBadge = document.getElementById('msModalQStatusBadge');
+        const metaEl = document.getElementById('msModalQMeta');
+        const toggleBtn = document.getElementById('msModalToggleSelectBtn');
+
+        const cleanNumber = formatCleanQuestionNumber(q.label, qIndex);
+
+        const imgSrc = q.dataUrl || q.answerDataUrl || q.src || (typeof q === 'string' ? q : '');
+        if (imgEl) {
+            imgEl.src = imgSrc;
+            imgEl.alt = cleanNumber;
+        }
+        if (titleEl) titleEl.textContent = cleanNumber;
+
+        const st = (session.moduleQuestionStatus && session.moduleQuestionStatus[qIndex]) || 'unattempted';
+        if (statusBadge) {
+            if (st === 'correct') {
+                statusBadge.className = 'px-2.5 py-0.5 text-xs font-black uppercase bg-emerald-400 text-black border border-black';
+                statusBadge.textContent = '🟢 Previously Correct (+4)';
+            } else if (st === 'incorrect') {
+                statusBadge.className = 'px-2.5 py-0.5 text-xs font-black uppercase bg-rose-500 text-white border border-black';
+                statusBadge.textContent = '🔴 Previously Wrong (-1)';
             } else {
-                window.selectedModuleQuestions.add(qIndex);
+                statusBadge.className = 'px-2.5 py-0.5 text-xs font-black uppercase bg-amber-400 text-black border border-black';
+                statusBadge.textContent = '🟡 Not Attempted';
             }
-            updateToggleBtnText();
-            renderActiveModuleSolver();
-        };
-    }
+        }
 
-    if (modal) {
+        if (metaEl) {
+            metaEl.textContent = `Page ${q.page || 1} • Question #${qIndex + 1} of ${session.extractedImages.length}`;
+        }
+
+        function updateToggleBtnText() {
+            if (toggleBtn) {
+                const isSelected = window.selectedModuleQuestions && window.selectedModuleQuestions.has(qIndex);
+                toggleBtn.textContent = isSelected ? '✓ Selected (Click to Remove)' : '+ Select This Question';
+                toggleBtn.className = isSelected 
+                    ? 'px-5 py-2 ms-btn-red font-black uppercase text-xs border-[2px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer'
+                    : 'px-5 py-2 ms-btn-purple font-black uppercase text-xs border-[2px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer';
+            }
+        }
+        updateToggleBtnText();
+
+        if (toggleBtn) {
+            toggleBtn.onclick = (e) => {
+                e.stopPropagation();
+                if (!window.selectedModuleQuestions) window.selectedModuleQuestions = new Set();
+                if (window.selectedModuleQuestions.has(qIndex)) {
+                    window.selectedModuleQuestions.delete(qIndex);
+                } else {
+                    window.selectedModuleQuestions.add(qIndex);
+                }
+                updateToggleBtnText();
+                renderActiveModuleSolver();
+            };
+        }
+
         modal.classList.remove('hidden');
         modal.style.display = 'flex';
         modal.style.zIndex = '999999';
+    } catch (err) {
+        console.error('Error opening preview modal:', err);
     }
 };
 
