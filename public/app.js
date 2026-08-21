@@ -944,13 +944,23 @@ wizardSkipScanBtn.addEventListener('click', () => {
 // PDF LOAD & PREVIEW
 // =============================================================
 async function loadPDF(file) {
-    if (file.type !== 'application/pdf') { alert('Please upload a valid PDF file.'); return; }
+    if (!file) return;
+    if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+        alert('Please upload a valid PDF file.');
+        return;
+    }
     
     try {
         window.currentPdfFilename = file.name.replace(/\.pdf$/i, '');
         const ab  = await file.arrayBuffer();
         const doc = await pdfjsLib.getDocument({ data: ab }).promise;
         const total = doc.numPages;
+
+        if (window.isModuleSolverScanMode || wizardStep !== 3) {
+            wizardStep = 1;
+            pdfDocAnswers = null;
+            pdfFileAnswers = null;
+        }
 
         if (wizardStep === 1) {
             pdfFile = file;
@@ -961,13 +971,19 @@ async function loadPDF(file) {
             
             // Show wizard buttons, hide final scan
             wizardNextBtn.classList.remove('hidden');
-            // wizardSkipScanBtn.classList.remove('hidden'); // Force user to upload answer key
             startFinalScanBtn.classList.add('hidden');
             
-            document.getElementById('pageRangeTitle').textContent = window.isModuleSolverScanMode ? 'Module Questions Setup' : 'Questions Setup';
-            document.getElementById('answerKeySourceContainer').classList.remove('hidden');
-            document.querySelector('input[name="answerKeySource"][value="different"]').checked = true;
-            wizardNextBtn.innerHTML = '<span>Next: Upload Answer Key</span><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>';
+            if (window.isModuleSolverScanMode) {
+                document.getElementById('pageRangeTitle').textContent = 'Module Questions Setup';
+                wizardSkipScanBtn.classList.remove('hidden');
+                wizardSkipScanBtn.innerHTML = '<span>⚡ Slice Module Questions Directly</span>';
+                wizardNextBtn.innerHTML = '<span>Next: Add Answer Key</span><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>';
+            } else {
+                document.getElementById('pageRangeTitle').textContent = 'Questions Setup';
+                document.getElementById('answerKeySourceContainer').classList.remove('hidden');
+                document.querySelector('input[name="answerKeySource"][value="different"]').checked = true;
+                wizardNextBtn.innerHTML = '<span>Next: Upload Answer Key</span><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>';
+            }
             
         } else if (wizardStep === 3) {
             pdfFileAnswers = file;
@@ -1006,7 +1022,9 @@ async function loadPDF(file) {
         topLine.style.top    = `${config.topMargin * 100}%`;
         bottomLine.style.top = `${config.bottomMargin * 100}%`;
     } catch (err) {
-        console.error(err); alert('Failed to load PDF.'); cancelBtn.click();
+        console.error("Failed to load PDF:", err);
+        alert('Failed to load PDF. Please make sure the file is not corrupted.');
+        cancelBtn.click();
     }
 }
 
