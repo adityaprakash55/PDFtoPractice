@@ -2582,7 +2582,7 @@ async function renderHistory() {
             }
             
             const isModule = session.isModuleSolver || (session.moduleQuestionStatus && Object.keys(session.moduleQuestionStatus).length > 0);
-            const moduleBadge = isModule ? `<span class="inline-block px-1.5 py-0.5 bg-violet-600 text-white font-black uppercase text-[9px] tracking-wider rounded mr-1.5 border border-violet-400">MODULE</span>` : '';
+            const moduleBadge = isModule ? `<span class="inline-block px-1.5 py-0.5 ms-btn-purple text-white font-black uppercase text-[9px] tracking-wider rounded mr-1.5 border border-black" style="background-color: #7C3AED !important; color: #ffffff !important;">MODULE</span>` : '';
             
             const dateStr = session.date ? session.date.split(',')[0] : 'Unknown';
             const qCount = session.extractedImages ? session.extractedImages.length : 0;
@@ -6750,27 +6750,26 @@ async function renderRecentModulesList(searchQuery = '') {
             card.innerHTML = `
                 <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-2 mb-1 flex-wrap">
-                        <span class="px-1.5 py-0.5 bg-violet-600 text-white font-black text-[9px] uppercase tracking-wider rounded">MODULE</span>
+                        <span class="px-2 py-0.5 ms-btn-purple text-white font-black text-[10px] uppercase tracking-wider rounded border border-black" style="background-color: #7C3AED !important; color: #ffffff !important;">MODULE</span>
                         <h4 class="text-sm sm:text-base font-black truncate">${title}</h4>
                     </div>
-                    <div class="flex items-center gap-3 text-xs font-semibold flex-wrap" style="color: var(--text-muted);">
+                    <div class="flex items-center gap-3 text-xs font-bold flex-wrap" style="color: var(--text-muted);">
                         <span>${totalQ} Total Qs</span>
                         <span>•</span>
-                        <span class="text-emerald-500 font-bold">🟢 ${correct} Solved</span>
-                        <span class="text-rose-500 font-bold">🔴 ${wrong} Wrong</span>
-                        <span class="text-amber-500 font-bold">🟡 ${unattempted} Left</span>
+                        <span class="text-emerald-600 dark:text-emerald-400 font-black">🟢 ${correct} Solved</span>
+                        <span class="text-rose-600 dark:text-rose-400 font-black">🔴 ${wrong} Wrong</span>
+                        <span class="text-amber-600 dark:text-amber-400 font-black">🟡 ${unattempted} Left</span>
                         <span>•</span>
                         <span>${dateStr}</span>
                     </div>
                 </div>
-                <button class="ms-open-btn px-4 py-2 bg-violet-600 hover:bg-violet-500 text-white font-black uppercase text-xs border-[2px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all shrink-0 flex items-center gap-1.5" data-id="${session.id}">
-                    <span>Open Module</span>
+                <button class="ms-open-btn ms-btn-purple px-4 py-2 hover:opacity-90 font-black uppercase text-xs border-[2px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all shrink-0 flex items-center gap-1.5 cursor-pointer" style="background-color: #7C3AED !important; color: #ffffff !important;" data-id="${session.id}" onclick="event.preventDefault(); event.stopPropagation(); window.loadModuleSessionIntoSolver('${session.id}');">
+                    <span style="color: #ffffff !important;">Open Module</span>
                     <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
                 </button>
             `;
             listContainer.appendChild(card);
         });
-
         listContainer.querySelectorAll('.ms-open-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const id = btn.getAttribute('data-id');
