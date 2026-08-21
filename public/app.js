@@ -943,13 +943,16 @@ wizardSkipScanBtn.addEventListener('click', () => {
 // =============================================================
 // PDF LOAD & PREVIEW
 // =============================================================
+let isLoadingPdf = false;
 async function loadPDF(file) {
     if (!file) return;
+    if (isLoadingPdf) return;
     if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
         alert('Please upload a valid PDF file.');
         return;
     }
     
+    isLoadingPdf = true;
     try {
         window.currentPdfFilename = file.name.replace(/\.pdf$/i, '');
         const ab  = await file.arrayBuffer();
@@ -1025,6 +1028,11 @@ async function loadPDF(file) {
         console.error("Failed to load PDF:", err);
         alert('Failed to load PDF. Please make sure the file is not corrupted.');
         cancelBtn.click();
+    } finally {
+        isLoadingPdf = false;
+        const msInput = document.getElementById('msDirectFileInput');
+        if (msInput) msInput.value = '';
+        if (fileInput) fileInput.value = '';
     }
 }
 
@@ -1044,13 +1052,29 @@ endPageInput.addEventListener('change', async () => {
     config.endPage = p;
 });
 
+let currentPreviewRenderTask = null;
 async function renderPreview(pageNum, canvas, ctx) {
     const doc = getActiveDoc();
     if (!doc) return;
+    if (currentPreviewRenderTask) {
+        try {
+            await currentPreviewRenderTask.cancel();
+        } catch(e) {}
+        currentPreviewRenderTask = null;
+    }
     const page = await doc.getPage(pageNum);
     const vp   = page.getViewport({ scale: 1.0 });
     canvas.width = vp.width; canvas.height = vp.height;
-    await page.render({ canvasContext: ctx, viewport: vp }).promise;
+    currentPreviewRenderTask = page.render({ canvasContext: ctx, viewport: vp });
+    try {
+        await currentPreviewRenderTask.promise;
+    } catch(err) {
+        if (err && err.name !== 'RenderingCancelledException') {
+            throw err;
+        }
+    } finally {
+        currentPreviewRenderTask = null;
+    }
 }
 
 window.addEventListener('resize', () => {
