@@ -3093,58 +3093,58 @@
         </div>
     </div>
     <!-- Test Instructions & Setup Modal -->
-    <div id="testInstructionsModal" class="hidden fixed inset-0 bg-black/80 z-[99999] flex items-center justify-center p-4">
-        <div class="brutal-card border-[3.5px] border-black max-w-lg w-full p-8 text-left shadow-[8px_8px_0px_0px_#000] relative overflow-hidden flex flex-col gap-5">
+    <div id="testInstructionsModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4" style="z-index: 999999;">
+        <div class="brutal-card border-[3.5px] border-black max-w-lg w-full p-6 sm:p-8 text-left shadow-[8px_8px_0px_0px_#000] relative overflow-hidden flex flex-col gap-5" style="background-color: var(--bg-card); color: var(--text-primary);">
             <!-- Header -->
-            <div class="flex items-start justify-between border-b border-black pb-4">
+            <div class="flex items-start justify-between border-b-2 border-black pb-4">
                 <div>
-                    <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest bg-blue-500/10 text-blue-400 border border-blue-500/20 mb-1">Test Instructions</span>
-                    <h3 id="instructionsModalTitle" class="text-lg font-bold leading-tight">Mock Test Session</h3>
-                    <p id="instructionsModalSubtitle" class="text-xs mt-0.5">25 Questions • Standard Marking</p>
+                    <span class="inline-block px-2.5 py-0.5 text-[10px] font-black uppercase tracking-widest bg-yellow-400 text-black border border-black mb-1">Test Instructions</span>
+                    <h3 id="instructionsModalTitle" class="text-lg sm:text-xl font-black uppercase leading-tight">Mock Test Session</h3>
+                    <p id="instructionsModalSubtitle" class="text-xs font-semibold mt-0.5" style="color: var(--text-muted);">25 Questions • Standard Marking</p>
                 </div>
-                <button id="closeInstructionsModalBtn" class="hover: p-1 rounded-none hover:bg-gray-800 transition-colors">
+                <button id="closeInstructionsModalBtn" class="p-1.5 hover:bg-black/10 dark:hover:bg-white/10 rounded transition-colors cursor-pointer" title="Close">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
 
             <!-- Rename Test Field -->
-            <div class="bg-[#141924] p-3 rounded-none /60 flex flex-col gap-1">
-                <label for="instructionsModalTitleInput" class="text-[10px] font-bold uppercase tracking-widest">Test Name / Title</label>
-                <input type="text" id="instructionsModalTitleInput" placeholder="Enter test name..." class="w-full brutal-card text-xs rounded-none px-3 py-2 focus:outline-none focus:border-blue-500 font-semibold transition-colors" />
+            <div class="p-3 border-2 border-black flex flex-col gap-1.5" style="background-color: var(--bg-page);">
+                <label for="instructionsModalTitleInput" class="text-[10px] font-black uppercase tracking-widest" style="color: var(--text-primary);">Test Name / Title</label>
+                <input type="text" id="instructionsModalTitleInput" placeholder="Enter test name..." class="w-full bg-white dark:bg-slate-900 border-2 border-black text-xs px-3 py-2 font-bold focus:outline-none" style="color: var(--text-primary);" />
             </div>
 
             <!-- Rules & Guidelines -->
-            <div class="space-y-3 text-xs">
-                <div class="flex items-start gap-2.5 bg-[#141924] p-3 rounded-none /60">
-                    <div class="text-blue-400 mt-0.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+            <div class="space-y-2.5 text-xs font-medium">
+                <div class="flex items-start gap-2.5 p-3 border-2 border-black" style="background-color: var(--bg-page);">
+                    <div class="text-blue-500 font-bold mt-0.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
                     <div>
-                        <strong class="">Timer & Duration:</strong>
-                        <p class="text-[11px] mt-0.5">The countdown timer starts as soon as you click "Start Exam Now". Manage your time wisely.</p>
+                        <strong class="font-black uppercase" style="color: var(--text-primary);">Timer &amp; Duration:</strong>
+                        <p class="text-[11px] mt-0.5" style="color: var(--text-muted);">The countdown timer starts as soon as you click "Start Exam Now". Manage your time wisely.</p>
                     </div>
                 </div>
-                <div class="flex items-start gap-2.5 bg-[#141924] p-3 rounded-none /60">
-                    <div class="text-emerald-400 mt-0.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+                <div class="flex items-start gap-2.5 p-3 border-2 border-black" style="background-color: var(--bg-page);">
+                    <div class="text-emerald-500 font-bold mt-0.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
                     <div>
-                        <strong class="">Scoring Scheme:</strong>
-                        <p class="text-[11px] mt-0.5">Correct response: <span class="text-emerald-400 font-bold">+4</span> • Incorrect response: <span class="text-red-400 font-bold">-1</span></p>
+                        <strong class="font-black uppercase" style="color: var(--text-primary);">Scoring Scheme:</strong>
+                        <p class="text-[11px] mt-0.5" style="color: var(--text-muted);">Correct response: <span class="text-emerald-600 font-black">+4</span> • Incorrect response: <span class="text-rose-600 font-black">-1</span></p>
                     </div>
                 </div>
-                <div class="flex items-start gap-2.5 bg-[#141924] p-3 rounded-none /60">
-                    <div class="text-purple-400 mt-0.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+                <div class="flex items-start gap-2.5 p-3 border-2 border-black" style="background-color: var(--bg-page);">
+                    <div class="text-purple-500 font-bold mt-0.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
                     <div>
-                        <strong class="">Navigation:</strong>
-                        <p class="text-[11px] mt-0.5">Use the question palette to jump between questions. You can save, clear, or mark questions for review.</p>
+                        <strong class="font-black uppercase" style="color: var(--text-primary);">Navigation:</strong>
+                        <p class="text-[11px] mt-0.5" style="color: var(--text-muted);">Use the question palette to jump between questions. You can save, clear, or mark questions for review.</p>
                     </div>
                 </div>
             </div>
 
             <!-- Modal Action Footer -->
-            <div class="flex items-center justify-end gap-3 border-t border-black pt-4">
-                <button id="cancelInstructionsModalBtn" class="px-4 py-2.5 rounded-none text-xs font-semibold hover: hover:bg-gray-800 transition-colors">
+            <div class="flex items-center justify-end gap-3 border-t-2 border-black pt-4">
+                <button id="cancelInstructionsModalBtn" class="px-4 py-2 text-xs font-black uppercase border-2 border-black bg-gray-200 hover:bg-gray-300 text-black cursor-pointer shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all">
                     Cancel
                 </button>
-                <button id="confirmStartTestBtn" class="flex items-center gap-2 px-6 py-2.5 rounded-none text-xs font-bold bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-600/30 transition-all active:scale-95">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
+                <button id="confirmStartTestBtn" class="ms-btn-purple flex items-center gap-2 px-6 py-2.5 text-xs font-black uppercase border-2 border-black shadow-[4px_4px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 transition-all cursor-pointer">
+                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
                     Start Exam Now
                 </button>
             </div>
@@ -3186,7 +3186,7 @@
         </div>
     </div>
 
-    <script defer src="app.js?v=230"></script>
+    <script defer src="app.js?v=235"></script>
     <script defer src="/liveRoom.js"></script>
 </body>
 </html>

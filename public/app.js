@@ -2620,12 +2620,12 @@ async function renderHistory() {
                         </button>
                     </div>
                     <!-- Module Solver: Reselect & Solve button -->
-                    <button class="brutal-btn open-module-solver-btn text-xs font-black uppercase py-2 px-3 sm:py-2.5 sm:px-3.5 flex items-center gap-1.5 transition-all shrink-0 bg-violet-600 hover:bg-violet-500 text-white border-[2px] border-black shadow-[2px_2px_0px_0px_#000]" data-id="${session.id}" title="Open in Module Solver to pick questions & track progress">
+                    <button class="brutal-btn open-module-solver-btn text-xs font-black uppercase py-2 px-3 sm:py-2.5 sm:px-3.5 flex items-center gap-1.5 transition-all shrink-0 ms-btn-purple border-[2px] border-black shadow-[2px_2px_0px_0px_#000] cursor-pointer" style="background-color: #7C3AED !important; color: #ffffff !important;" data-id="${session.id}" onclick="event.preventDefault(); event.stopPropagation(); window.loadModuleSessionIntoSolver('${session.id}');" title="Open in Module Solver to pick questions & track progress">
                         <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012-2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-                        <span>Reselect &amp; Solve</span>
+                        <span style="color: #ffffff !important;">Reselect &amp; Solve</span>
                     </button>
                     <!-- Take Test: yellow pill -->
-                    <button class="brutal-btn take-test-modal-btn btn-action-taketest text-xs font-black uppercase py-2 px-3 sm:py-2.5 sm:px-4 flex items-center gap-1.5 transition-all shrink-0" style="background-color: #FFE600 !important; color: #000000 !important;" data-id="${session.id}" data-type="all">
+                    <button class="brutal-btn take-test-modal-btn btn-action-taketest text-xs font-black uppercase py-2 px-3 sm:py-2.5 sm:px-4 flex items-center gap-1.5 transition-all shrink-0 cursor-pointer" style="background-color: #FFE600 !important; color: #000000 !important;" data-id="${session.id}" data-type="all" onclick="event.preventDefault(); event.stopPropagation(); window.openInstructionsModalForSession('${session.id}', 'all');">
                         <svg class="w-3.5 h-3.5" fill="#000000" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
                         <span style="color: #000000 !important;">Take Test</span>
                     </button>
@@ -6307,6 +6307,7 @@ function renderExternalSources() {
 // =============================================================
 
 window.pendingSessionToLaunch = null;
+window.openInstructionsModalForSession = openInstructionsModalForSession;
 
 async function openInstructionsModalForSession(id, type) {
     try {
@@ -6345,7 +6346,11 @@ async function openInstructionsModalForSession(id, type) {
             subtitleEl.textContent = `${count} Questions • Standard Marking (+4 / -1)`;
         }
         
-        if (modal) modal.classList.remove('hidden');
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+            modal.style.zIndex = '999999';
+        }
     } catch(e) {
         console.error("Error opening instructions modal:", e);
         alert("Could not load test session.");
@@ -6359,11 +6364,21 @@ function initTestInstructionsModal() {
     const confirmStartBtn = document.getElementById('confirmStartTestBtn');
     
     function hideModal() {
-        if(modal) modal.classList.add('hidden');
+        if(modal) {
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+        }
     }
     
     if(closeBtn) closeBtn.onclick = hideModal;
     if(cancelBtn) cancelBtn.onclick = hideModal;
+    if(modal) {
+        modal.onclick = (e) => {
+            if (e.target.id === 'testInstructionsModal') {
+                hideModal();
+            }
+        };
+    }
     
     if(confirmStartBtn) {
         confirmStartBtn.onclick = async () => {
@@ -6385,7 +6400,7 @@ function initTestInstructionsModal() {
             
             // Set up global session variables
             currentSessionId = Date.now();
-            extractedImages = session.extractedImages || [];
+            extractedImages = JSON.parse(JSON.stringify(session.extractedImages || []));
             
             if (extractedImages.length === 0) {
                 alert("No questions found in this test.");
@@ -6393,7 +6408,7 @@ function initTestInstructionsModal() {
             }
             
             // Calculate time
-            const mins = (typeof getCalculatedTimeMinutes === 'function') ? getCalculatedTimeMinutes(extractedImages.length) : 60;
+            const mins = (typeof getCalculatedTimeMinutes === 'function') ? getCalculatedTimeMinutes(extractedImages.length) : Math.max(10, extractedImages.length * 2);
             
             // Fresh practiceState for test run
             practiceState = {
@@ -6403,6 +6418,7 @@ function initTestInstructionsModal() {
                 totalSecondsRemaining: mins * 60,
                 scorePerQ: 4,
                 negativeMarking: true,
+                targetTime: 0,
                 stats: extractedImages.map((q, idx) => {
                     let ex = 'Exercise 1';
                     if (q.label && q.label.includes(' - ')) ex = q.label.split(' - ')[0];
