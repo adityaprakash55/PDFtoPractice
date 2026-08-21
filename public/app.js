@@ -3478,7 +3478,7 @@ function updateNtaSummary() {
     document.getElementById('ntaLegendMarked').textContent = counts.marked;
     const answeredMarkedEl = document.getElementById('ntaLegendAnsweredMarked');
     if(answeredMarkedEl) {
-        answeredMarkedEl.innerHTML = `<span class="w-2 h-2 bg-green-400 rounded-full absolute bottom-0 right-0"></span>${counts.answered_marked}`;
+        answeredMarkedEl.innerHTML = `<span class="w-2 h-2 bg-[#0284c7] rounded-full absolute bottom-0 right-0 border border-white"></span>${counts.answered_marked}`;
     }
 }
 
@@ -3518,9 +3518,9 @@ function renderNtaQuestion(index) {
     // Auto-select the correct Subject Tab if user navigated via Palette
     Array.from(ntaSubjectTabs.children).forEach(btn => {
         if (btn.textContent === stat.exercise.toUpperCase()) {
-            btn.className = 'px-6 py-2 h-full font-bold text-sm tracking-wide transition-colors -r  bg-white text-blue-900';
+            btn.className = 'px-6 py-2 h-full font-bold text-sm tracking-wide transition-colors -r bg-white text-blue-900';
         } else {
-            btn.className = 'px-6 py-2 h-full font-bold text-sm tracking-wide transition-colors -r   hover:bg-[#e07b1a]';
+            btn.className = 'px-6 py-2 h-full font-bold text-sm tracking-wide transition-colors -r hover:bg-[#e07b1a]';
         }
     });
     
@@ -3552,7 +3552,6 @@ function renderNtaQuestion(index) {
             }
         };
     });
-
     
     // Setup question-specific scratchpad note
     if (!practiceState.scratchpadNotes) practiceState.scratchpadNotes = {};
@@ -3585,7 +3584,6 @@ function renderNtaQuestion(index) {
 function showNtaAnswer() {
     practiceState.isAnswerRevealed = true;
     const realIndex = practiceState.activeIndices[practiceState.currentIndex];
-    practiceState.stats[realIndex].attempted = true;
     
     ntaCheckAnswerBtn.classList.add('hidden');
     ntaAnswerArea.classList.remove('hidden');
@@ -3615,7 +3613,8 @@ ntaCorrectBtn.addEventListener('click', () => {
     s.ntaStatus = 'answered';
     s.attempted = true;
     s.evaluation = 'correct';
-    if (!practiceState.answers[realIndex]) practiceState.answers[realIndex] = 'correct';
+    if (!practiceState.answers) practiceState.answers = {};
+    practiceState.answers[realIndex] = 'correct';
     logQuestionJourney(realIndex, 'correct');
     updateNtaPaletteColors();
 });
@@ -3626,7 +3625,8 @@ ntaIncorrectBtn.addEventListener('click', () => {
     s.ntaStatus = 'answered';
     s.attempted = true;
     s.evaluation = 'incorrect';
-    if (!practiceState.answers[realIndex]) practiceState.answers[realIndex] = 'incorrect';
+    if (!practiceState.answers) practiceState.answers = {};
+    practiceState.answers[realIndex] = 'incorrect';
     logQuestionJourney(realIndex, 'incorrect');
     updateNtaPaletteColors();
 });
@@ -3647,12 +3647,21 @@ ntaSaveNextBtn.addEventListener('click', () => {
         };
     }
     const s = practiceState.stats[realIndex];
-    s.ntaStatus = 'answered';
-    s.attempted = true;
-    if (s.evaluation !== 'correct' && s.evaluation !== 'incorrect') {
+    
+    // Check if an option was chosen or self-evaluation was marked
+    const hasAnswer = (practiceState.answers && practiceState.answers[realIndex] !== undefined && practiceState.answers[realIndex] !== null && practiceState.answers[realIndex] !== '') || s.evaluation === 'correct' || s.evaluation === 'incorrect';
+
+    if (hasAnswer) {
+        s.ntaStatus = 'answered';
+        s.attempted = true;
+        logQuestionJourney(realIndex, 'answered');
+    } else {
+        s.ntaStatus = 'not_answered';
+        s.attempted = false;
         s.evaluation = null;
+        logQuestionJourney(realIndex, 'not_answered');
     }
-    logQuestionJourney(realIndex, 'answered');
+    
     updateNtaPaletteColors();
     if (practiceState.currentIndex < practiceState.activeIndices.length - 1) {
         renderNtaQuestion(practiceState.currentIndex + 1);
@@ -3678,7 +3687,16 @@ if (document.getElementById('ntaSaveReviewBtn')) {
             };
         }
         const s = practiceState.stats[realIndex];
-        s.ntaStatus = s.attempted ? 'answered_marked' : 'marked';
+        const hasAnswer = (practiceState.answers && practiceState.answers[realIndex] !== undefined && practiceState.answers[realIndex] !== null && practiceState.answers[realIndex] !== '') || s.evaluation === 'correct' || s.evaluation === 'incorrect';
+
+        if (hasAnswer) {
+            s.ntaStatus = 'answered_marked';
+            s.attempted = true;
+        } else {
+            s.ntaStatus = 'marked';
+            s.attempted = false;
+            s.evaluation = null;
+        }
         logQuestionJourney(realIndex, s.ntaStatus);
         updateNtaPaletteColors();
         if (practiceState.currentIndex < practiceState.activeIndices.length - 1) {
@@ -3708,7 +3726,7 @@ ntaClearBtn.addEventListener('click', () => {
     s.ntaStatus = 'not_answered';
     s.attempted = false;
     s.evaluation = null;
-    delete practiceState.answers[realIndex];
+    if (practiceState.answers) delete practiceState.answers[realIndex];
     practiceState.isAnswerRevealed = false;
     logQuestionJourney(realIndex, 'cleared');
     updateNtaPaletteColors();
@@ -3731,7 +3749,16 @@ ntaMarkReviewBtn.addEventListener('click', () => {
         };
     }
     const s = practiceState.stats[realIndex];
-    s.ntaStatus = s.attempted ? 'answered_marked' : 'marked';
+    const hasAnswer = (practiceState.answers && practiceState.answers[realIndex] !== undefined && practiceState.answers[realIndex] !== null && practiceState.answers[realIndex] !== '') || s.evaluation === 'correct' || s.evaluation === 'incorrect';
+
+    if (hasAnswer) {
+        s.ntaStatus = 'answered_marked';
+        s.attempted = true;
+    } else {
+        s.ntaStatus = 'marked';
+        s.attempted = false;
+        s.evaluation = null;
+    }
     logQuestionJourney(realIndex, s.ntaStatus);
     updateNtaPaletteColors();
     if (practiceState.currentIndex < practiceState.activeIndices.length - 1) {
