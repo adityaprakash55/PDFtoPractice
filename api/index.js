@@ -42,9 +42,15 @@ app.get('/sitemap.xml', (req, res) => {
 });
 
 app.get('/robots.txt', (req, res) => {
-    res.header('Content-Type', 'text/plain');
+    res.header('Content-Type', 'text/plain; charset=utf-8');
     res.sendFile(path.join(__dirname, '../public/robots.txt'));
 });
+
+app.get('/ads.txt', (req, res) => {
+    res.header('Content-Type', 'text/plain; charset=utf-8');
+    res.sendFile(path.join(__dirname, '../public/ads.txt'));
+});
+
 
 app.get('/donate', (req, res) => {
     res.render('donate', {
@@ -83,6 +89,8 @@ app.get(['/donate.html', '/Donate'], (req, res) => res.redirect(301, '/donate'))
 app.get('/privacy.html', (req, res) => res.redirect(301, '/privacy'));
 app.get('/terms.html', (req, res) => res.redirect(301, '/terms'));
 app.get('/contact.html', (req, res) => res.redirect(301, '/contact'));
+app.get(['/Ads.txt', '/ADS.TXT', '/ads.txt/'], (req, res) => res.redirect(301, '/ads.txt'));
+
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

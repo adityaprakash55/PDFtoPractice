@@ -383,6 +383,13 @@
                 <svg class="w-4 h-4 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                 <span class="dash-nav-text whitespace-nowrap">Score Analysis</span>
             </button>
+            <button class="dash-nav-btn w-full flex items-center justify-between gap-2.5 px-3 py-2.5 rounded-none text-sm font-medium hover:hover:bg-white/5 transition-all text-left" data-target="moduleSolverView" title="Module Solver">
+                <div class="flex items-center gap-2.5">
+                    <svg class="w-4 h-4 shrink-0 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 11H5m14 0a2 2 0 012-2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                    <span class="dash-nav-text whitespace-nowrap font-bold">Module Solver</span>
+                </div>
+                <span class="text-[9px] font-black uppercase px-1.5 py-0.5 bg-violet-600 text-white rounded">NEW</span>
+            </button>
             <button class="dash-nav-btn w-full flex items-center gap-2.5 px-3 py-2.5 rounded-none text-sm font-medium  hover: hover:bg-white/5 transition-all text-left" data-target="combineView" title="Combine Tests">
                 <svg class="w-4 h-4 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"/></svg>
                 <span class="dash-nav-text whitespace-nowrap">Combine Tests</span>
@@ -448,8 +455,12 @@
                 </div>
             </div>
             
-            <!-- How to Use Button -->
-            <div class="mt-4 sm:mt-5 flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
+            <!-- Quick Actions Buttons -->
+            <div class="mt-4 sm:mt-5 flex flex-wrap justify-center gap-3 sm:gap-4">
+                <button id="homeModuleSolverBtn" class="inline-flex items-center justify-center gap-2 bg-violet-400 hover:bg-violet-300 text-black font-black uppercase border-[3px] border-black shadow-[4px_4px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_#000] transition-all active:translate-x-0 active:translate-y-0 px-4 py-2 text-xs sm:text-sm">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012-2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                    ⚡ Module Solver
+                </button>
                 <button id="homeCreateLiveRoomBtn" class="inline-flex items-center justify-center gap-2 bg-emerald-400 hover:bg-emerald-300 font-black uppercase border-[3px] border-black shadow-[4px_4px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_#000] transition-all active:translate-x-0 active:translate-y-0 px-4 py-2 text-xs sm:text-sm">
                     <svg class="w-4 h-4 sm:w-5 sm:h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                     Host a Live Practice Room
@@ -458,6 +469,234 @@
                     <svg class="w-4 h-4 sm:w-5 sm:h-5 text-black" fill="currentColor" viewBox="0 0 24 24"><path d="M21.582,6.186c-0.23-0.86-0.908-1.538-1.768-1.768C18.254,4,12,4,12,4S5.746,4,4.186,4.418c-0.86,0.23-1.538,0.908-1.768,1.768C2,7.746,2,12,2,12s0,4.254,0.418,5.814c0.23,0.86,0.908,1.538,1.768,1.768C5.746,20,12,20,12,20s6.254,0,7.814-0.418c0.86-0.23,1.538-0.908,1.768-1.768C22,16.254,22,12,22,12S22,7.746,21.582,6.186z M10,15.464V8.536L16,12L10,15.464z"></path></svg>
                     How to Use
                 </a>
+            </div>
+        </div>
+
+        <!-- Module Solver Section -->
+        <div id="moduleSolverContainer" class="dash-view moduleSolverView hidden max-w-6xl mx-auto mt-6 px-2 sm:px-4">
+            
+            <!-- State 1: No Module Selected / Module Picker State -->
+            <div id="msNoModuleState" class="max-w-4xl mx-auto space-y-6">
+                <!-- Hero Header -->
+                <div class="brutal-card p-6 sm:p-8 border-[3.5px] border-black shadow-[6px_6px_0px_0px_#000] relative overflow-hidden">
+                    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 relative z-10">
+                        <div>
+                            <div class="inline-flex items-center gap-2 px-3 py-1 bg-violet-500 text-white font-black uppercase text-[11px] border-[2px] border-black shadow-[2px_2px_0px_0px_#000] mb-3">
+                                <span>⚡ SMART ASSIGNMENT MODE</span>
+                            </div>
+                            <h2 class="text-2xl sm:text-3xl md:text-4xl font-black uppercase tracking-tight">Module Question Solver</h2>
+                            <p class="text-xs sm:text-sm mt-2 max-w-xl font-medium" style="color: var(--text-muted);">
+                                Pick specific question numbers across different sections and pages given by your teacher. Tracks previous attempts (🟢 Correct, 🔴 Wrong, 🟡 Unattempted) so you can resume, reselect new questions next day, or retry mistakes!
+                            </p>
+                        </div>
+                        <div class="shrink-0 flex flex-col gap-2 w-full md:w-auto">
+                            <button id="msUploadNewPdfBtn" class="bg-violet-400 hover:bg-violet-300 text-black font-black uppercase py-3 px-6 border-[3px] border-black shadow-[4px_4px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 transition-all flex items-center justify-center gap-2 text-xs sm:text-sm">
+                                <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                                Upload Module PDF
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Existing Modules from Vault / Recents -->
+                <div class="brutal-card p-6 border-[3.5px] border-black shadow-[6px_6px_0px_0px_#000]">
+                    <div class="flex items-center justify-between mb-4 pb-3 border-b-2 border-black">
+                        <h3 class="text-base sm:text-lg font-black uppercase flex items-center gap-2">
+                            <span class="text-violet-500">📚</span> Choose Module from Vault / Recents
+                        </h3>
+                        <span id="msVaultCount" class="text-xs font-bold px-2 py-0.5 bg-black/10 dark:bg-white/10 rounded">0 Modules</span>
+                    </div>
+
+                    <div id="msRecentModulesList" class="flex flex-col gap-3 max-h-[50vh] overflow-y-auto pr-1 custom-scrollbar">
+                        <!-- Populated dynamically with tests that can be opened in Module Solver -->
+                        <div class="text-center py-10 text-sm font-medium" style="color: var(--text-muted);">
+                            Loading modules...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- State 2: Active Module Selected / Question Selector State -->
+            <div id="msActiveModuleState" class="hidden space-y-6">
+                
+                <!-- Module Header Card -->
+                <div class="brutal-card p-5 sm:p-6 border-[3.5px] border-black shadow-[6px_6px_0px_0px_#000] relative">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b-2 border-black">
+                        <div class="flex items-start sm:items-center gap-3">
+                            <button id="msBackToModulesBtn" class="p-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 border-[2px] border-black shadow-[2px_2px_0px_0px_#000] shrink-0 active:translate-x-0.5 active:translate-y-0.5 transition-all" title="Back to Modules List">
+                                <svg class="w-4 h-4 text-black dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                            </button>
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-2 flex-wrap mb-1">
+                                    <span class="inline-block px-2 py-0.5 bg-violet-600 text-white font-black uppercase text-[10px] tracking-wider rounded">MODULE SOLVER</span>
+                                    <span id="msModuleSectionBadge" class="inline-block px-2 py-0.5 bg-cyan-400 text-black font-black uppercase text-[10px] tracking-wider border border-black">0 Sections</span>
+                                    <span id="msModulePageBadge" class="inline-block px-2 py-0.5 bg-yellow-400 text-black font-black uppercase text-[10px] tracking-wider border border-black">0 Pages</span>
+                                </div>
+                                <h2 id="msModuleTitle" class="text-xl sm:text-2xl font-black truncate uppercase tracking-tight">Module Title</h2>
+                            </div>
+                        </div>
+
+                        <!-- Switch Module button -->
+                        <div class="flex items-center gap-2 shrink-0">
+                            <button id="msSwitchModuleBtn" class="px-3 py-1.5 bg-yellow-400 hover:bg-yellow-300 text-black font-black uppercase text-xs border-[2px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all">
+                                🔄 Switch Module
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Cumulative Status Stats Row -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4">
+                        <div class="p-3 bg-emerald-500/10 border-[2px] border-emerald-500 rounded-none flex flex-col items-center text-center">
+                            <span class="text-[10px] font-black uppercase text-emerald-500 tracking-wider flex items-center gap-1">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Correct / Mastered
+                            </span>
+                            <span id="msStatCorrectCount" class="text-xl sm:text-2xl font-black text-emerald-500 mt-1">0</span>
+                            <span id="msStatCorrectPct" class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">0% of Module</span>
+                        </div>
+
+                        <div class="p-3 bg-rose-500/10 border-[2px] border-rose-500 rounded-none flex flex-col items-center text-center">
+                            <span class="text-[10px] font-black uppercase text-rose-500 tracking-wider flex items-center gap-1">
+                                <span class="w-2 h-2 rounded-full bg-rose-500"></span> Wrong / Needs Retry
+                            </span>
+                            <span id="msStatWrongCount" class="text-xl sm:text-2xl font-black text-rose-500 mt-1">0</span>
+                            <span id="msStatWrongPct" class="text-[10px] text-rose-600 dark:text-rose-400 font-bold">0% of Module</span>
+                        </div>
+
+                        <div class="p-3 bg-amber-500/10 border-[2px] border-amber-500 rounded-none flex flex-col items-center text-center">
+                            <span class="text-[10px] font-black uppercase text-amber-500 tracking-wider flex items-center gap-1">
+                                <span class="w-2 h-2 rounded-full bg-amber-500"></span> Not Attempted
+                            </span>
+                            <span id="msStatUnattemptedCount" class="text-xl sm:text-2xl font-black text-amber-500 mt-1">0</span>
+                            <span id="msStatUnattemptedPct" class="text-[10px] text-amber-600 dark:text-amber-400 font-bold">100% of Module</span>
+                        </div>
+
+                        <div class="p-3 bg-violet-500/10 border-[2px] border-violet-500 rounded-none flex flex-col items-center text-center">
+                            <span class="text-[10px] font-black uppercase text-violet-400 tracking-wider flex items-center gap-1">
+                                <span class="w-2 h-2 rounded-full bg-violet-400"></span> Selected Today
+                            </span>
+                            <span id="msStatSelectedCount" class="text-xl sm:text-2xl font-black text-violet-400 mt-1">0</span>
+                            <span id="msStatSelectedTime" class="text-[10px] text-violet-400 font-bold">Est. 0 mins</span>
+                        </div>
+                    </div>
+
+                    <!-- Progress Distribution Bar -->
+                    <div class="mt-4">
+                        <div class="flex justify-between text-[11px] font-bold uppercase mb-1" style="color: var(--text-muted);">
+                            <span>Overall Module Progress</span>
+                            <span id="msProgressSummaryText">0 / 0 Solved</span>
+                        </div>
+                        <div class="w-full h-3 bg-gray-200 dark:bg-gray-800 border-[2px] border-black flex overflow-hidden">
+                            <div id="msProgressBarCorrect" class="h-full bg-emerald-500 transition-all duration-500" style="width: 0%" title="Correct"></div>
+                            <div id="msProgressBarWrong" class="h-full bg-rose-500 transition-all duration-500" style="width: 0%" title="Wrong"></div>
+                            <div id="msProgressBarUnattempted" class="h-full bg-amber-400 transition-all duration-500" style="width: 100%" title="Unattempted"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Controls & Filter Toolbar -->
+                <div class="brutal-card p-4 sm:p-5 border-[3.5px] border-black shadow-[6px_6px_0px_0px_#000] space-y-4">
+                    
+                    <!-- Quick Question Numbers Input -->
+                    <div>
+                        <label for="msQuickNumberInput" class="block text-xs font-black uppercase tracking-wider mb-1.5 flex items-center justify-between">
+                            <span class="flex items-center gap-1.5">
+                                <span>🎯 Quick Select by Question Numbers</span>
+                                <span class="text-[10px] text-violet-400 font-normal">(as marked by teacher)</span>
+                            </span>
+                            <span class="text-[10px] font-bold" style="color: var(--text-muted);">e.g. 1, 4, 7-10, 15, 23</span>
+                        </label>
+                        <div class="flex gap-2">
+                            <input type="text" id="msQuickNumberInput" placeholder="Type question numbers e.g. 1, 3, 5-8, 12, 19..." class="w-full px-3 py-2.5 text-xs sm:text-sm bg-[var(--bg-input)] border-[2.5px] border-black font-semibold focus:outline-none focus:border-violet-500 transition-colors" />
+                            <button id="msApplyQuickNumbersBtn" class="px-4 py-2.5 bg-violet-500 hover:bg-violet-400 text-white font-black uppercase text-xs border-[2.5px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all shrink-0">
+                                Apply
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Dropdowns & Filters Row -->
+                    <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-black/20 dark:border-white/20">
+                        <div class="flex flex-wrap items-center gap-2 sm:gap-3 flex-1">
+                            <!-- Section Filter -->
+                            <div class="flex items-center gap-1.5">
+                                <label for="msSectionFilter" class="text-[11px] font-black uppercase shrink-0">Section:</label>
+                                <select id="msSectionFilter" class="px-2.5 py-1.5 text-xs bg-[var(--bg-input)] border-[2px] border-black font-bold focus:outline-none focus:border-violet-500">
+                                    <option value="all">All Sections</option>
+                                </select>
+                            </div>
+
+                            <!-- Page Filter -->
+                            <div class="flex items-center gap-1.5">
+                                <label for="msPageFilter" class="text-[11px] font-black uppercase shrink-0">Page:</label>
+                                <select id="msPageFilter" class="px-2.5 py-1.5 text-xs bg-[var(--bg-input)] border-[2px] border-black font-bold focus:outline-none focus:border-violet-500">
+                                    <option value="all">All Pages</option>
+                                </select>
+                            </div>
+
+                            <!-- Status Filter Buttons -->
+                            <div class="flex items-center gap-1 bg-black/10 dark:bg-white/10 p-1 border border-black">
+                                <button type="button" class="ms-status-tab px-2.5 py-1 text-[11px] font-black uppercase transition-all bg-yellow-400 text-black border border-black shadow" data-status="all">All</button>
+                                <button type="button" class="ms-status-tab px-2.5 py-1 text-[11px] font-black uppercase transition-all text-rose-500 hover:text-white" data-status="wrong">🔴 Wrong</button>
+                                <button type="button" class="ms-status-tab px-2.5 py-1 text-[11px] font-black uppercase transition-all text-emerald-500 hover:text-white" data-status="correct">🟢 Correct</button>
+                                <button type="button" class="ms-status-tab px-2.5 py-1 text-[11px] font-black uppercase transition-all text-amber-500 hover:text-white" data-status="unattempted">🟡 Unattempted</button>
+                            </div>
+                        </div>
+
+                        <!-- Quick Batch Selection Actions -->
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button id="msSelectAllUnattemptedBtn" class="px-2.5 py-1.5 bg-amber-400 hover:bg-amber-300 text-black font-black uppercase text-[10px] sm:text-xs border-[2px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all">
+                                🟡 Select Unattempted
+                            </button>
+                            <button id="msSelectAllWrongBtn" class="px-2.5 py-1.5 bg-rose-500 hover:bg-rose-400 text-white font-black uppercase text-[10px] sm:text-xs border-[2px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all">
+                                🔴 Select Wrong (Retry)
+                            </button>
+                            <button id="msSelectAllFilteredBtn" class="px-2.5 py-1.5 bg-cyan-400 hover:bg-cyan-300 text-black font-black uppercase text-[10px] sm:text-xs border-[2px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all">
+                                Select All Filtered
+                            </button>
+                            <button id="msClearSelectionBtn" class="px-2.5 py-1.5 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-black dark:text-white font-black uppercase text-[10px] sm:text-xs border-[2px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all">
+                                Clear
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Questions Selection Grid Container -->
+                <div id="msQuestionsContainer" class="space-y-6">
+                    <!-- Populated dynamically with grouped sections and question cards -->
+                </div>
+
+                <!-- Sticky Bottom Launch Bar -->
+                <div id="msLaunchBar" class="sticky bottom-4 z-40 brutal-card p-4 border-[3.5px] border-black shadow-[6px_6px_0px_0px_#000] bg-white/95 dark:bg-slate-900/95 backdrop-blur-md">
+                    <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div class="flex flex-wrap items-center gap-4 w-full md:w-auto">
+                            <div class="flex flex-col">
+                                <span class="text-[10px] font-black uppercase text-violet-400">Selected Questions</span>
+                                <span class="text-lg sm:text-xl font-black">
+                                    <span id="msLaunchSelectedCount" class="text-violet-400 font-black">0</span> Questions
+                                </span>
+                            </div>
+                            
+                            <div class="h-8 w-px bg-black/20 dark:bg-white/20 hidden sm:block"></div>
+
+                            <div class="flex items-center gap-2 flex-1 sm:flex-initial">
+                                <label for="msTestTitleInput" class="text-xs font-black uppercase shrink-0">Test Name:</label>
+                                <input type="text" id="msTestTitleInput" placeholder="Module Day Practice" class="px-3 py-1.5 text-xs bg-[var(--bg-input)] border-[2px] border-black font-semibold focus:outline-none focus:border-violet-500 w-44 sm:w-56" />
+                            </div>
+
+                            <div class="flex items-center gap-2">
+                                <label for="msTimeMinutesInput" class="text-xs font-black uppercase shrink-0">Time (mins):</label>
+                                <input type="number" id="msTimeMinutesInput" value="30" min="1" class="w-16 px-2 py-1.5 text-xs text-center bg-[var(--bg-input)] border-[2px] border-black font-bold focus:outline-none" />
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3 w-full md:w-auto justify-end">
+                            <button id="msStartTestBtn" disabled class="w-full sm:w-auto px-6 py-3 bg-violet-600 hover:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-black uppercase text-xs sm:text-sm border-[3px] border-black shadow-[4px_4px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 transition-all flex items-center justify-center gap-2">
+                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                Launch Practice Test
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -2867,7 +3106,31 @@
             </div>
         </div>
     </div>
-    
+    <!-- Module Solver Question Preview Modal -->
+    <div id="msQuestionPreviewModal" class="hidden fixed inset-0 bg-black/80 z-[99999] flex items-center justify-center p-4">
+        <div class="brutal-card border-[3.5px] border-black max-w-3xl w-full p-6 text-left shadow-[8px_8px_0px_0px_#000] relative overflow-hidden flex flex-col gap-4 max-h-[90vh]">
+            <div class="flex items-center justify-between border-b-2 border-black pb-3">
+                <div class="flex items-center gap-2">
+                    <span id="msModalQStatusBadge" class="px-2.5 py-0.5 text-xs font-black uppercase rounded">Status</span>
+                    <h3 id="msModalQTitle" class="text-base sm:text-lg font-black uppercase">Question Preview</h3>
+                </div>
+                <button id="msCloseModalBtn" class="p-1 hover:bg-black/10 dark:hover:bg-white/10 rounded transition-colors" title="Close Preview">
+                    <svg class="w-6 h-6 text-black dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto p-2 bg-slate-100 dark:bg-slate-900 border-2 border-black flex items-center justify-center custom-scrollbar min-h-[250px]">
+                <img id="msModalQImage" src="" alt="Question Preview" class="max-w-full max-h-[60vh] object-contain rounded dark:bg-white" />
+            </div>
+
+            <div class="flex items-center justify-between pt-2 border-t border-black/20 dark:border-white/20">
+                <div id="msModalQMeta" class="text-xs font-bold" style="color: var(--text-muted);">Page • Section</div>
+                <button id="msModalToggleSelectBtn" class="px-5 py-2 bg-violet-600 hover:bg-violet-500 text-white font-black uppercase text-xs border-[2px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all">
+                    Toggle Selection
+                </button>
+            </div>
+        </div>
+    </div>
 
     <script defer src="app.js?v=185"></script>
     <script defer src="/liveRoom.js"></script>

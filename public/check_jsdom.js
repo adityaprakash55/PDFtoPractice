@@ -28,3 +28,4 @@ try {
 } catch (e) {
     fs.writeFileSync('jsdom_error.log', 'CRASH: ' + e.stack + '\n');
 }
+    

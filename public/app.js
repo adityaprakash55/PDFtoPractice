@@ -1746,12 +1746,42 @@ function linkQuestionsAndAnswers() {
 // PRACTICE UI LOGIC
 // =============================================================
 
-function showPracticeSetup() {
+async function showPracticeSetup() {
     setupCropCount.textContent = extractedImages.length;
     const titleInput = document.getElementById('setupTestTitleInput');
     if (titleInput) {
         titleInput.value = window.currentPdfFilename || `Mock Test Session #${Date.now()}`;
     }
+
+    if (window.isModuleSolverScanMode) {
+        window.isModuleSolverScanMode = false;
+        const newSessionId = Date.now();
+        const initialStatus = {};
+        for (let i = 0; i < extractedImages.length; i++) {
+            initialStatus[i] = 'unattempted';
+        }
+        const moduleSession = {
+            id: newSessionId,
+            date: new Date().toLocaleString(),
+            title: window.currentPdfFilename || `Module Assignment #${newSessionId}`,
+            isModuleSolver: true,
+            moduleQuestionStatus: initialStatus,
+            extractedImages: extractedImages.map(img => ({
+                label: img.label,
+                dataUrl: img.dataUrl,
+                answerDataUrl: img.answerDataUrl,
+                page: img.page
+            }))
+        };
+        try {
+            await saveSessionToDB(moduleSession);
+            await loadModuleSessionIntoSolver(newSessionId);
+            return;
+        } catch(err) {
+            console.error("Failed to auto-save scanned module session:", err);
+        }
+    }
+
     practiceSetupContainer.classList.remove('hidden');
 }
 
@@ -2379,10 +2409,6 @@ function renderRadarChart() {
 async function saveCurrentSession(totalSeconds, correctCount, incorrectCount, unansweredCount) {
     if (!currentSessionId) return;
     
-    // Filter extractedImages to avoid storing massive raw canvas data if not needed, 
-    // but we need dataUrl and answerDataUrl for review.
-    // To save space, we ONLY save images that are in practiceState.activeIndices
-    // or just save all if they are standard base64 strings.
     const sessionData = {
         id: currentSessionId,
         date: new Date(currentSessionId).toLocaleString(),
@@ -2390,6 +2416,8 @@ async function saveCurrentSession(totalSeconds, correctCount, incorrectCount, un
 
         isHosted: (typeof isLiveMode !== 'undefined' && isLiveMode) || (typeof isHost !== 'undefined' && isHost) || false,
         isCommunity: (typeof isLiveMode !== 'undefined' && isLiveMode) || (typeof isHost !== 'undefined' && isHost) || false,
+        isModuleSolver: (practiceState && practiceState.isModuleSolver) ? true : false,
+        parentModuleId: (practiceState && practiceState.parentModuleId) ? practiceState.parentModuleId : null,
         totalSeconds,
         correctCount,
         incorrectCount,
@@ -2406,6 +2434,45 @@ async function saveCurrentSession(totalSeconds, correctCount, incorrectCount, un
     try {
         await saveSessionToDB(sessionData);
         console.log('Session saved to DB successfully.');
+
+        // If this was a Module Solver practice test, update the parent module's cumulative question status
+        if (practiceState && practiceState.parentModuleId) {
+            try {
+                let parentModule = await getSessionFromDB(practiceState.parentModuleId);
+                if (!parentModule) {
+                    const numId = parseInt(practiceState.parentModuleId);
+                    if (!isNaN(numId)) parentModule = await getSessionFromDB(numId);
+                }
+                if (!parentModule) {
+                    const all = await getAllSessionsFromDB();
+                    parentModule = all.find(s => String(s.id) === String(practiceState.parentModuleId));
+                }
+
+                if (parentModule) {
+                    parentModule.moduleQuestionStatus = parentModule.moduleQuestionStatus || {};
+                    parentModule.isModuleSolver = true;
+
+                    if (practiceState.selectedOriginalIndices && practiceState.stats) {
+                        practiceState.stats.forEach((stat, testIdx) => {
+                            const origIdx = practiceState.selectedOriginalIndices[testIdx];
+                            if (origIdx !== undefined) {
+                                if (stat.evaluation === 'correct') {
+                                    parentModule.moduleQuestionStatus[origIdx] = 'correct';
+                                } else if (stat.evaluation === 'incorrect') {
+                                    parentModule.moduleQuestionStatus[origIdx] = 'incorrect';
+                                } else if (stat.attempted) {
+                                    parentModule.moduleQuestionStatus[origIdx] = stat.evaluation || 'unattempted';
+                                }
+                            }
+                        });
+                    }
+                    await saveSessionToDB(parentModule);
+                    console.log('Successfully updated parent module question history for module:', parentModule.id);
+                }
+            } catch (pErr) {
+                console.error('Failed to update parent module cumulative history:', pErr);
+            }
+        }
     } catch (e) {
         console.error('Failed to save session:', e);
     }
@@ -2471,12 +2538,19 @@ async function renderHistory() {
                 formattedTitle = `${parts[0]}<span class="text-blue-400 font-extrabold">#${parts[1]}</span>`;
             }
             
+            const isModule = session.isModuleSolver || (session.moduleQuestionStatus && Object.keys(session.moduleQuestionStatus).length > 0);
+            const moduleBadge = isModule ? `<span class="inline-block px-1.5 py-0.5 bg-violet-600 text-white font-black uppercase text-[9px] tracking-wider rounded mr-1.5 border border-violet-400">MODULE</span>` : '';
+            
             const dateStr = session.date ? session.date.split(',')[0] : 'Unknown';
+            const qCount = session.extractedImages ? session.extractedImages.length : 0;
             
             card.innerHTML = `
                 <div class="flex-1 min-w-0 w-full sm:w-auto">
-                    <h4 class="text-sm sm:text-base font-bold truncate tracking-tight">${formattedTitle}</h4>
-                    <p class="text-xs mt-0.5 sm:mt-1 font-medium">Created: ${dateStr}</p>
+                    <div class="flex items-center gap-1 mb-0.5">
+                        ${moduleBadge}
+                        <h4 class="text-sm sm:text-base font-bold truncate tracking-tight">${formattedTitle}</h4>
+                    </div>
+                    <p class="text-xs font-medium" style="color: var(--text-muted);">${qCount} Questions • Created: ${dateStr}</p>
                 </div>
                 
                 <div class="flex flex-wrap items-center justify-between sm:justify-end gap-2 w-full sm:w-auto shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-black/10 dark:border-white/10">
@@ -2502,6 +2576,11 @@ async function renderHistory() {
                             <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="#ffffff" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path></svg>
                         </button>
                     </div>
+                    <!-- Module Solver: Reselect & Solve button -->
+                    <button class="brutal-btn open-module-solver-btn text-xs font-black uppercase py-2 px-3 sm:py-2.5 sm:px-3.5 flex items-center gap-1.5 transition-all shrink-0 bg-violet-600 hover:bg-violet-500 text-white border-[2px] border-black shadow-[2px_2px_0px_0px_#000]" data-id="${session.id}" title="Open in Module Solver to pick questions & track progress">
+                        <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012-2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                        <span>Reselect &amp; Solve</span>
+                    </button>
                     <!-- Take Test: yellow pill -->
                     <button class="brutal-btn take-test-modal-btn btn-action-taketest text-xs font-black uppercase py-2 px-3 sm:py-2.5 sm:px-4 flex items-center gap-1.5 transition-all shrink-0" style="background-color: #FFE600 !important; color: #000000 !important;" data-id="${session.id}" data-type="all">
                         <svg class="w-3.5 h-3.5" fill="#000000" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
@@ -2612,15 +2691,14 @@ async function renderHistory() {
             });
         });
         
-        document.querySelectorAll('.history-reattempt-btn').forEach(btn => {
-            console.log("Binding click listener to history-reattempt-btn, data-id:", btn.getAttribute('data-id'));
-            btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.open-module-solver-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
                 e.stopPropagation();
                 const rawId = btn.getAttribute('data-id');
                 const id = /^\d+$/.test(rawId) ? parseInt(rawId, 10) : rawId;
-                const filterType = btn.getAttribute('data-type');
-                console.log("history-reattempt-btn clicked. rawId:", rawId, "parsedId:", id, "filterType:", filterType);
-                openInstructionsModalForSession(id, filterType);
+                if (typeof loadModuleSessionIntoSolver === 'function') {
+                    await loadModuleSessionIntoSolver(id);
+                }
             });
         });
         
@@ -6483,3 +6561,834 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+
+// =============================================================
+// MODULE SOLVER ENGINE & WORKFLOW
+// =============================================================
+window.currentModuleSession = null;
+window.selectedModuleQuestions = new Set();
+window.moduleActiveStatusFilter = 'all';
+window.moduleActiveSectionFilter = 'all';
+window.moduleActivePageFilter = 'all';
+window.moduleActivePreviewIndex = null;
+window.isModuleSolverScanMode = false;
+
+// Open Module Solver View
+window.openModuleSolverView = async function() {
+    if (typeof window.switchDashView === 'function') {
+        window.switchDashView('moduleSolverView');
+    } else {
+        document.querySelectorAll('.dash-view').forEach(v => v.classList.add('hidden'));
+        const msContainer = document.getElementById('moduleSolverContainer');
+        if (msContainer) msContainer.classList.remove('hidden');
+    }
+
+    if (window.currentModuleSession) {
+        document.getElementById('msNoModuleState')?.classList.add('hidden');
+        document.getElementById('msActiveModuleState')?.classList.remove('hidden');
+        renderActiveModuleSolver();
+    } else {
+        document.getElementById('msNoModuleState')?.classList.remove('hidden');
+        document.getElementById('msActiveModuleState')?.classList.add('hidden');
+        await renderRecentModulesList();
+    }
+};
+
+// Render recent module sessions in the picker
+async function renderRecentModulesList() {
+    const listContainer = document.getElementById('msRecentModulesList');
+    const countEl = document.getElementById('msVaultCount');
+    if (!listContainer) return;
+
+    try {
+        const sessions = await getAllSessionsFromDB();
+        const validSessions = sessions.filter(s => s.extractedImages && s.extractedImages.length > 0);
+        
+        if (countEl) countEl.textContent = `${validSessions.length} Modules Available`;
+
+        if (validSessions.length === 0) {
+            listContainer.innerHTML = `
+                <div class="text-center py-10 text-sm font-medium" style="color: var(--text-muted);">
+                    <p class="mb-3">No module PDFs found in your Vault.</p>
+                    <button id="msEmptyUploadBtn" class="px-4 py-2 bg-violet-500 hover:bg-violet-400 text-white font-bold text-xs uppercase border-2 border-black">
+                        Upload Your First Module PDF
+                    </button>
+                </div>
+            `;
+            document.getElementById('msEmptyUploadBtn')?.addEventListener('click', () => {
+                document.getElementById('msUploadNewPdfBtn')?.click();
+            });
+            return;
+        }
+
+        listContainer.innerHTML = '';
+        const reversed = [...validSessions].reverse();
+
+        reversed.forEach(session => {
+            const card = document.createElement('div');
+            card.className = 'brutal-card p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-[2.5px] border-black transition-all hover:bg-violet-50 dark:hover:bg-violet-950/20';
+            
+            const totalQ = session.extractedImages.length;
+            const statusMap = session.moduleQuestionStatus || {};
+            
+            let correct = 0;
+            let wrong = 0;
+            let unattempted = 0;
+
+            for (let i = 0; i < totalQ; i++) {
+                const st = statusMap[i] || (session.practiceState && session.practiceState.stats && session.practiceState.stats[i] ? session.practiceState.stats[i].evaluation : null);
+                if (st === 'correct') correct++;
+                else if (st === 'incorrect') wrong++;
+                else unattempted++;
+            }
+
+            const dateStr = session.date ? session.date.split(',')[0] : 'Recent';
+            const title = session.title || `Module #${session.id}`;
+
+            card.innerHTML = `
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1 flex-wrap">
+                        <span class="px-1.5 py-0.5 bg-violet-600 text-white font-black text-[9px] uppercase tracking-wider rounded">MODULE</span>
+                        <h4 class="text-sm sm:text-base font-black truncate">${title}</h4>
+                    </div>
+                    <div class="flex items-center gap-3 text-xs font-semibold flex-wrap" style="color: var(--text-muted);">
+                        <span>${totalQ} Total Qs</span>
+                        <span>•</span>
+                        <span class="text-emerald-500 font-bold">🟢 ${correct} Solved</span>
+                        <span class="text-rose-500 font-bold">🔴 ${wrong} Wrong</span>
+                        <span class="text-amber-500 font-bold">🟡 ${unattempted} Unattempted</span>
+                        <span>•</span>
+                        <span>${dateStr}</span>
+                    </div>
+                </div>
+                <button class="ms-open-btn px-4 py-2 bg-violet-600 hover:bg-violet-500 text-white font-black uppercase text-xs border-[2px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all shrink-0 flex items-center gap-1.5" data-id="${session.id}">
+                    <span>Open Module</span>
+                    <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                </button>
+            `;
+            listContainer.appendChild(card);
+        });
+
+        listContainer.querySelectorAll('.ms-open-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = btn.getAttribute('data-id');
+                loadModuleSessionIntoSolver(id);
+            });
+        });
+    } catch(err) {
+        console.error("Failed to render recent modules:", err);
+    }
+}
+
+// Load a specific module session into the active solver view
+window.loadModuleSessionIntoSolver = async function(sessionId) {
+    try {
+        let session = await getSessionFromDB(sessionId);
+        if (!session) {
+            const numId = parseInt(sessionId);
+            if (!isNaN(numId)) session = await getSessionFromDB(numId);
+        }
+        if (!session) {
+            const strId = String(sessionId);
+            session = await getSessionFromDB(strId);
+        }
+        if (!session) {
+            const all = await getAllSessionsFromDB();
+            session = all.find(s => String(s.id) === String(sessionId));
+        }
+
+        if (!session || !session.extractedImages || session.extractedImages.length === 0) {
+            alert("This module does not contain any valid extracted questions.");
+            return;
+        }
+
+        window.currentModuleSession = session;
+        
+        // Initialize status map if not already present
+        if (!session.moduleQuestionStatus) {
+            session.moduleQuestionStatus = {};
+            if (session.practiceState && session.practiceState.stats) {
+                session.practiceState.stats.forEach((stat, idx) => {
+                    if (stat.evaluation === 'correct') session.moduleQuestionStatus[idx] = 'correct';
+                    else if (stat.evaluation === 'incorrect') session.moduleQuestionStatus[idx] = 'incorrect';
+                    else session.moduleQuestionStatus[idx] = 'unattempted';
+                });
+            }
+        }
+
+        // Fill remaining questions as unattempted
+        for (let i = 0; i < session.extractedImages.length; i++) {
+            if (!session.moduleQuestionStatus[i]) {
+                session.moduleQuestionStatus[i] = 'unattempted';
+            }
+        }
+
+        // Fresh selection set
+        window.selectedModuleQuestions = new Set();
+        window.moduleActiveStatusFilter = 'all';
+        window.moduleActiveSectionFilter = 'all';
+        window.moduleActivePageFilter = 'all';
+
+        // Switch view to Module Solver if not active
+        if (typeof window.switchDashView === 'function') {
+            window.switchDashView('moduleSolverView');
+        } else {
+            document.querySelectorAll('.dash-view').forEach(v => v.classList.add('hidden'));
+            document.getElementById('moduleSolverContainer')?.classList.remove('hidden');
+        }
+
+        document.getElementById('msNoModuleState')?.classList.add('hidden');
+        document.getElementById('msActiveModuleState')?.classList.remove('hidden');
+
+        const titleInput = document.getElementById('msTestTitleInput');
+        if (titleInput) {
+            const baseName = session.title || 'Module';
+            titleInput.value = `${baseName} - Day Practice`;
+        }
+
+        renderActiveModuleSolver();
+    } catch(err) {
+        console.error("Failed to load module into solver:", err);
+        alert("Could not load module session.");
+    }
+};
+
+// Render active module details, stats, filter dropdowns, and question grid
+function renderActiveModuleSolver() {
+    const session = window.currentModuleSession;
+    if (!session || !session.extractedImages) return;
+
+    const totalQ = session.extractedImages.length;
+    const statusMap = session.moduleQuestionStatus || {};
+
+    let correctCount = 0;
+    let wrongCount = 0;
+    let unattemptedCount = 0;
+
+    for (let i = 0; i < totalQ; i++) {
+        const st = statusMap[i] || 'unattempted';
+        if (st === 'correct') correctCount++;
+        else if (st === 'incorrect') wrongCount++;
+        else unattemptedCount++;
+    }
+
+    const selectedCount = window.selectedModuleQuestions.size;
+
+    // Header info
+    const titleEl = document.getElementById('msModuleTitle');
+    if (titleEl) titleEl.textContent = session.title || `Module #${session.id}`;
+
+    // Extract unique sections & pages
+    const uniqueSections = new Set();
+    const uniquePages = new Set();
+
+    session.extractedImages.forEach((q, idx) => {
+        let sec = 'General Section';
+        if (q.label && q.label.includes(' - ')) {
+            sec = q.label.split(' - ')[0].trim();
+        }
+        uniqueSections.add(sec);
+        if (q.page) uniquePages.add(q.page);
+    });
+
+    const secBadge = document.getElementById('msModuleSectionBadge');
+    if (secBadge) secBadge.textContent = `${uniqueSections.size} Sections`;
+
+    const pageBadge = document.getElementById('msModulePageBadge');
+    if (pageBadge) pageBadge.textContent = `${uniquePages.size > 0 ? uniquePages.size : 1} Pages`;
+
+    // Stats Cards
+    const elCorrect = document.getElementById('msStatCorrectCount');
+    if (elCorrect) elCorrect.textContent = correctCount;
+    const elCorrectPct = document.getElementById('msStatCorrectPct');
+    if (elCorrectPct) elCorrectPct.textContent = `${Math.round((correctCount / totalQ) * 100)}% of Module`;
+
+    const elWrong = document.getElementById('msStatWrongCount');
+    if (elWrong) elWrong.textContent = wrongCount;
+    const elWrongPct = document.getElementById('msStatWrongPct');
+    if (elWrongPct) elWrongPct.textContent = `${Math.round((wrongCount / totalQ) * 100)}% of Module`;
+
+    const elUnattempted = document.getElementById('msStatUnattemptedCount');
+    if (elUnattempted) elUnattempted.textContent = unattemptedCount;
+    const elUnattemptedPct = document.getElementById('msStatUnattemptedPct');
+    if (elUnattemptedPct) elUnattemptedPct.textContent = `${Math.round((unattemptedCount / totalQ) * 100)}% of Module`;
+
+    const elSelected = document.getElementById('msStatSelectedCount');
+    if (elSelected) elSelected.textContent = selectedCount;
+    const elSelectedTime = document.getElementById('msStatSelectedTime');
+    if (elSelectedTime) elSelectedTime.textContent = `Est. ${selectedCount * 2} mins`;
+
+    // Progress Bar
+    const pCorrect = (correctCount / totalQ) * 100;
+    const pWrong = (wrongCount / totalQ) * 100;
+    const pUnattempted = (unattemptedCount / totalQ) * 100;
+
+    const barCorrect = document.getElementById('msProgressBarCorrect');
+    if (barCorrect) barCorrect.style.width = `${pCorrect}%`;
+    const barWrong = document.getElementById('msProgressBarWrong');
+    if (barWrong) barWrong.style.width = `${pWrong}%`;
+    const barUnattempted = document.getElementById('msProgressBarUnattempted');
+    if (barUnattempted) barUnattempted.style.width = `${pUnattempted}%`;
+
+    const progressSummary = document.getElementById('msProgressSummaryText');
+    if (progressSummary) progressSummary.textContent = `${correctCount} Correct • ${wrongCount} Wrong • ${unattemptedCount} Left (${totalQ} Total)`;
+
+    // Populate Section Filter
+    const sectionSelect = document.getElementById('msSectionFilter');
+    if (sectionSelect) {
+        const currVal = window.moduleActiveSectionFilter;
+        sectionSelect.innerHTML = '<option value="all">All Sections</option>';
+        Array.from(uniqueSections).sort().forEach(sec => {
+            const opt = document.createElement('option');
+            opt.value = sec;
+            opt.textContent = sec;
+            if (sec === currVal) opt.selected = true;
+            sectionSelect.appendChild(opt);
+        });
+    }
+
+    // Populate Page Filter
+    const pageSelect = document.getElementById('msPageFilter');
+    if (pageSelect) {
+        const currVal = window.moduleActivePageFilter;
+        pageSelect.innerHTML = '<option value="all">All Pages</option>';
+        Array.from(uniquePages).sort((a, b) => a - b).forEach(p => {
+            const opt = document.createElement('option');
+            opt.value = String(p);
+            opt.textContent = `Page ${p}`;
+            if (String(p) === currVal) opt.selected = true;
+            pageSelect.appendChild(opt);
+        });
+    }
+
+    // Render Grid
+    renderModuleQuestionsGrid();
+}
+
+// Render the grouped question grid
+function renderModuleQuestionsGrid() {
+    const session = window.currentModuleSession;
+    const container = document.getElementById('msQuestionsContainer');
+    if (!session || !session.extractedImages || !container) return;
+
+    container.innerHTML = '';
+    const statusMap = session.moduleQuestionStatus || {};
+
+    // Group questions by Section
+    const sectionsMap = new Map();
+
+    session.extractedImages.forEach((q, idx) => {
+        let sec = 'General Section';
+        if (q.label && q.label.includes(' - ')) {
+            sec = q.label.split(' - ')[0].trim();
+        }
+
+        const pageStr = q.page ? String(q.page) : '1';
+        const st = statusMap[idx] || 'unattempted';
+
+        // Filter check
+        if (window.moduleActiveSectionFilter !== 'all' && sec !== window.moduleActiveSectionFilter) return;
+        if (window.moduleActivePageFilter !== 'all' && pageStr !== window.moduleActivePageFilter) return;
+        if (window.moduleActiveStatusFilter !== 'all') {
+            if (window.moduleActiveStatusFilter === 'wrong' && st !== 'incorrect') return;
+            if (window.moduleActiveStatusFilter === 'correct' && st !== 'correct') return;
+            if (window.moduleActiveStatusFilter === 'unattempted' && st !== 'unattempted') return;
+        }
+
+        if (!sectionsMap.has(sec)) {
+            sectionsMap.set(sec, []);
+        }
+        sectionsMap.get(sec).push({ ...q, originalIndex: idx, status: st });
+    });
+
+    if (sectionsMap.size === 0) {
+        container.innerHTML = `
+            <div class="brutal-card p-12 text-center border-[3px] border-black shadow-[4px_4px_0px_0px_#000]">
+                <p class="text-base font-bold" style="color: var(--text-muted);">No questions match the current filter selection.</p>
+                <button id="msResetFiltersBtn" class="mt-4 px-4 py-2 bg-violet-500 hover:bg-violet-400 text-white font-bold text-xs uppercase border-2 border-black">
+                    Reset Filters
+                </button>
+            </div>
+        `;
+        document.getElementById('msResetFiltersBtn')?.addEventListener('click', () => {
+            window.moduleActiveSectionFilter = 'all';
+            window.moduleActivePageFilter = 'all';
+            window.moduleActiveStatusFilter = 'all';
+            document.querySelectorAll('.ms-status-tab').forEach(b => {
+                b.className = b.getAttribute('data-status') === 'all' 
+                    ? "ms-status-tab px-2.5 py-1 text-[11px] font-black uppercase transition-all bg-yellow-400 text-black border border-black shadow"
+                    : "ms-status-tab px-2.5 py-1 text-[11px] font-black uppercase transition-all text-gray-400 hover:text-white";
+            });
+            renderActiveModuleSolver();
+        });
+        updateLaunchBarState();
+        return;
+    }
+
+    sectionsMap.forEach((questions, sectionName) => {
+        const secBlock = document.createElement('div');
+        secBlock.className = 'brutal-card p-5 border-[3.5px] border-black shadow-[6px_6px_0px_0px_#000] space-y-4';
+
+        // Section header
+        const allSecIndices = questions.map(q => q.originalIndex);
+        const allSecSelected = allSecIndices.every(idx => window.selectedModuleQuestions.has(idx));
+        const someSecSelected = allSecIndices.some(idx => window.selectedModuleQuestions.has(idx));
+
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b-2 border-black';
+        headerDiv.innerHTML = `
+            <div class="flex items-center gap-2.5">
+                <span class="w-3 h-3 bg-violet-600 border border-black"></span>
+                <h3 class="text-base sm:text-lg font-black uppercase tracking-tight">${sectionName}</h3>
+                <span class="text-xs font-bold px-2 py-0.5 bg-black/10 dark:bg-white/10 rounded">${questions.length} Qs</span>
+            </div>
+            <button class="ms-sec-toggle-btn px-3 py-1.5 ${allSecSelected ? 'bg-rose-500 text-white' : 'bg-violet-500 text-white'} hover:opacity-90 font-black uppercase text-[10px] sm:text-xs border-[2px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all self-start sm:self-auto">
+                ${allSecSelected ? 'Deselect Section' : 'Select All in Section'}
+            </button>
+        `;
+
+        headerDiv.querySelector('.ms-sec-toggle-btn').addEventListener('click', () => {
+            if (allSecSelected) {
+                allSecIndices.forEach(idx => window.selectedModuleQuestions.delete(idx));
+            } else {
+                allSecIndices.forEach(idx => window.selectedModuleQuestions.add(idx));
+            }
+            renderActiveModuleSolver();
+        });
+
+        secBlock.appendChild(headerDiv);
+
+        // Questions Grid
+        const gridDiv = document.createElement('div');
+        gridDiv.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5';
+
+        questions.forEach(q => {
+            const isSelected = window.selectedModuleQuestions.has(q.originalIndex);
+            const card = document.createElement('div');
+            
+            // Status specifics
+            let statusBadge = '';
+            let statusBorder = '';
+            if (q.status === 'correct') {
+                statusBadge = `<span class="px-2 py-0.5 bg-emerald-400 text-black font-black text-[10px] uppercase border border-black shadow-[1.5px_1.5px_0px_0px_#000] rounded-none">🟢 SOLVED (+4)</span>`;
+                statusBorder = isSelected ? 'border-violet-500 bg-violet-500/15 shadow-[4px_4px_0px_0px_#8b5cf6]' : 'border-emerald-500 bg-emerald-500/5 hover:border-emerald-400';
+            } else if (q.status === 'incorrect') {
+                statusBadge = `<span class="px-2 py-0.5 bg-rose-500 text-white font-black text-[10px] uppercase border border-black shadow-[1.5px_1.5px_0px_0px_#000] rounded-none">🔴 WRONG (-1)</span>`;
+                statusBorder = isSelected ? 'border-violet-500 bg-violet-500/15 shadow-[4px_4px_0px_0px_#8b5cf6]' : 'border-rose-500 bg-rose-500/5 hover:border-rose-400';
+            } else {
+                statusBadge = `<span class="px-2 py-0.5 bg-amber-400 text-black font-black text-[10px] uppercase border border-black shadow-[1.5px_1.5px_0px_0px_#000] rounded-none">🟡 NOT ATTEMPTED</span>`;
+                statusBorder = isSelected ? 'border-violet-500 bg-violet-500/15 shadow-[4px_4px_0px_0px_#8b5cf6]' : 'border-amber-400/80 bg-amber-400/5 hover:border-amber-400';
+            }
+
+            card.className = `p-3.5 border-[2.5px] rounded-none cursor-pointer transition-all flex flex-col justify-between gap-2.5 relative group ${statusBorder}`;
+            
+            let cleanLabel = q.label || `Question ${q.originalIndex + 1}`;
+            if (cleanLabel.includes(' - ')) cleanLabel = cleanLabel.split(' - ')[1];
+
+            card.innerHTML = `
+                <div>
+                    <div class="flex items-center justify-between gap-2 mb-2">
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" class="ms-q-checkbox w-4 h-4 text-violet-600 rounded-none border-2 border-black focus:ring-0 cursor-pointer pointer-events-none" ${isSelected ? 'checked' : ''} />
+                            <span class="font-black text-xs sm:text-sm uppercase tracking-tight truncate">${cleanLabel}</span>
+                        </div>
+                        <span class="text-[10px] font-bold px-1.5 py-0.5 bg-black/10 dark:bg-white/10 rounded">P.${q.page || 1}</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 mb-1 flex-wrap">
+                        ${statusBadge}
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between pt-2 border-t border-black/10 dark:border-white/10">
+                    <span class="text-[10px] font-bold" style="color: var(--text-muted);">Q #${q.originalIndex + 1}</span>
+                    <button class="ms-preview-btn px-2 py-1 bg-black/5 dark:bg-white/10 hover:bg-black/10 text-[11px] font-black uppercase rounded flex items-center gap-1 transition-colors" data-idx="${q.originalIndex}">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        <span>Preview</span>
+                    </button>
+                </div>
+            `;
+
+            // Card click toggles checkbox
+            card.addEventListener('click', (e) => {
+                if (e.target.closest('.ms-preview-btn')) return;
+                if (window.selectedModuleQuestions.has(q.originalIndex)) {
+                    window.selectedModuleQuestions.delete(q.originalIndex);
+                } else {
+                    window.selectedModuleQuestions.add(q.originalIndex);
+                }
+                renderActiveModuleSolver();
+            });
+
+            // Preview click opens preview modal
+            card.querySelector('.ms-preview-btn')?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openModuleQuestionPreview(q.originalIndex);
+            });
+
+            gridDiv.appendChild(card);
+        });
+
+        secBlock.appendChild(gridDiv);
+        container.appendChild(secBlock);
+    });
+
+    updateLaunchBarState();
+}
+
+// Update the sticky bottom launch bar with current selections
+function updateLaunchBarState() {
+    const selectedCount = window.selectedModuleQuestions.size;
+    const launchCountEl = document.getElementById('msLaunchSelectedCount');
+    const startBtn = document.getElementById('msStartTestBtn');
+    const timeInput = document.getElementById('msTimeMinutesInput');
+
+    if (launchCountEl) launchCountEl.textContent = selectedCount;
+    
+    if (timeInput && selectedCount > 0) {
+        timeInput.value = Math.max(10, selectedCount * 2);
+    }
+
+    if (startBtn) {
+        if (selectedCount > 0) {
+            startBtn.removeAttribute('disabled');
+            startBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        } else {
+            startBtn.setAttribute('disabled', 'true');
+            startBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+    }
+}
+
+// Handle quick selection by question numbers/ranges: e.g. "1, 4, 7-10, 15, 23"
+function handleQuickQuestionNumbers(queryStr) {
+    const session = window.currentModuleSession;
+    if (!session || !session.extractedImages) return;
+
+    if (!queryStr || queryStr.trim() === '') {
+        alert("Please enter question numbers e.g. 1, 3, 5-8, 12, 19");
+        return;
+    }
+
+    const totalQ = session.extractedImages.length;
+    const parts = queryStr.split(/[,;\s]+/).filter(Boolean);
+    const targetNumbers = new Set();
+
+    parts.forEach(part => {
+        if (part.includes('-')) {
+            const [startStr, endStr] = part.split('-');
+            const start = parseInt(startStr, 10);
+            const end = parseInt(endStr, 10);
+            if (!isNaN(start) && !isNaN(end)) {
+                for (let n = Math.min(start, end); n <= Math.max(start, end); n++) {
+                    targetNumbers.add(n);
+                }
+            }
+        } else {
+            const num = parseInt(part.replace(/[^0-9]/g, ''), 10);
+            if (!isNaN(num)) targetNumbers.add(num);
+        }
+    });
+
+    if (targetNumbers.size === 0) {
+        alert("Could not parse any valid question numbers from your input.");
+        return;
+    }
+
+    let newlySelectedCount = 0;
+
+    session.extractedImages.forEach((q, idx) => {
+        let matches = false;
+        
+        // 1. Check label for bullet number (e.g. Q. 4)
+        if (q.label) {
+            const numsInLabel = q.label.match(/\b\d+\b/g);
+            if (numsInLabel) {
+                numsInLabel.forEach(n => {
+                    if (targetNumbers.has(parseInt(n, 10))) matches = true;
+                });
+            }
+        }
+
+        // 2. Check 1-based index (e.g. 4 corresponds to index 3)
+        if (targetNumbers.has(idx + 1)) matches = true;
+
+        if (matches) {
+            window.selectedModuleQuestions.add(idx);
+            newlySelectedCount++;
+        }
+    });
+
+    renderActiveModuleSolver();
+}
+
+// Open Question Preview Modal
+function openModuleQuestionPreview(qIndex) {
+    const session = window.currentModuleSession;
+    if (!session || !session.extractedImages || !session.extractedImages[qIndex]) return;
+
+    const q = session.extractedImages[qIndex];
+    window.moduleActivePreviewIndex = qIndex;
+
+    const modal = document.getElementById('msQuestionPreviewModal');
+    const imgEl = document.getElementById('msModalQImage');
+    const titleEl = document.getElementById('msModalQTitle');
+    const statusBadge = document.getElementById('msModalQStatusBadge');
+    const metaEl = document.getElementById('msModalQMeta');
+    const toggleBtn = document.getElementById('msModalToggleSelectBtn');
+
+    if (imgEl) imgEl.src = q.dataUrl || '';
+    if (titleEl) titleEl.textContent = q.label || `Question #${qIndex + 1}`;
+
+    const st = (session.moduleQuestionStatus && session.moduleQuestionStatus[qIndex]) || 'unattempted';
+    if (statusBadge) {
+        if (st === 'correct') {
+            statusBadge.className = 'px-2.5 py-0.5 text-xs font-black uppercase bg-emerald-400 text-black border border-black';
+            statusBadge.textContent = '🟢 Previously Correct (+4)';
+        } else if (st === 'incorrect') {
+            statusBadge.className = 'px-2.5 py-0.5 text-xs font-black uppercase bg-rose-500 text-white border border-black';
+            statusBadge.textContent = '🔴 Previously Wrong (-1)';
+        } else {
+            statusBadge.className = 'px-2.5 py-0.5 text-xs font-black uppercase bg-amber-400 text-black border border-black';
+            statusBadge.textContent = '🟡 Not Attempted';
+        }
+    }
+
+    if (metaEl) {
+        metaEl.textContent = `Page ${q.page || 1} • Question #${qIndex + 1} of ${session.extractedImages.length}`;
+    }
+
+    function updateToggleBtnText() {
+        if (toggleBtn) {
+            const isSelected = window.selectedModuleQuestions.has(qIndex);
+            toggleBtn.textContent = isSelected ? '✓ Selected (Click to Remove)' : '+ Select This Question';
+            toggleBtn.className = isSelected 
+                ? 'px-5 py-2 bg-rose-500 hover:bg-rose-400 text-white font-black uppercase text-xs border-[2px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all'
+                : 'px-5 py-2 bg-violet-600 hover:bg-violet-500 text-white font-black uppercase text-xs border-[2px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all';
+        }
+    }
+    updateToggleBtnText();
+
+    if (toggleBtn) {
+        toggleBtn.onclick = () => {
+            if (window.selectedModuleQuestions.has(qIndex)) {
+                window.selectedModuleQuestions.delete(qIndex);
+            } else {
+                window.selectedModuleQuestions.add(qIndex);
+            }
+            updateToggleBtnText();
+            renderActiveModuleSolver();
+        };
+    }
+
+    if (modal) modal.classList.remove('hidden');
+}
+
+// Launch test with only selected questions
+async function launchModuleSolverTest() {
+    const session = window.currentModuleSession;
+    if (!session || !session.extractedImages) return;
+
+    if (window.selectedModuleQuestions.size === 0) {
+        alert("Please select at least 1 question to start the practice test.");
+        return;
+    }
+
+    const selectedIndices = Array.from(window.selectedModuleQuestions).sort((a, b) => a - b);
+    const selectedImages = selectedIndices.map(idx => session.extractedImages[idx]);
+
+    const titleInput = document.getElementById('msTestTitleInput');
+    const customTestName = titleInput && titleInput.value.trim() !== '' ? titleInput.value.trim() : `${session.title || 'Module'} - Day Practice`;
+
+    const timeMinutes = parseInt(document.getElementById('msTimeMinutesInput')?.value, 10) || Math.max(10, selectedIndices.length * 2);
+
+    // Configure practiceState
+    practiceState = {
+        isModuleSolver: true,
+        parentModuleId: session.id,
+        selectedOriginalIndices: selectedIndices,
+        activeIndices: selectedIndices.map((_, i) => i),
+        currentIndex: 0,
+        theme: 'nta',
+        totalSecondsRemaining: timeMinutes * 60,
+        scorePerQ: 4,
+        negativeMarking: true,
+        stats: selectedIndices.map((origIdx, i) => {
+            const q = session.extractedImages[origIdx];
+            let ex = 'Exercise 1';
+            if (q && q.label && q.label.includes(' - ')) ex = q.label.split(' - ')[0];
+            return {
+                index: i,
+                timeSpent: 0,
+                targetTime: 0,
+                attempted: false,
+                evaluation: null,
+                ntaStatus: 'not_visited',
+                exercise: ex
+            };
+        })
+    };
+
+    extractedImages = selectedImages;
+    currentSessionId = Date.now();
+    window.currentPdfFilename = customTestName;
+
+    // Hide all dashboard views
+    document.querySelectorAll('.dash-view').forEach(v => v.classList.add('hidden'));
+    document.getElementById('uploadContainer')?.classList.add('hidden');
+    document.getElementById('historyContainer')?.classList.add('hidden');
+    document.getElementById('configContainer')?.classList.add('hidden');
+    document.getElementById('practiceSetupContainer')?.classList.add('hidden');
+    document.getElementById('analysisContainer')?.classList.add('hidden');
+    document.getElementById('liveResultsDashboard')?.classList.add('hidden');
+    document.getElementById('moduleSolverContainer')?.classList.add('hidden');
+
+    if (typeof startPracticeSession === 'function') {
+        startPracticeSession(practiceState.activeIndices);
+    }
+}
+
+// Bind all Module Solver UI elements
+function initModuleSolverEvents() {
+    // Nav & hero buttons
+    document.getElementById('homeModuleSolverBtn')?.addEventListener('click', () => {
+        window.openModuleSolverView();
+    });
+
+    document.querySelectorAll('.dash-nav-btn[data-target="moduleSolverView"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            window.openModuleSolverView();
+        });
+    });
+
+    // Upload PDF in module solver mode
+    document.getElementById('msUploadNewPdfBtn')?.addEventListener('click', () => {
+        window.isModuleSolverScanMode = true;
+        document.getElementById('fileInput')?.click();
+    });
+
+    // Back to modules list / Switch module
+    document.getElementById('msBackToModulesBtn')?.addEventListener('click', () => {
+        window.currentModuleSession = null;
+        window.openModuleSolverView();
+    });
+
+    document.getElementById('msSwitchModuleBtn')?.addEventListener('click', () => {
+        window.currentModuleSession = null;
+        window.openModuleSolverView();
+    });
+
+    // Quick question numbers
+    document.getElementById('msApplyQuickNumbersBtn')?.addEventListener('click', () => {
+        const input = document.getElementById('msQuickNumberInput');
+        if (input) handleQuickQuestionNumbers(input.value);
+    });
+
+    document.getElementById('msQuickNumberInput')?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleQuickQuestionNumbers(e.target.value);
+        }
+    });
+
+    // Section filter
+    document.getElementById('msSectionFilter')?.addEventListener('change', (e) => {
+        window.moduleActiveSectionFilter = e.target.value;
+        renderModuleQuestionsGrid();
+    });
+
+    // Page filter
+    document.getElementById('msPageFilter')?.addEventListener('change', (e) => {
+        window.moduleActivePageFilter = e.target.value;
+        renderModuleQuestionsGrid();
+    });
+
+    // Status filter tabs
+    document.querySelectorAll('.ms-status-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            window.moduleActiveStatusFilter = tab.getAttribute('data-status');
+            document.querySelectorAll('.ms-status-tab').forEach(b => {
+                if (b.getAttribute('data-status') === window.moduleActiveStatusFilter) {
+                    b.className = "ms-status-tab px-2.5 py-1 text-[11px] font-black uppercase transition-all bg-yellow-400 text-black border border-black shadow";
+                } else {
+                    b.className = "ms-status-tab px-2.5 py-1 text-[11px] font-black uppercase transition-all text-gray-400 hover:text-white";
+                }
+            });
+            renderModuleQuestionsGrid();
+        });
+    });
+
+    // Batch selection buttons
+    document.getElementById('msSelectAllUnattemptedBtn')?.addEventListener('click', () => {
+        const session = window.currentModuleSession;
+        if (!session || !session.extractedImages) return;
+        const statusMap = session.moduleQuestionStatus || {};
+        session.extractedImages.forEach((_, idx) => {
+            const st = statusMap[idx] || 'unattempted';
+            if (st === 'unattempted') window.selectedModuleQuestions.add(idx);
+        });
+        renderActiveModuleSolver();
+    });
+
+    document.getElementById('msSelectAllWrongBtn')?.addEventListener('click', () => {
+        const session = window.currentModuleSession;
+        if (!session || !session.extractedImages) return;
+        const statusMap = session.moduleQuestionStatus || {};
+        session.extractedImages.forEach((_, idx) => {
+            const st = statusMap[idx] || 'unattempted';
+            if (st === 'incorrect') window.selectedModuleQuestions.add(idx);
+        });
+        renderActiveModuleSolver();
+    });
+
+    document.getElementById('msSelectAllFilteredBtn')?.addEventListener('click', () => {
+        const session = window.currentModuleSession;
+        if (!session || !session.extractedImages) return;
+        const statusMap = session.moduleQuestionStatus || {};
+
+        session.extractedImages.forEach((q, idx) => {
+            let sec = 'General Section';
+            if (q.label && q.label.includes(' - ')) sec = q.label.split(' - ')[0].trim();
+            const pageStr = q.page ? String(q.page) : '1';
+            const st = statusMap[idx] || 'unattempted';
+
+            if (window.moduleActiveSectionFilter !== 'all' && sec !== window.moduleActiveSectionFilter) return;
+            if (window.moduleActivePageFilter !== 'all' && pageStr !== window.moduleActivePageFilter) return;
+            if (window.moduleActiveStatusFilter !== 'all') {
+                if (window.moduleActiveStatusFilter === 'wrong' && st !== 'incorrect') return;
+                if (window.moduleActiveStatusFilter === 'correct' && st !== 'correct') return;
+                if (window.moduleActiveStatusFilter === 'unattempted' && st !== 'unattempted') return;
+            }
+            window.selectedModuleQuestions.add(idx);
+        });
+        renderActiveModuleSolver();
+    });
+
+    document.getElementById('msClearSelectionBtn')?.addEventListener('click', () => {
+        window.selectedModuleQuestions.clear();
+        renderActiveModuleSolver();
+    });
+
+    // Launch Test button
+    document.getElementById('msStartTestBtn')?.addEventListener('click', () => {
+        launchModuleSolverTest();
+    });
+
+    // Close preview modal
+    document.getElementById('msCloseModalBtn')?.addEventListener('click', () => {
+        document.getElementById('msQuestionPreviewModal')?.classList.add('hidden');
+    });
+
+    document.getElementById('msQuestionPreviewModal')?.addEventListener('click', (e) => {
+        if (e.target.id === 'msQuestionPreviewModal') {
+            document.getElementById('msQuestionPreviewModal')?.classList.add('hidden');
+        }
+    });
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initModuleSolverEvents);
+} else {
+    initModuleSolverEvents();
+}
+
