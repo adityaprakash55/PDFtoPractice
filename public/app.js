@@ -947,6 +947,7 @@ async function loadPDF(file) {
     if (file.type !== 'application/pdf') { alert('Please upload a valid PDF file.'); return; }
     
     try {
+        window.currentPdfFilename = file.name.replace(/\.pdf$/i, '');
         const ab  = await file.arrayBuffer();
         const doc = await pdfjsLib.getDocument({ data: ab }).promise;
         const total = doc.numPages;
@@ -963,7 +964,7 @@ async function loadPDF(file) {
             // wizardSkipScanBtn.classList.remove('hidden'); // Force user to upload answer key
             startFinalScanBtn.classList.add('hidden');
             
-            document.getElementById('pageRangeTitle').textContent = 'Questions Setup';
+            document.getElementById('pageRangeTitle').textContent = window.isModuleSolverScanMode ? 'Module Questions Setup' : 'Questions Setup';
             document.getElementById('answerKeySourceContainer').classList.remove('hidden');
             document.querySelector('input[name="answerKeySource"][value="different"]').checked = true;
             wizardNextBtn.innerHTML = '<span>Next: Upload Answer Key</span><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>';
@@ -993,6 +994,8 @@ async function loadPDF(file) {
         document.getElementById('historyContainer')?.classList.add('hidden');
         document.getElementById('bookmarksContainer')?.classList.add('hidden');
         document.getElementById('notedQsContainer')?.classList.add('hidden');
+        document.getElementById('moduleSolverContainer')?.classList.add('hidden');
+        document.querySelectorAll('.dash-view').forEach(v => v.classList.add('hidden'));
         
         configContainer.classList.remove('hidden');
         practiceSetupContainer.classList.add('hidden');
@@ -6564,7 +6567,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // =============================================================
-// MODULE SOLVER ENGINE & WORKFLOW
+// MODULE SOLVER ENGINE & WORKFLOW (ENHANCED & DYNAMIC)
 // =============================================================
 window.currentModuleSession = null;
 window.selectedModuleQuestions = new Set();
@@ -6573,6 +6576,7 @@ window.moduleActiveSectionFilter = 'all';
 window.moduleActivePageFilter = 'all';
 window.moduleActivePreviewIndex = null;
 window.isModuleSolverScanMode = false;
+window.recentModulesCache = [];
 
 // Open Module Solver View
 window.openModuleSolverView = async function() {
@@ -6595,17 +6599,26 @@ window.openModuleSolverView = async function() {
     }
 };
 
-// Render recent module sessions in the picker
-async function renderRecentModulesList() {
+// Render recent module sessions in the picker with live search
+async function renderRecentModulesList(searchQuery = '') {
     const listContainer = document.getElementById('msRecentModulesList');
     const countEl = document.getElementById('msVaultCount');
     if (!listContainer) return;
 
     try {
-        const sessions = await getAllSessionsFromDB();
-        const validSessions = sessions.filter(s => s.extractedImages && s.extractedImages.length > 0);
+        if (!window.recentModulesCache || window.recentModulesCache.length === 0 || !searchQuery) {
+            const sessions = await getAllSessionsFromDB();
+            window.recentModulesCache = sessions.filter(s => s.extractedImages && s.extractedImages.length > 0);
+        }
+
+        const validSessions = window.recentModulesCache;
         
-        if (countEl) countEl.textContent = `${validSessions.length} Modules Available`;
+        const q = (searchQuery || '').toLowerCase().trim();
+        const filteredSessions = q
+            ? validSessions.filter(s => (s.title || '').toLowerCase().includes(q))
+            : validSessions;
+
+        if (countEl) countEl.textContent = `${filteredSessions.length} Modules`;
 
         if (validSessions.length === 0) {
             listContainer.innerHTML = `
@@ -6622,8 +6635,17 @@ async function renderRecentModulesList() {
             return;
         }
 
+        if (filteredSessions.length === 0) {
+            listContainer.innerHTML = `
+                <div class="text-center py-8 text-sm font-medium" style="color: var(--text-muted);">
+                    No modules match "${searchQuery}".
+                </div>
+            `;
+            return;
+        }
+
         listContainer.innerHTML = '';
-        const reversed = [...validSessions].reverse();
+        const reversed = [...filteredSessions].reverse();
 
         reversed.forEach(session => {
             const card = document.createElement('div');
@@ -6657,7 +6679,7 @@ async function renderRecentModulesList() {
                         <span>•</span>
                         <span class="text-emerald-500 font-bold">🟢 ${correct} Solved</span>
                         <span class="text-rose-500 font-bold">🔴 ${wrong} Wrong</span>
-                        <span class="text-amber-500 font-bold">🟡 ${unattempted} Unattempted</span>
+                        <span class="text-amber-500 font-bold">🟡 ${unattempted} Left</span>
                         <span>•</span>
                         <span>${dateStr}</span>
                     </div>
@@ -6730,7 +6752,7 @@ window.loadModuleSessionIntoSolver = async function(sessionId) {
         window.moduleActiveSectionFilter = 'all';
         window.moduleActivePageFilter = 'all';
 
-        // Switch view to Module Solver if not active
+        // Switch view to Module Solver
         if (typeof window.switchDashView === 'function') {
             window.switchDashView('moduleSolverView');
         } else {
@@ -6738,13 +6760,20 @@ window.loadModuleSessionIntoSolver = async function(sessionId) {
             document.getElementById('moduleSolverContainer')?.classList.remove('hidden');
         }
 
+        // Hide upload & config containers
+        document.getElementById('uploadContainer')?.classList.add('hidden');
+        document.getElementById('configContainer')?.classList.add('hidden');
+        document.getElementById('progressContainer')?.classList.add('hidden');
+        document.getElementById('practiceSetupContainer')?.classList.add('hidden');
+        document.getElementById('moduleSolverContainer')?.classList.remove('hidden');
+
         document.getElementById('msNoModuleState')?.classList.add('hidden');
         document.getElementById('msActiveModuleState')?.classList.remove('hidden');
 
         const titleInput = document.getElementById('msTestTitleInput');
         if (titleInput) {
             const baseName = session.title || 'Module';
-            titleInput.value = `${baseName} - Day Practice`;
+            titleInput.value = `${baseName} - Practice Set`;
         }
 
         renderActiveModuleSolver();
@@ -6932,8 +6961,8 @@ function renderModuleQuestionsGrid() {
 
         // Section header
         const allSecIndices = questions.map(q => q.originalIndex);
-        const allSecSelected = allSecIndices.every(idx => window.selectedModuleQuestions.has(idx));
-        const someSecSelected = allSecIndices.some(idx => window.selectedModuleQuestions.has(idx));
+        const selectedSecCount = allSecIndices.filter(idx => window.selectedModuleQuestions.has(idx)).length;
+        const allSecSelected = selectedSecCount === allSecIndices.length;
 
         const headerDiv = document.createElement('div');
         headerDiv.className = 'flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b-2 border-black';
@@ -6941,10 +6970,10 @@ function renderModuleQuestionsGrid() {
             <div class="flex items-center gap-2.5">
                 <span class="w-3 h-3 bg-violet-600 border border-black"></span>
                 <h3 class="text-base sm:text-lg font-black uppercase tracking-tight">${sectionName}</h3>
-                <span class="text-xs font-bold px-2 py-0.5 bg-black/10 dark:bg-white/10 rounded">${questions.length} Qs</span>
+                <span class="text-xs font-bold px-2 py-0.5 bg-black/10 dark:bg-white/10 rounded">${selectedSecCount}/${questions.length} Selected</span>
             </div>
-            <button class="ms-sec-toggle-btn px-3 py-1.5 ${allSecSelected ? 'bg-rose-500 text-white' : 'bg-violet-500 text-white'} hover:opacity-90 font-black uppercase text-[10px] sm:text-xs border-[2px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all self-start sm:self-auto">
-                ${allSecSelected ? 'Deselect Section' : 'Select All in Section'}
+            <button class="ms-sec-toggle-btn px-3 py-1.5 ${allSecSelected ? 'bg-rose-500 text-white' : 'bg-violet-600 text-white'} hover:opacity-90 font-black uppercase text-[10px] sm:text-xs border-[2px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all self-start sm:self-auto">
+                ${allSecSelected ? 'Deselect Section' : `Select All (${questions.length})`}
             </button>
         `;
 
@@ -6966,6 +6995,7 @@ function renderModuleQuestionsGrid() {
         questions.forEach(q => {
             const isSelected = window.selectedModuleQuestions.has(q.originalIndex);
             const card = document.createElement('div');
+            card.id = `ms-q-card-${q.originalIndex}`;
             
             // Status specifics
             let statusBadge = '';
@@ -6981,7 +7011,7 @@ function renderModuleQuestionsGrid() {
                 statusBorder = isSelected ? 'border-violet-500 bg-violet-500/15 shadow-[4px_4px_0px_0px_#8b5cf6]' : 'border-amber-400/80 bg-amber-400/5 hover:border-amber-400';
             }
 
-            card.className = `p-3.5 border-[2.5px] rounded-none cursor-pointer transition-all flex flex-col justify-between gap-2.5 relative group ${statusBorder}`;
+            card.className = `p-3.5 border-[2.5px] rounded-none cursor-pointer transition-all flex flex-col justify-between gap-2.5 relative group active:scale-[0.98] ${statusBorder}`;
             
             let cleanLabel = q.label || `Question ${q.originalIndex + 1}`;
             if (cleanLabel.includes(' - ')) cleanLabel = cleanLabel.split(' - ')[1];
@@ -7060,17 +7090,10 @@ function updateLaunchBarState() {
     }
 }
 
-// Handle quick selection by question numbers/ranges: e.g. "1, 4, 7-10, 15, 23"
-function handleQuickQuestionNumbers(queryStr) {
-    const session = window.currentModuleSession;
-    if (!session || !session.extractedImages) return;
-
-    if (!queryStr || queryStr.trim() === '') {
-        alert("Please enter question numbers e.g. 1, 3, 5-8, 12, 19");
-        return;
-    }
-
-    const totalQ = session.extractedImages.length;
+// Parse quick question numbers input helper
+function parseQuestionNumbersToIndices(queryStr, session) {
+    if (!session || !session.extractedImages || !queryStr) return [];
+    
     const parts = queryStr.split(/[,;\s]+/).filter(Boolean);
     const targetNumbers = new Set();
 
@@ -7090,17 +7113,11 @@ function handleQuickQuestionNumbers(queryStr) {
         }
     });
 
-    if (targetNumbers.size === 0) {
-        alert("Could not parse any valid question numbers from your input.");
-        return;
-    }
+    if (targetNumbers.size === 0) return [];
 
-    let newlySelectedCount = 0;
-
+    const matchedIndices = [];
     session.extractedImages.forEach((q, idx) => {
         let matches = false;
-        
-        // 1. Check label for bullet number (e.g. Q. 4)
         if (q.label) {
             const numsInLabel = q.label.match(/\b\d+\b/g);
             if (numsInLabel) {
@@ -7109,26 +7126,47 @@ function handleQuickQuestionNumbers(queryStr) {
                 });
             }
         }
-
-        // 2. Check 1-based index (e.g. 4 corresponds to index 3)
         if (targetNumbers.has(idx + 1)) matches = true;
 
-        if (matches) {
-            window.selectedModuleQuestions.add(idx);
-            newlySelectedCount++;
-        }
+        if (matches) matchedIndices.push(idx);
     });
 
-    renderActiveModuleSolver();
+    return matchedIndices;
 }
 
-// Open Question Preview Modal
+// Handle quick selection by question numbers/ranges: e.g. "1, 4, 7-10, 15, 23"
+function handleQuickQuestionNumbers(queryStr) {
+    const session = window.currentModuleSession;
+    if (!session || !session.extractedImages) return;
+
+    if (!queryStr || queryStr.trim() === '') {
+        alert("Please enter question numbers e.g. 1, 3, 5-8, 12, 19");
+        return;
+    }
+
+    const matched = parseQuestionNumbersToIndices(queryStr, session);
+    if (matched.length === 0) {
+        alert("Could not find any questions matching your input.");
+        return;
+    }
+
+    matched.forEach(idx => window.selectedModuleQuestions.add(idx));
+    renderActiveModuleSolver();
+
+    // Smooth scroll to first match
+    const firstEl = document.getElementById(`ms-q-card-${matched[0]}`);
+    if (firstEl) {
+        firstEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+
+// Open Question Preview Modal with full navigation
 function openModuleQuestionPreview(qIndex) {
     const session = window.currentModuleSession;
     if (!session || !session.extractedImages || !session.extractedImages[qIndex]) return;
 
-    const q = session.extractedImages[qIndex];
     window.moduleActivePreviewIndex = qIndex;
+    const q = session.extractedImages[qIndex];
 
     const modal = document.getElementById('msQuestionPreviewModal');
     const imgEl = document.getElementById('msModalQImage');
@@ -7182,6 +7220,18 @@ function openModuleQuestionPreview(qIndex) {
     }
 
     if (modal) modal.classList.remove('hidden');
+}
+
+// Navigate preview modal
+function navigateModulePreview(step) {
+    const session = window.currentModuleSession;
+    if (!session || !session.extractedImages || window.moduleActivePreviewIndex === null) return;
+    
+    let nextIdx = window.moduleActivePreviewIndex + step;
+    if (nextIdx < 0) nextIdx = session.extractedImages.length - 1;
+    if (nextIdx >= session.extractedImages.length) nextIdx = 0;
+
+    openModuleQuestionPreview(nextIdx);
 }
 
 // Launch test with only selected questions
@@ -7261,10 +7311,55 @@ function initModuleSolverEvents() {
         });
     });
 
-    // Upload PDF in module solver mode
-    document.getElementById('msUploadNewPdfBtn')?.addEventListener('click', () => {
-        window.isModuleSolverScanMode = true;
-        document.getElementById('fileInput')?.click();
+    // Upload PDF in module solver mode (Button & Direct File Input)
+    const directFileInput = document.getElementById('msDirectFileInput');
+    const uploadBtn = document.getElementById('msUploadNewPdfBtn');
+
+    if (uploadBtn && directFileInput) {
+        uploadBtn.addEventListener('click', () => {
+            window.isModuleSolverScanMode = true;
+            directFileInput.click();
+        });
+
+        directFileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                window.isModuleSolverScanMode = true;
+                loadPDF(e.target.files[0]);
+            }
+        });
+    }
+
+    // Direct Dropzone for Module PDF
+    const dropZone = document.getElementById('msDropZone');
+    if (dropZone) {
+        dropZone.addEventListener('click', () => {
+            window.isModuleSolverScanMode = true;
+            if (directFileInput) directFileInput.click();
+            else document.getElementById('fileInput')?.click();
+        });
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('bg-violet-500/20', 'border-violet-600');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('bg-violet-500/20', 'border-violet-600');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('bg-violet-500/20', 'border-violet-600');
+            if (e.dataTransfer.files.length) {
+                window.isModuleSolverScanMode = true;
+                loadPDF(e.dataTransfer.files[0]);
+            }
+        });
+    }
+
+    // Live search in Recent Modules
+    document.getElementById('msModuleSearchInput')?.addEventListener('input', (e) => {
+        renderRecentModulesList(e.target.value);
     });
 
     // Back to modules list / Switch module
@@ -7374,7 +7469,15 @@ function initModuleSolverEvents() {
         launchModuleSolverTest();
     });
 
-    // Close preview modal
+    // Preview modal navigation & close
+    document.getElementById('msModalNextBtn')?.addEventListener('click', () => {
+        navigateModulePreview(1);
+    });
+
+    document.getElementById('msModalPrevBtn')?.addEventListener('click', () => {
+        navigateModulePreview(-1);
+    });
+
     document.getElementById('msCloseModalBtn')?.addEventListener('click', () => {
         document.getElementById('msQuestionPreviewModal')?.classList.add('hidden');
     });
@@ -7382,6 +7485,23 @@ function initModuleSolverEvents() {
     document.getElementById('msQuestionPreviewModal')?.addEventListener('click', (e) => {
         if (e.target.id === 'msQuestionPreviewModal') {
             document.getElementById('msQuestionPreviewModal')?.classList.add('hidden');
+        }
+    });
+
+    // Keyboard shortcuts for modal
+    window.addEventListener('keydown', (e) => {
+        const modal = document.getElementById('msQuestionPreviewModal');
+        if (!modal || modal.classList.contains('hidden')) return;
+
+        if (e.key === 'Escape') {
+            modal.classList.add('hidden');
+        } else if (e.key === 'ArrowRight') {
+            navigateModulePreview(1);
+        } else if (e.key === 'ArrowLeft') {
+            navigateModulePreview(-1);
+        } else if (e.key === ' ') {
+            e.preventDefault();
+            document.getElementById('msModalToggleSelectBtn')?.click();
         }
     });
 }

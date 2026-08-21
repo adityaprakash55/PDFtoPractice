@@ -490,6 +490,7 @@
                             </p>
                         </div>
                         <div class="shrink-0 flex flex-col gap-2 w-full md:w-auto">
+                            <input type="file" id="msDirectFileInput" accept="application/pdf" class="hidden" />
                             <button id="msUploadNewPdfBtn" class="bg-violet-400 hover:bg-violet-300 text-black font-black uppercase py-3 px-6 border-[3px] border-black shadow-[4px_4px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 transition-all flex items-center justify-center gap-2 text-xs sm:text-sm">
                                 <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
                                 Upload Module PDF
@@ -498,13 +499,25 @@
                     </div>
                 </div>
 
+                <!-- Direct Drop Zone for Module PDF -->
+                <div id="msDropZone" class="brutal-card p-6 sm:p-8 border-[3px] border-dashed border-violet-500 dark:border-violet-400 bg-violet-500/5 hover:bg-violet-500/10 cursor-pointer text-center transition-all flex flex-col items-center justify-center gap-2 group">
+                    <div class="w-12 h-12 rounded-full bg-violet-500/20 text-violet-600 dark:text-violet-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                    </div>
+                    <h4 class="text-sm sm:text-base font-black uppercase tracking-tight">Drag & Drop Module PDF here</h4>
+                    <p class="text-xs font-semibold" style="color: var(--text-muted);">or click anywhere in this box to browse from your computer</p>
+                </div>
+
                 <!-- Existing Modules from Vault / Recents -->
                 <div class="brutal-card p-6 border-[3.5px] border-black shadow-[6px_6px_0px_0px_#000]">
-                    <div class="flex items-center justify-between mb-4 pb-3 border-b-2 border-black">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b-2 border-black">
                         <h3 class="text-base sm:text-lg font-black uppercase flex items-center gap-2">
                             <span class="text-violet-500">📚</span> Choose Module from Vault / Recents
                         </h3>
-                        <span id="msVaultCount" class="text-xs font-bold px-2 py-0.5 bg-black/10 dark:bg-white/10 rounded">0 Modules</span>
+                        <div class="flex items-center gap-2">
+                            <input type="text" id="msModuleSearchInput" placeholder="Search modules..." class="px-2.5 py-1 text-xs bg-[var(--bg-input)] border-2 border-black font-semibold focus:outline-none focus:border-violet-500 w-36 sm:w-48" />
+                            <span id="msVaultCount" class="text-xs font-bold px-2 py-0.5 bg-black/10 dark:bg-white/10 rounded shrink-0">0 Modules</span>
+                        </div>
                     </div>
 
                     <div id="msRecentModulesList" class="flex flex-col gap-3 max-h-[50vh] overflow-y-auto pr-1 custom-scrollbar">
@@ -3114,20 +3127,30 @@
                     <span id="msModalQStatusBadge" class="px-2.5 py-0.5 text-xs font-black uppercase rounded">Status</span>
                     <h3 id="msModalQTitle" class="text-base sm:text-lg font-black uppercase">Question Preview</h3>
                 </div>
-                <button id="msCloseModalBtn" class="p-1 hover:bg-black/10 dark:hover:bg-white/10 rounded transition-colors" title="Close Preview">
+                <button id="msCloseModalBtn" class="p-1 hover:bg-black/10 dark:hover:bg-white/10 rounded transition-colors" title="Close Preview (Esc)">
                     <svg class="w-6 h-6 text-black dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
             
-            <div class="flex-1 overflow-y-auto p-2 bg-slate-100 dark:bg-slate-900 border-2 border-black flex items-center justify-center custom-scrollbar min-h-[250px]">
+            <div class="flex-1 overflow-y-auto p-2 bg-slate-100 dark:bg-slate-900 border-2 border-black flex items-center justify-center custom-scrollbar min-h-[250px] relative">
                 <img id="msModalQImage" src="" alt="Question Preview" class="max-w-full max-h-[60vh] object-contain rounded dark:bg-white" />
+                
+                <!-- Prev / Next Navigation Arrows -->
+                <button id="msModalPrevBtn" class="absolute left-3 p-2.5 bg-black/70 hover:bg-black text-white font-black rounded-full shadow-lg transition-transform active:scale-95" title="Previous Question (Left Arrow)">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"/></svg>
+                </button>
+                <button id="msModalNextBtn" class="absolute right-3 p-2.5 bg-black/70 hover:bg-black text-white font-black rounded-full shadow-lg transition-transform active:scale-95" title="Next Question (Right Arrow)">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"/></svg>
+                </button>
             </div>
 
-            <div class="flex items-center justify-between pt-2 border-t border-black/20 dark:border-white/20">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 border-t border-black/20 dark:border-white/20">
                 <div id="msModalQMeta" class="text-xs font-bold" style="color: var(--text-muted);">Page • Section</div>
-                <button id="msModalToggleSelectBtn" class="px-5 py-2 bg-violet-600 hover:bg-violet-500 text-white font-black uppercase text-xs border-[2px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all">
-                    Toggle Selection
-                </button>
+                <div class="flex items-center gap-2">
+                    <button id="msModalToggleSelectBtn" class="px-5 py-2 bg-violet-600 hover:bg-violet-500 text-white font-black uppercase text-xs border-[2px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all">
+                        Toggle Selection
+                    </button>
+                </div>
             </div>
         </div>
     </div>
