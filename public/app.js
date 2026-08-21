@@ -6895,6 +6895,28 @@ function renderActiveModuleSolver() {
     renderModuleQuestionsGrid();
 }
 
+// Helper to format clean question number (e.g. "Q. 1", "Q. 5") without clutter or question types
+function formatCleanQuestionNumber(label, fallbackIndex) {
+    if (!label) return `Q. ${fallbackIndex + 1}`;
+    let str = label;
+    if (str.includes(' - ')) {
+        str = str.split(' - ').pop().trim();
+    }
+    // Remove all bracketed annotations like [MCQ], [NUMERICAL/SUBJECTIVE], [SUBJECTIVE], etc.
+    str = str.replace(/\[.*?\]/g, '').replace(/\(.*?\)/g, '').trim();
+    
+    // Look for Q. 1, Question 1, Q1, Q 1.2
+    const match = str.match(/(?:Q\.?|Question)\s*(\d+(?:\.\d+)?)/i);
+    if (match) {
+        return `Q. ${match[1]}`;
+    }
+    const numMatch = str.match(/^(\d+(?:\.\d+)?)$/);
+    if (numMatch) {
+        return `Q. ${numMatch[1]}`;
+    }
+    return str || `Q. ${fallbackIndex + 1}`;
+}
+
 // Render the grouped question grid
 function renderModuleQuestionsGrid() {
     const session = window.currentModuleSession;
@@ -6957,7 +6979,7 @@ function renderModuleQuestionsGrid() {
 
     sectionsMap.forEach((questions, sectionName) => {
         const secBlock = document.createElement('div');
-        secBlock.className = 'brutal-card p-5 border-[3.5px] border-black shadow-[6px_6px_0px_0px_#000] space-y-4';
+        secBlock.className = 'brutal-card p-4 sm:p-5 border-[3.5px] border-black shadow-[6px_6px_0px_0px_#000] space-y-3.5';
 
         // Section header
         const allSecIndices = questions.map(q => q.originalIndex);
@@ -6990,7 +7012,7 @@ function renderModuleQuestionsGrid() {
 
         // Questions Grid
         const gridDiv = document.createElement('div');
-        gridDiv.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5';
+        gridDiv.className = 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3';
 
         questions.forEach(q => {
             const isSelected = window.selectedModuleQuestions.has(q.originalIndex);
@@ -7011,31 +7033,25 @@ function renderModuleQuestionsGrid() {
                 statusBorder = isSelected ? 'border-violet-500 bg-violet-500/15 shadow-[4px_4px_0px_0px_#8b5cf6]' : 'border-amber-400/80 bg-amber-400/5 hover:border-amber-400';
             }
 
-            card.className = `p-3.5 border-[2.5px] rounded-none cursor-pointer transition-all flex flex-col justify-between gap-2.5 relative group active:scale-[0.98] ${statusBorder}`;
+            card.className = `p-3 border-[2.5px] rounded-none cursor-pointer transition-all flex flex-col justify-between gap-2 relative group active:scale-[0.98] ${statusBorder}`;
             
-            let cleanLabel = q.label || `Question ${q.originalIndex + 1}`;
-            if (cleanLabel.includes(' - ')) cleanLabel = cleanLabel.split(' - ')[1];
+            const cleanNumber = formatCleanQuestionNumber(q.label, q.originalIndex);
 
             card.innerHTML = `
-                <div>
-                    <div class="flex items-center justify-between gap-2 mb-2">
-                        <div class="flex items-center gap-2">
-                            <input type="checkbox" class="ms-q-checkbox w-4 h-4 text-violet-600 rounded-none border-2 border-black focus:ring-0 cursor-pointer pointer-events-none" ${isSelected ? 'checked' : ''} />
-                            <span class="font-black text-xs sm:text-sm uppercase tracking-tight truncate">${cleanLabel}</span>
-                        </div>
-                        <span class="text-[10px] font-bold px-1.5 py-0.5 bg-black/10 dark:bg-white/10 rounded">P.${q.page || 1}</span>
+                <div class="flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <input type="checkbox" class="ms-q-checkbox w-4 h-4 text-violet-600 rounded-none border-2 border-black focus:ring-0 cursor-pointer pointer-events-none shrink-0" ${isSelected ? 'checked' : ''} />
+                        <span class="font-black text-sm sm:text-base tracking-tight truncate">${cleanNumber}</span>
                     </div>
-                    <div class="flex items-center gap-1.5 mb-1 flex-wrap">
-                        ${statusBadge}
+                    <div class="flex items-center gap-1 shrink-0">
+                        <span class="text-[10px] font-bold px-1.5 py-0.5 bg-black/10 dark:bg-white/10 rounded">P.${q.page || 1}</span>
+                        <button class="ms-preview-btn p-1 hover:bg-black/10 dark:hover:bg-white/10 rounded transition-colors" data-idx="${q.originalIndex}" title="Preview Question">
+                            <svg class="w-4 h-4 text-black dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        </button>
                     </div>
                 </div>
-
-                <div class="flex items-center justify-between pt-2 border-t border-black/10 dark:border-white/10">
-                    <span class="text-[10px] font-bold" style="color: var(--text-muted);">Q #${q.originalIndex + 1}</span>
-                    <button class="ms-preview-btn px-2 py-1 bg-black/5 dark:bg-white/10 hover:bg-black/10 text-[11px] font-black uppercase rounded flex items-center gap-1 transition-colors" data-idx="${q.originalIndex}">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                        <span>Preview</span>
-                    </button>
+                <div class="flex items-center pt-1">
+                    ${statusBadge}
                 </div>
             `;
 
@@ -7175,8 +7191,10 @@ function openModuleQuestionPreview(qIndex) {
     const metaEl = document.getElementById('msModalQMeta');
     const toggleBtn = document.getElementById('msModalToggleSelectBtn');
 
+    const cleanNumber = formatCleanQuestionNumber(q.label, qIndex);
+
     if (imgEl) imgEl.src = q.dataUrl || '';
-    if (titleEl) titleEl.textContent = q.label || `Question #${qIndex + 1}`;
+    if (titleEl) titleEl.textContent = cleanNumber;
 
     const st = (session.moduleQuestionStatus && session.moduleQuestionStatus[qIndex]) || 'unattempted';
     if (statusBadge) {
