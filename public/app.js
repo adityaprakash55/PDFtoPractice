@@ -3440,10 +3440,10 @@ function updateNtaPaletteColors() {
                 btn.classList.add('nta-not-answered');
                 break;
             case 'answered':
-                if (stat.evaluation === 'correct') {
-                    btn.classList.add('nta-answered-correct');
-                } else if (stat.evaluation === 'incorrect') {
+                if (stat.evaluation === 'incorrect') {
                     btn.classList.add('nta-wrong');
+                } else if (stat.evaluation === 'correct') {
+                    btn.classList.add('nta-answered-correct');
                 } else {
                     btn.classList.add('nta-answered');
                 }
@@ -3452,16 +3452,14 @@ function updateNtaPaletteColors() {
                 btn.classList.add('nta-marked');
                 break;
             case 'answered_marked':
-                if (stat.evaluation === 'correct') {
-                    btn.classList.add('nta-answered-marked', 'relative');
-                    btn.innerHTML += `<span class="w-3 h-3 bg-emerald-400 rounded-full absolute bottom-0 right-0 border border-white"></span>`;
-                } else if (stat.evaluation === 'incorrect') {
+                if (stat.evaluation === 'incorrect') {
                     btn.classList.add('nta-wrong', 'relative');
-                    btn.innerHTML += `<span class="w-3 h-3 bg-purple-500 rounded-full absolute bottom-0 right-0 border border-white"></span>`;
+                } else if (stat.evaluation === 'correct') {
+                    btn.classList.add('nta-answered-correct', 'relative');
                 } else {
                     btn.classList.add('nta-answered-marked', 'relative');
-                    btn.innerHTML += `<span class="w-3 h-3 bg-sky-400 rounded-full absolute bottom-0 right-0 border border-white"></span>`;
                 }
+                btn.innerHTML += `<span class="w-3 h-3 bg-green-400 rounded-full absolute bottom-0 right-0"></span>`;
                 break;
         }
     });
@@ -3563,7 +3561,7 @@ function renderNtaQuestion(index) {
     }
 
     practiceState.qSecondsSpent = stat.timeSpent;
-    practiceState.isAnswerRevealed = stat.attempted;
+    practiceState.isAnswerRevealed = stat.isAnswerRevealed || false;
     
     ntaAnswerArea.classList.add('hidden');
     ntaCheckAnswerBtn.classList.remove('hidden');
@@ -3651,6 +3649,9 @@ ntaSaveNextBtn.addEventListener('click', () => {
     const s = practiceState.stats[realIndex];
     s.ntaStatus = 'answered';
     s.attempted = true;
+    if (s.evaluation !== 'correct' && s.evaluation !== 'incorrect') {
+        s.evaluation = null;
+    }
     logQuestionJourney(realIndex, 'answered');
     updateNtaPaletteColors();
     if (practiceState.currentIndex < practiceState.activeIndices.length - 1) {
