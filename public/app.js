@@ -6957,7 +6957,7 @@ function renderModuleQuestionsGrid() {
         container.innerHTML = `
             <div class="brutal-card p-12 text-center border-[3px] border-black shadow-[4px_4px_0px_0px_#000]">
                 <p class="text-base font-bold" style="color: var(--text-muted);">No questions match the current filter selection.</p>
-                <button id="msResetFiltersBtn" class="mt-4 px-4 py-2 bg-violet-500 hover:bg-violet-400 text-white font-bold text-xs uppercase border-2 border-black">
+                <button id="msResetFiltersBtn" class="mt-4 px-4 py-2 ms-btn-purple text-white font-bold text-xs uppercase border-2 border-black">
                     Reset Filters
                 </button>
             </div>
@@ -6990,11 +6990,11 @@ function renderModuleQuestionsGrid() {
         headerDiv.className = 'flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b-2 border-black';
         headerDiv.innerHTML = `
             <div class="flex items-center gap-2.5">
-                <span class="w-3 h-3 bg-violet-600 border border-black"></span>
+                <span class="w-3 h-3 ms-btn-purple border border-black inline-block"></span>
                 <h3 class="text-base sm:text-lg font-black uppercase tracking-tight">${sectionName}</h3>
                 <span class="text-xs font-bold px-2 py-0.5 bg-black/10 dark:bg-white/10 rounded">${selectedSecCount}/${questions.length} Selected</span>
             </div>
-            <button class="ms-sec-toggle-btn px-3 py-1.5 ${allSecSelected ? 'bg-rose-500 text-white' : 'bg-violet-600 text-white'} hover:opacity-90 font-black uppercase text-[10px] sm:text-xs border-[2px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all self-start sm:self-auto">
+            <button class="ms-sec-toggle-btn px-3.5 py-1.5 ${allSecSelected ? 'ms-btn-red text-white' : 'ms-btn-purple text-white'} hover:opacity-90 font-black uppercase text-[10px] sm:text-xs border-[2px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all self-start sm:self-auto">
                 ${allSecSelected ? 'Deselect Section' : `Select All (${questions.length})`}
             </button>
         `;
@@ -7024,13 +7024,13 @@ function renderModuleQuestionsGrid() {
             let statusBorder = '';
             if (q.status === 'correct') {
                 statusBadge = `<span class="px-2 py-0.5 bg-emerald-400 text-black font-black text-[10px] uppercase border border-black shadow-[1.5px_1.5px_0px_0px_#000] rounded-none">🟢 SOLVED (+4)</span>`;
-                statusBorder = isSelected ? 'border-violet-500 bg-violet-500/15 shadow-[4px_4px_0px_0px_#8b5cf6]' : 'border-emerald-500 bg-emerald-500/5 hover:border-emerald-400';
+                statusBorder = isSelected ? 'border-purple-600 bg-purple-500/15 shadow-[4px_4px_0px_0px_#7c3aed]' : 'border-emerald-500 bg-emerald-500/5 hover:border-emerald-400';
             } else if (q.status === 'incorrect') {
                 statusBadge = `<span class="px-2 py-0.5 bg-rose-500 text-white font-black text-[10px] uppercase border border-black shadow-[1.5px_1.5px_0px_0px_#000] rounded-none">🔴 WRONG (-1)</span>`;
-                statusBorder = isSelected ? 'border-violet-500 bg-violet-500/15 shadow-[4px_4px_0px_0px_#8b5cf6]' : 'border-rose-500 bg-rose-500/5 hover:border-rose-400';
+                statusBorder = isSelected ? 'border-purple-600 bg-purple-500/15 shadow-[4px_4px_0px_0px_#7c3aed]' : 'border-rose-500 bg-rose-500/5 hover:border-rose-400';
             } else {
                 statusBadge = `<span class="px-2 py-0.5 bg-amber-400 text-black font-black text-[10px] uppercase border border-black shadow-[1.5px_1.5px_0px_0px_#000] rounded-none">🟡 NOT ATTEMPTED</span>`;
-                statusBorder = isSelected ? 'border-violet-500 bg-violet-500/15 shadow-[4px_4px_0px_0px_#8b5cf6]' : 'border-amber-400/80 bg-amber-400/5 hover:border-amber-400';
+                statusBorder = isSelected ? 'border-purple-600 bg-purple-500/15 shadow-[4px_4px_0px_0px_#7c3aed]' : 'border-amber-400/80 bg-amber-400/5 hover:border-amber-400';
             }
 
             card.className = `p-3 border-[2.5px] rounded-none cursor-pointer transition-all flex flex-col justify-between gap-2 relative group active:scale-[0.98] ${statusBorder}`;
@@ -7040,13 +7040,13 @@ function renderModuleQuestionsGrid() {
             card.innerHTML = `
                 <div class="flex items-center justify-between gap-2">
                     <div class="flex items-center gap-2 min-w-0">
-                        <input type="checkbox" class="ms-q-checkbox w-4 h-4 text-violet-600 rounded-none border-2 border-black focus:ring-0 cursor-pointer pointer-events-none shrink-0" ${isSelected ? 'checked' : ''} />
+                        <input type="checkbox" class="ms-q-checkbox w-4 h-4 text-purple-600 rounded-none border-2 border-black focus:ring-0 cursor-pointer pointer-events-none shrink-0" ${isSelected ? 'checked' : ''} />
                         <span class="font-black text-sm sm:text-base tracking-tight truncate">${cleanNumber}</span>
                     </div>
                     <div class="flex items-center gap-1 shrink-0">
                         <span class="text-[10px] font-bold px-1.5 py-0.5 bg-black/10 dark:bg-white/10 rounded">P.${q.page || 1}</span>
-                        <button class="ms-preview-btn p-1 hover:bg-black/10 dark:hover:bg-white/10 rounded transition-colors" data-idx="${q.originalIndex}" title="Preview Question">
-                            <svg class="w-4 h-4 text-black dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        <button type="button" class="ms-preview-btn p-1.5 hover:bg-black/10 dark:hover:bg-white/10 rounded transition-colors flex items-center justify-center cursor-pointer" data-idx="${q.originalIndex}" title="Preview Question">
+                            <svg class="w-4 h-4 text-black dark:text-white pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                         </button>
                     </div>
                 </div>
@@ -7068,8 +7068,9 @@ function renderModuleQuestionsGrid() {
 
             // Preview click opens preview modal
             card.querySelector('.ms-preview-btn')?.addEventListener('click', (e) => {
+                e.preventDefault();
                 e.stopPropagation();
-                openModuleQuestionPreview(q.originalIndex);
+                window.openModuleQuestionPreview(q.originalIndex);
             });
 
             gridDiv.appendChild(card);
@@ -7177,9 +7178,12 @@ function handleQuickQuestionNumbers(queryStr) {
 }
 
 // Open Question Preview Modal with full navigation
-function openModuleQuestionPreview(qIndex) {
+window.openModuleQuestionPreview = function(qIndex) {
     const session = window.currentModuleSession;
-    if (!session || !session.extractedImages || !session.extractedImages[qIndex]) return;
+    if (!session || !session.extractedImages || !session.extractedImages[qIndex]) {
+        console.warn("Session or question not found at index", qIndex);
+        return;
+    }
 
     window.moduleActivePreviewIndex = qIndex;
     const q = session.extractedImages[qIndex];
@@ -7193,7 +7197,7 @@ function openModuleQuestionPreview(qIndex) {
 
     const cleanNumber = formatCleanQuestionNumber(q.label, qIndex);
 
-    if (imgEl) imgEl.src = q.dataUrl || '';
+    if (imgEl) imgEl.src = q.dataUrl || q.answerDataUrl || '';
     if (titleEl) titleEl.textContent = cleanNumber;
 
     const st = (session.moduleQuestionStatus && session.moduleQuestionStatus[qIndex]) || 'unattempted';
@@ -7219,8 +7223,8 @@ function openModuleQuestionPreview(qIndex) {
             const isSelected = window.selectedModuleQuestions.has(qIndex);
             toggleBtn.textContent = isSelected ? '✓ Selected (Click to Remove)' : '+ Select This Question';
             toggleBtn.className = isSelected 
-                ? 'px-5 py-2 bg-rose-500 hover:bg-rose-400 text-white font-black uppercase text-xs border-[2px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all'
-                : 'px-5 py-2 bg-violet-600 hover:bg-violet-500 text-white font-black uppercase text-xs border-[2px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all';
+                ? 'px-5 py-2 ms-btn-red font-black uppercase text-xs border-[2px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer'
+                : 'px-5 py-2 ms-btn-purple font-black uppercase text-xs border-[2px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer';
         }
     }
     updateToggleBtnText();
@@ -7237,8 +7241,12 @@ function openModuleQuestionPreview(qIndex) {
         };
     }
 
-    if (modal) modal.classList.remove('hidden');
-}
+    if (modal) {
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+        modal.style.zIndex = '999999';
+    }
+};
 
 // Navigate preview modal
 function navigateModulePreview(step) {
@@ -7249,7 +7257,7 @@ function navigateModulePreview(step) {
     if (nextIdx < 0) nextIdx = session.extractedImages.length - 1;
     if (nextIdx >= session.extractedImages.length) nextIdx = 0;
 
-    openModuleQuestionPreview(nextIdx);
+    window.openModuleQuestionPreview(nextIdx);
 }
 
 // Launch test with only selected questions
@@ -7262,120 +7270,126 @@ async function launchModuleSolverTest() {
         return;
     }
 
-    const selectedIndices = Array.from(window.selectedModuleQuestions).sort((a, b) => a - b);
-    const selectedImages = selectedIndices.map(idx => session.extractedImages[idx]);
+    const selectedOriginalIndices = Array.from(window.selectedModuleQuestions).sort((a, b) => a - b);
+    const selectedQuestions = selectedOriginalIndices.map(idx => session.extractedImages[idx]);
 
     const titleInput = document.getElementById('msTestTitleInput');
-    const customTestName = titleInput && titleInput.value.trim() !== '' ? titleInput.value.trim() : `${session.title || 'Module'} - Day Practice`;
+    const timeInput = document.getElementById('msTimeMinutesInput');
 
-    const timeMinutes = parseInt(document.getElementById('msTimeMinutesInput')?.value, 10) || Math.max(10, selectedIndices.length * 2);
+    const customTitle = (titleInput && titleInput.value.trim()) || `${session.title || 'Module'} - Practice Set`;
+    const customTimeMinutes = (timeInput && parseInt(timeInput.value, 10)) || Math.max(10, selectedQuestions.length * 2);
 
-    // Configure practiceState
-    practiceState = {
-        isModuleSolver: true,
-        parentModuleId: session.id,
-        selectedOriginalIndices: selectedIndices,
-        activeIndices: selectedIndices.map((_, i) => i),
-        currentIndex: 0,
-        theme: 'nta',
-        totalSecondsRemaining: timeMinutes * 60,
-        scorePerQ: 4,
-        negativeMarking: true,
-        stats: selectedIndices.map((origIdx, i) => {
-            const q = session.extractedImages[origIdx];
-            let ex = 'Exercise 1';
-            if (q && q.label && q.label.includes(' - ')) ex = q.label.split(' - ')[0];
-            return {
-                index: i,
+    // Build standalone mock session linked to parent module
+    const parentModuleId = session.id;
+    const testSession = {
+        id: Date.now(),
+        parentModuleId: parentModuleId,
+        title: customTitle,
+        pdfFilename: session.pdfFilename || 'Module',
+        createdAt: new Date().toISOString(),
+        extractedImages: selectedQuestions,
+        totalQuestions: selectedQuestions.length,
+        timeLimitMinutes: customTimeMinutes,
+        score: 0,
+        userAnswers: {},
+        questionStatus: {},
+        markedForReview: [],
+        practiceState: {
+            timeRemaining: customTimeMinutes * 60,
+            currentQuestionIndex: 0,
+            activeIndices: selectedQuestions.map((_, i) => i),
+            selectedOriginalIndices: selectedOriginalIndices,
+            stats: selectedQuestions.map((q, idx) => ({
+                id: idx,
+                status: 'not_visited',
+                selectedOption: null,
+                numericalAnswer: '',
+                isMarkedForReview: false,
                 timeSpent: 0,
-                targetTime: 0,
-                attempted: false,
-                evaluation: null,
-                ntaStatus: 'not_visited',
-                exercise: ex
-            };
-        })
+                page: q.page || 1,
+                label: q.label || `Q. ${idx + 1}`,
+                originalModuleIndex: selectedOriginalIndices[idx]
+            }))
+        }
     };
 
-    extractedImages = selectedImages;
-    currentSessionId = Date.now();
-    window.currentPdfFilename = customTestName;
-
-    // Hide all dashboard views
-    document.querySelectorAll('.dash-view').forEach(v => v.classList.add('hidden'));
-    document.getElementById('uploadContainer')?.classList.add('hidden');
-    document.getElementById('historyContainer')?.classList.add('hidden');
-    document.getElementById('configContainer')?.classList.add('hidden');
-    document.getElementById('practiceSetupContainer')?.classList.add('hidden');
-    document.getElementById('analysisContainer')?.classList.add('hidden');
-    document.getElementById('liveResultsDashboard')?.classList.add('hidden');
-    document.getElementById('moduleSolverContainer')?.classList.add('hidden');
-
-    if (typeof startPracticeSession === 'function') {
-        startPracticeSession(practiceState.activeIndices);
+    // Save test session to IndexedDB
+    try {
+        await saveSessionToDB(testSession);
+        
+        // Hide Module Solver and switch to practice container
+        document.querySelectorAll('.dash-view').forEach(v => v.classList.add('hidden'));
+        document.getElementById('moduleSolverContainer')?.classList.add('hidden');
+        
+        // Load into practice engine
+        currentSessionId = testSession.id;
+        window.currentParentModuleId = parentModuleId;
+        window.currentSelectedOriginalIndices = selectedOriginalIndices;
+        
+        practiceState = JSON.parse(JSON.stringify(testSession.practiceState));
+        extractedImages = JSON.parse(JSON.stringify(selectedQuestions));
+        
+        // Open Practice View
+        document.getElementById('practiceContainer')?.classList.remove('hidden');
+        initPracticeExamUI(testSession);
+    } catch(err) {
+        console.error("Failed to start module test session:", err);
+        alert("Error launching module test. Please try again.");
     }
 }
 
-// Bind all Module Solver UI elements
+// Initialize all Module Solver DOM Events
 function initModuleSolverEvents() {
-    // Nav & hero buttons
-    document.getElementById('homeModuleSolverBtn')?.addEventListener('click', () => {
-        window.openModuleSolverView();
-    });
+    // Dropzone drag-and-drop & file click
+    const dropZone = document.getElementById('msDropZone');
+    const directInput = document.getElementById('msDirectFileInput');
 
-    document.querySelectorAll('.dash-nav-btn[data-target="moduleSolverView"]').forEach(btn => {
-        btn.addEventListener('click', () => {
-            window.openModuleSolverView();
-        });
-    });
-
-    // Upload PDF in module solver mode (Button & Direct File Input)
-    const directFileInput = document.getElementById('msDirectFileInput');
-    const uploadBtn = document.getElementById('msUploadNewPdfBtn');
-
-    if (uploadBtn && directFileInput) {
-        uploadBtn.addEventListener('click', () => {
-            window.isModuleSolverScanMode = true;
-            directFileInput.click();
-        });
-
-        directFileInput.addEventListener('change', (e) => {
-            if (e.target.files.length) {
-                window.isModuleSolverScanMode = true;
-                loadPDF(e.target.files[0]);
+    if (dropZone && directInput) {
+        dropZone.addEventListener('click', () => directInput.click());
+        directInput.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files[0]) {
+                const file = e.target.files[0];
+                if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+                    window.isModuleSolverScanMode = true;
+                    if (typeof loadPDF === 'function') loadPDF(file);
+                } else {
+                    alert('Please select a valid PDF file.');
+                }
             }
         });
-    }
 
-    // Direct Dropzone for Module PDF
-    const dropZone = document.getElementById('msDropZone');
-    if (dropZone) {
-        dropZone.addEventListener('click', () => {
-            window.isModuleSolverScanMode = true;
-            if (directFileInput) directFileInput.click();
-            else document.getElementById('fileInput')?.click();
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.add('border-purple-500', 'bg-purple-500/10');
+            }, false);
         });
 
-        dropZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropZone.classList.add('bg-violet-500/20', 'border-violet-600');
-        });
-
-        dropZone.addEventListener('dragleave', () => {
-            dropZone.classList.remove('bg-violet-500/20', 'border-violet-600');
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.remove('border-purple-500', 'bg-purple-500/10');
+            }, false);
         });
 
         dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropZone.classList.remove('bg-violet-500/20', 'border-violet-600');
-            if (e.dataTransfer.files.length) {
-                window.isModuleSolverScanMode = true;
-                loadPDF(e.dataTransfer.files[0]);
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files && files[0]) {
+                const file = files[0];
+                if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+                    window.isModuleSolverScanMode = true;
+                    if (typeof loadPDF === 'function') loadPDF(file);
+                } else {
+                    alert('Please drop a valid PDF file.');
+                }
             }
         });
     }
 
-    // Live search in Recent Modules
+    // Module search
     document.getElementById('msModuleSearchInput')?.addEventListener('input', (e) => {
         renderRecentModulesList(e.target.value);
     });
@@ -7488,6 +7502,14 @@ function initModuleSolverEvents() {
     });
 
     // Preview modal navigation & close
+    function closeModulePreviewModal() {
+        const modal = document.getElementById('msQuestionPreviewModal');
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+        }
+    }
+
     document.getElementById('msModalNextBtn')?.addEventListener('click', () => {
         navigateModulePreview(1);
     });
@@ -7496,23 +7518,21 @@ function initModuleSolverEvents() {
         navigateModulePreview(-1);
     });
 
-    document.getElementById('msCloseModalBtn')?.addEventListener('click', () => {
-        document.getElementById('msQuestionPreviewModal')?.classList.add('hidden');
-    });
+    document.getElementById('msCloseModalBtn')?.addEventListener('click', closeModulePreviewModal);
 
     document.getElementById('msQuestionPreviewModal')?.addEventListener('click', (e) => {
         if (e.target.id === 'msQuestionPreviewModal') {
-            document.getElementById('msQuestionPreviewModal')?.classList.add('hidden');
+            closeModulePreviewModal();
         }
     });
 
     // Keyboard shortcuts for modal
     window.addEventListener('keydown', (e) => {
         const modal = document.getElementById('msQuestionPreviewModal');
-        if (!modal || modal.classList.contains('hidden')) return;
+        if (!modal || modal.classList.contains('hidden') || modal.style.display === 'none') return;
 
         if (e.key === 'Escape') {
-            modal.classList.add('hidden');
+            closeModulePreviewModal();
         } else if (e.key === 'ArrowRight') {
             navigateModulePreview(1);
         } else if (e.key === 'ArrowLeft') {
@@ -7529,4 +7549,3 @@ if (document.readyState === 'loading') {
 } else {
     initModuleSolverEvents();
 }
-
