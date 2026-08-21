@@ -2505,8 +2505,6 @@ async function saveCurrentSession(totalSeconds, correctCount, incorrectCount, un
                                     parentModule.moduleQuestionStatus[origIdx] = 'correct';
                                 } else if (stat.evaluation === 'incorrect') {
                                     parentModule.moduleQuestionStatus[origIdx] = 'incorrect';
-                                } else if (stat.attempted) {
-                                    parentModule.moduleQuestionStatus[origIdx] = stat.evaluation || 'unattempted';
                                 }
                             }
                         });
@@ -3609,14 +3607,6 @@ ntaCheckAnswerBtn.addEventListener('click', showNtaAnswer);
 
 ntaCorrectBtn.addEventListener('click', () => {
     const realIndex = practiceState.activeIndices[practiceState.currentIndex];
-    practiceState.stats[realIndex].ntaStatus = 'answered';
-    practiceState.stats[realIndex].evaluation = 'correct';
-    logQuestionJourney(realIndex, 'correct');
-    updateNtaPaletteColors();
-});
-
-ntaCorrectBtn.addEventListener('click', () => {
-    const realIndex = practiceState.activeIndices[practiceState.currentIndex];
     const s = practiceState.stats[realIndex];
     s.ntaStatus = 'answered';
     s.attempted = true;
@@ -4135,9 +4125,6 @@ function showResultsDashboard() {
                     const normAns = String(ans).trim().toUpperCase();
                     const normCorrect = String(q.correctAnswer || q.answer).trim().toUpperCase();
                     s.evaluation = (normAns === normCorrect) ? 'correct' : 'incorrect';
-                } else {
-                    // Default attempted question to 'correct' for practice/live mode if no official key embedded
-                    s.evaluation = 'correct';
                 }
             }
         }
