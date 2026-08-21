@@ -196,7 +196,8 @@
         .nta-not-visited { background-color: #e5e7eb; border: 2px solid #d1d5db; color: #1f2937; }
         .dark .nta-not-visited { background-color: #374151; border: 2px solid #4b5563; color: #ffffff; }
         .nta-not-answered { background-color: #F28C28; border-color: #d97a22; color: white; border-radius: 0 0 10px 10px; }
-        .nta-answered { background-color: #22c55e; border-color: #16a34a; color: white; border-radius: 10px 10px 0 0; }
+        .nta-answered { background-color: #0284c7; border-color: #0369a1; color: white; border-radius: 10px 10px 0 0; }
+        .nta-answered-correct { background-color: #10b981; border-color: #059669; color: white; border-radius: 10px 10px 0 0; }
         .nta-marked { background-color: #9333ea; border-color: #7e22ce; color: white; border-radius: 50%; }
         .nta-answered-marked { background-color: #9333ea; border-color: #7e22ce; color: white; border-radius: 50%; }
         .nta-wrong { background-color: #ef4444; border-color: #dc2626; color: white; border-radius: 10px 10px 0 0; }
@@ -1697,7 +1698,7 @@
                     <!-- Legend Area -->
                     <div class="border-b-2 border-black p-3 text-[11px] font-bold flex flex-col gap-2" style="background-color: var(--bg-card); color: var(--text-primary);">
                         <div class="flex justify-between">
-                            <div class="flex items-center w-1/2"><span id="ntaLegendAnswered" class="w-6 h-6 inline-flex items-center justify-center bg-[#22c55e] text-white font-black rounded-t-md mr-2 nta-answered" style="color: #ffffff !important;">0</span> Answered</div>
+                            <div class="flex items-center w-1/2"><span id="ntaLegendAnswered" class="w-6 h-6 inline-flex items-center justify-center bg-[#0284c7] text-white font-black rounded-t-md mr-2 nta-answered" style="color: #ffffff !important;">0</span> Answered</div>
                             <div class="flex items-center w-1/2"><span id="ntaLegendNotAnswered" class="w-6 h-6 inline-flex items-center justify-center bg-[#F28C28] text-white font-black rounded-b-md mr-2 nta-not-answered" style="color: #ffffff !important;">0</span> Not Answered</div>
                         </div>
                         <div class="flex justify-between">
@@ -1706,7 +1707,7 @@
                         </div>
                         <div class="flex items-start mt-1">
                             <span id="ntaLegendAnsweredMarked" class="w-6 h-6 shrink-0 inline-flex items-center justify-center bg-[#9333ea] text-white font-black rounded-full mr-2 relative nta-answered-marked" style="color: #ffffff !important;">
-                                <span class="w-2 h-2 bg-[#22c55e] rounded-full absolute bottom-0 right-0 border border-white"></span>0
+                                <span class="w-2 h-2 bg-[#0284c7] rounded-full absolute bottom-0 right-0 border border-white"></span>0
                             </span> 
                             <span class="text-[10px] font-semibold leading-tight mt-0.5" style="color: var(--text-muted);">Answered & Marked for Review</span>
                         </div>
