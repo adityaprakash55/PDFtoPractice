@@ -84,6 +84,10 @@ app.get('/contact', (req, res) => {
     });
 });
 
+app.get(['/mathongo', '/mathongo.html'], (req, res) => {
+    res.sendFile(path.join(__dirname, '../public/mathongo.html'));
+});
+
 // Redirects for legacy/incorrect paths
 app.get(['/donate.html', '/Donate'], (req, res) => res.redirect(301, '/donate'));
 app.get('/privacy.html', (req, res) => res.redirect(301, '/privacy'));
