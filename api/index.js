@@ -24,6 +24,15 @@ app.use((req, res, next) => {
     next();
 });
 
+// Routes with Server-Side Rendering (SSR) for SEO
+app.get(['/mathongo', '/mathongo.html'], (req, res) => {
+    res.render('mathongo', {
+        title: 'Mathongo Coupon Code 2026 / 2027: Flat ₹500 OFF (Verified Code: MG27P89)',
+        description: 'Verified Mathongo Coupon Code & Cupon Code: Use code MG27P89 to get flat ₹500 EXTRA OFF on MathonGo JEE Main 2026/2027, JEE Advanced & Quizrr Pass test series. 100% working discount code!',
+        canonical: 'https://pdftopractice.in/mathongo.html'
+    });
+});
+
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, '../public')));
 
@@ -84,9 +93,6 @@ app.get('/contact', (req, res) => {
     });
 });
 
-app.get(['/mathongo', '/mathongo.html'], (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/mathongo.html'));
-});
 
 // Redirects for legacy/incorrect paths
 app.get(['/donate.html', '/Donate'], (req, res) => res.redirect(301, '/donate'));
