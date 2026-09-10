@@ -46,18 +46,8 @@ const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
    </url>
    <url>
       <loc>https://pdftopractice.in/mathongo.html</loc>
-      <changefreq>daily</changefreq>
-      <priority>0.9</priority>
-   </url>
-   <url>
-      <loc>https://pdftopractice.in/mathongo</loc>
-      <changefreq>daily</changefreq>
-      <priority>0.9</priority>
-   </url>
-   <url>
-      <loc>https://pdftopractice.in/contact</loc>
-      <changefreq>monthly</changefreq>
-      <priority>0.7</priority>
+      <changefreq>weekly</changefreq>
+      <priority>0.95</priority>
    </url>
    <url>
       <loc>https://pdftopractice.in/donate</loc>
