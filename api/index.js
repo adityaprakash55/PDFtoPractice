@@ -30,8 +30,8 @@ app.use(express.static(path.join(__dirname, '../public')));
 // Routes
 app.get('/', (req, res) => {
     res.render('index', {
-        title: 'PDF to CBT Test Generator | Online JEE & NEET Mock CBT Practice',
-        description: 'Convert any question paper PDF, DPP, or coaching module into an interactive online NTA CBT mock test instantly. Best free tool for PDF to CBT, PDF to Practice, JEE Mock CBT, NEET Mock CBT, and DPP to Practice with percentile predictor.',
+        title: 'PDF to CBT Test Generator & Free Mentorship | Online JEE & NEET Mock CBT Practice',
+        description: 'Convert any question paper PDF, DPP, or coaching module into an interactive online NTA CBT mock test instantly. Best free tool for PDF to CBT, PDF to Practice, JEE Mock CBT, NEET Mock CBT, and DPP to Practice with percentile predictor and free mentorship.',
         canonical: 'https://pdftopractice.in/'
     });
 });
@@ -87,6 +87,9 @@ app.get('/contact', (req, res) => {
 app.get(['/mathongo', '/mathongo.html'], (req, res) => {
     res.sendFile(path.join(__dirname, '../public/mathongo.html'));
 });
+
+// Mentorship route - Redirects to contact page for now
+app.get('/mentorship', (req, res) => res.redirect(301, '/contact'));
 
 // Redirects for legacy/incorrect paths
 app.get(['/donate.html', '/Donate'], (req, res) => res.redirect(301, '/donate'));
