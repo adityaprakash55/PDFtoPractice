@@ -88,8 +88,8 @@ app.get(['/mathongo', '/mathongo.html'], (req, res) => {
     res.sendFile(path.join(__dirname, '../public/mathongo.html'));
 });
 
-// Mentorship route - Redirects to contact page for now
-app.get('/mentorship', (req, res) => res.redirect(301, '/contact'));
+// Mentorship route - Redirects to Telegram channel
+app.get('/mentorship', (req, res) => res.redirect(301, 'https://t.me/+fmOGYoVG7kQyMGM1'));
 
 // Redirects for legacy/incorrect paths
 app.get(['/donate.html', '/Donate'], (req, res) => res.redirect(301, '/donate'));
