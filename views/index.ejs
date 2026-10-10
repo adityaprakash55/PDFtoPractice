@@ -254,6 +254,29 @@
         .ms-btn-red:hover {
             background-color: #DC2626 !important;
         }
+
+        /* Home Quick Action Buttons - Guaranteed High Contrast in Dark & Light modes */
+        #homeModuleSolverBtn {
+            background-color: #a78bfa !important;
+            color: #000000 !important;
+        }
+        #homeModuleSolverBtn:hover {
+            background-color: #c4b5fd !important;
+        }
+        .dark #homeModuleSolverBtn {
+            background-color: #a78bfa !important;
+            color: #000000 !important;
+        }
+        .dark #homeModuleSolverBtn:hover {
+            background-color: #c4b5fd !important;
+        }
+        #homeCreateLiveRoomBtn {
+            background-color: #34d399 !important;
+            color: #000000 !important;
+        }
+        #homeCreateLiveRoomBtn:hover {
+            background-color: #6ee7b7 !important;
+        }
         
         .brutal-card {
             background: rgba(255, 255, 255, 0.7);
@@ -499,15 +522,15 @@
             
             <!-- Quick Actions Buttons -->
             <div class="mt-4 sm:mt-5 flex flex-wrap justify-center gap-3 sm:gap-4">
-                <button id="homeModuleSolverBtn" class="inline-flex items-center justify-center gap-2 bg-violet-400 hover:bg-violet-300 text-black font-black uppercase border-[3px] border-black shadow-[4px_4px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_#000] transition-all active:translate-x-0 active:translate-y-0 px-4 py-2 text-xs sm:text-sm">
+                <button id="homeModuleSolverBtn" style="background-color: #a78bfa !important; color: #000000 !important;" class="inline-flex items-center justify-center gap-2 bg-violet-400 hover:bg-violet-300 text-black font-black uppercase border-[3px] border-black shadow-[4px_4px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_#000] transition-all active:translate-x-0 active:translate-y-0 px-4 py-2 text-xs sm:text-sm">
                     <svg class="w-4 h-4 sm:w-5 sm:h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012-2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
                     ⚡ Module Solver
                 </button>
-                <button id="homeCreateLiveRoomBtn" class="inline-flex items-center justify-center gap-2 bg-emerald-400 hover:bg-emerald-300 font-black uppercase border-[3px] border-black shadow-[4px_4px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_#000] transition-all active:translate-x-0 active:translate-y-0 px-4 py-2 text-xs sm:text-sm">
+                <button id="homeCreateLiveRoomBtn" style="background-color: #34d399 !important; color: #000000 !important;" class="inline-flex items-center justify-center gap-2 bg-emerald-400 hover:bg-emerald-300 font-black uppercase border-[3px] border-black shadow-[4px_4px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_#000] transition-all active:translate-x-0 active:translate-y-0 px-4 py-2 text-xs sm:text-sm">
                     <svg class="w-4 h-4 sm:w-5 sm:h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                     Host a Live Practice Room
                 </button>
-                <a href="https://youtu.be/AYSNQ1UcL7I" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-300 font-black uppercase border-[3px] border-black shadow-[4px_4px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_#000] transition-all active:translate-x-0 active:translate-y-0 px-4 py-2 text-xs sm:text-sm">
+                <a href="https://youtu.be/AYSNQ1UcL7I" target="_blank" rel="noopener noreferrer" style="background-color: #facc15 !important; color: #000000 !important;" class="inline-flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-300 font-black uppercase border-[3px] border-black shadow-[4px_4px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_#000] transition-all active:translate-x-0 active:translate-y-0 px-4 py-2 text-xs sm:text-sm">
                     <svg class="w-4 h-4 sm:w-5 sm:h-5 text-black" fill="currentColor" viewBox="0 0 24 24"><path d="M21.582,6.186c-0.23-0.86-0.908-1.538-1.768-1.768C18.254,4,12,4,12,4S5.746,4,4.186,4.418c-0.86,0.23-1.538,0.908-1.768,1.768C2,7.746,2,12,2,12s0,4.254,0.418,5.814c0.23,0.86,0.908,1.538,1.768,1.768C5.746,20,12,20,12,20s6.254,0,7.814-0.418c0.86-0.23,1.538-0.908,1.768-1.768C22,16.254,22,12,22,12S22,7.746,21.582,6.186z M10,15.464V8.536L16,12L10,15.464z"></path></svg>
                     How to Use
                 </a>
