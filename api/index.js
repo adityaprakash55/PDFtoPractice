@@ -86,8 +86,8 @@ app.get('/contact', (req, res) => {
 
 app.get(['/mathongo', '/mathongo.html'], (req, res) => {
     res.render('mathongo', {
-        title: 'Mathongo Coupon Code 2027: ₹500 EXTRA OFF (Code: MG27WFX)',
-        description: 'Verified Mathongo Coupon Code: MG27WFX. Get ₹500 EXTRA OFF on MathonGo Test Series for JEE Main 2027, JEE Advanced, Quizrr Pass & NEET. Claim your discount now!',
+        title: 'Mathongo Coupon Code 2026 - 2027: Flat ₹500 OFF (Code: MG27WFX) | Verified MathonGo Test Series Discount',
+        description: 'Looking for Mathongo Coupon Code? Use verified referral code MG27WFX to get flat ₹500 EXTRA OFF on MathonGo Test Series (JEE Main 2026/2027, Advanced, BITSAT, Quizrr Pass & NEET). 100% active today!',
         canonical: 'https://pdftopractice.in/mathongo.html'
     });
 });
