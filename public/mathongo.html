@@ -659,99 +659,6 @@
   }
   .btn-table:hover { background: var(--blue-800); transform: translateY(-1px); }
 
-  /* ---------- INTERACTIVE SAVINGS CALCULATOR ---------- */
-  .calc-card {
-    background: var(--white);
-    border: 2px solid var(--blue-600);
-    border-radius: var(--radius-lg);
-    padding: 28px;
-    box-shadow: 0 12px 28px -10px rgba(22, 86, 209, 0.2);
-    margin: 32px 0;
-  }
-  .calc-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-bottom: 18px;
-  }
-  .calc-title {
-    font-size: 1.3rem;
-    font-weight: 800;
-    color: var(--blue-950);
-  }
-  .calc-tag {
-    background: #fef08a;
-    color: #854d0e;
-    font-size: 0.78rem;
-    font-weight: 800;
-    padding: 4px 10px;
-    border-radius: 999px;
-    text-transform: uppercase;
-  }
-  .calc-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    align-items: center;
-  }
-  .calc-select-wrap label {
-    display: block;
-    font-size: 0.88rem;
-    font-weight: 700;
-    color: var(--ink-soft);
-    margin-bottom: 8px;
-  }
-  .calc-select {
-    width: 100%;
-    padding: 12px 16px;
-    font-size: 0.98rem;
-    font-family: inherit;
-    font-weight: 600;
-    color: var(--blue-950);
-    background: var(--blue-50);
-    border: 2px solid var(--line);
-    border-radius: 10px;
-    outline: none;
-    transition: border-color .2s;
-  }
-  .calc-select:focus { border-color: var(--blue-700); }
-  .calc-result-box {
-    background: linear-gradient(135deg, var(--blue-950), var(--blue-900));
-    color: var(--white);
-    border-radius: var(--radius-md);
-    padding: 20px;
-    text-align: center;
-  }
-  .calc-breakdown {
-    display: flex;
-    justify-content: space-around;
-    font-size: 0.92rem;
-    margin-bottom: 12px;
-    border-bottom: 1px solid rgba(255,255,255,0.15);
-    padding-bottom: 10px;
-  }
-  .calc-breakdown span.strike { text-decoration: line-through; opacity: 0.75; }
-  .calc-breakdown span.save { color: #3fd17e; font-weight: 700; }
-  .calc-final-price {
-    font-size: 1.8rem;
-    font-weight: 900;
-    color: var(--yellow);
-    font-family: 'Manrope', sans-serif;
-  }
-  .calc-btn {
-    display: inline-block;
-    margin-top: 10px;
-    background: var(--yellow);
-    color: var(--blue-950);
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-weight: 800;
-    font-size: 0.92rem;
-    transition: background .2s;
-  }
-  .calc-btn:hover { background: #ffd766; }
 
   /* ---------- REFERRAL GRID ---------- */
   .grid {
@@ -1010,7 +917,6 @@
   @media (max-width: 900px) {
     .steps-grid { grid-template-columns: repeat(2, 1fr); }
     .extra-offers { grid-template-columns: 1fr; }
-    .calc-grid { grid-template-columns: 1fr; }
   }
 
   @media (max-width: 720px) {
@@ -1115,40 +1021,6 @@
       </ul>
     </section>
 
-    <!-- Interactive Savings Calculator -->
-    <section class="calc-card" aria-label="MathonGo Savings Calculator">
-      <div class="calc-header">
-        <div>
-          <h2 class="calc-title">⚡ Instant MathonGo Discount Calculator</h2>
-          <p style="font-size:0.92rem; color:var(--ink-soft); margin:4px 0 0;">Calculate your final discounted price with referral code <strong>MG27WFX</strong></p>
-        </div>
-        <span class="calc-tag">Save ₹2000 Guaranteed</span>
-      </div>
-
-      <div class="calc-grid">
-        <div class="calc-select-wrap">
-          <label for="courseSelect">Select Target Course / Test Series:</label>
-          <select id="courseSelect" class="calc-select" onchange="updateCalc()">
-            <option value="6000|yyQbJedZ|JEE Main 2027 Test Series">MathonGo JEE Main 2027 Test Series</option>
-            <option value="8000|eyQbJbu4|JEE Main + Advanced Combo">MathonGo JEE Main + Advanced Combo</option>
-            <option value="4500|2yQbJCV3|Quizrr Pass (All-Access)">MathonGo Quizrr Pass</option>
-            <option value="4000|2yQbJCV3|BITSAT Test Series">MathonGo BITSAT Test Series</option>
-            <option value="3500|ZyQbKtSW|NEET Test Series">MathonGo NEET Test Series</option>
-          </select>
-          <p style="font-size:0.82rem; color:var(--ink-soft); margin-top:8px;">*Estimated base price shown. Final price reduces by ₹2,000 instantly.</p>
-        </div>
-
-        <div class="calc-result-box">
-          <div class="calc-breakdown">
-            <span>Base: <span id="calcBasePrice" class="strike">₹6,000</span></span>
-            <span class="save">Coupon MG27WFX: -₹2,000</span>
-          </div>
-          <div style="font-size:0.85rem; text-transform:uppercase; letter-spacing:0.08em; opacity:0.9;">Your Discounted Price:</div>
-          <div class="calc-final-price" id="calcFinalPrice">₹4,000</div>
-          <a id="calcClaimBtn" class="calc-btn" href="https://cutt.ly/yyQbJedZ" target="_blank" rel="noopener noreferrer">Claim with Code MG27WFX &rarr;</a>
-        </div>
-      </div>
-    </section>
 
     <!-- Active Offers & Courses Comparison Table -->
     <section class="section-heading">
@@ -1483,20 +1355,6 @@ function fallbackCopy(text){
   document.body.removeChild(ta);
 }
 
-function updateCalc(){
-  try {
-    const sel = document.getElementById('courseSelect').value;
-    const parts = sel.split('|');
-    const base = parseInt(parts[0], 10);
-    const link = 'https://cutt.ly/' + parts[1];
-    const finalPrice = Math.max(0, base - 2000);
-
-    document.getElementById('calcBasePrice').textContent = '₹' + base.toLocaleString('en-IN');
-    document.getElementById('calcFinalPrice').textContent = '₹' + finalPrice.toLocaleString('en-IN');
-    const btn = document.getElementById('calcClaimBtn');
-    btn.href = link;
-  } catch(e) {}
-}
 </script>
 
 </body>
