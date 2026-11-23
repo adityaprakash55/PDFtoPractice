@@ -84,11 +84,13 @@ app.get('/contact', (req, res) => {
     });
 });
 
-app.get(['/mathongo', '/mathongo.html'], (req, res) => {
+app.get('/mathongo.html', (req, res) => res.redirect(301, '/mathongo'));
+app.get('/mathongo', (req, res) => {
+    res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
     res.render('mathongo', {
-        title: 'Mathongo Coupon Code 2027: Flat ₹2000 OFF (Code: MG27WFX) | Verified MathonGo Test Series Discount',
-        description: 'Verified Mathongo Coupon Code 2027: MG27WFX. Get flat ₹2000 EXTRA OFF on MathonGo Test Series for JEE Main 2027, JEE Advanced, Quizrr Pass, BITSAT & NEET. 100% active today!',
-        canonical: 'https://pdftopractice.in/mathongo.html'
+        title: 'Mathongo Coupons & Coupon Code 2027: Flat ₹2000 OFF (Code: MG27WFX) | Verified MathonGo Test Series Discount',
+        description: 'Verified Mathongo Coupons & Promo Code 2027: MG27WFX. Get flat ₹2000 EXTRA OFF on MathonGo Test Series for JEE Main 2027, JEE Advanced, Quizrr Pass, BITSAT & NEET. 100% active today!',
+        canonical: 'https://pdftopractice.in/mathongo'
     });
 });
 
