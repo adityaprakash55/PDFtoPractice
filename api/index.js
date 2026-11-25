@@ -24,6 +24,9 @@ app.use((req, res, next) => {
     next();
 });
 
+// Canonical redirect for legacy .html URLs before static middleware to avoid duplicate content
+app.get('/mathongo.html', (req, res) => res.redirect(301, '/mathongo'));
+
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, '../public')));
 
@@ -84,13 +87,34 @@ app.get('/contact', (req, res) => {
     });
 });
 
-app.get('/mathongo.html', (req, res) => res.redirect(301, '/mathongo'));
+app.get('/llms.txt', (req, res) => {
+    res.header('Content-Type', 'text/plain; charset=utf-8');
+    res.sendFile(path.join(__dirname, '../public/llms.txt'));
+});
+
 app.get('/mathongo', (req, res) => {
     res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+    const now = new Date();
+    const todayIso = now.toISOString().split('T')[0];
+    const todayDisplay = now.toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+        timeZone: 'Asia/Kolkata'
+    }).toUpperCase();
+    const monthYear = now.toLocaleDateString('en-US', {
+        month: 'long',
+        year: 'numeric',
+        timeZone: 'Asia/Kolkata'
+    });
+
     res.render('mathongo', {
-        title: 'Mathongo Coupons & Coupon Code 2027: 2000 Rs Extra Discount on Mathongo Test Series (Code: MG27WFX)',
-        description: 'Verified Mathongo Coupons & Promo Code 2027: MG27WFX. Get flat 2000 Rs Extra Discount on Mathongo Test Series for JEE Main 2027, JEE Advanced, Quizrr Pass, BITSAT & NEET. 100% active today!',
-        canonical: 'https://pdftopractice.in/mathongo'
+        title: 'Mathongo Coupons & Coupon Code 2027: Flat ₹1000 OFF (MG27WFX)',
+        description: 'Verified Mathongo coupons & coupon code 2027: MG27WFX. Get flat ₹1000 (1000 Rs) OFF on MathonGo Test Series for JEE Main, Advanced, Quizrr Pass, BITSAT & NEET.',
+        canonical: 'https://pdftopractice.in/mathongo',
+        todayIso,
+        todayDisplay,
+        monthYear
     });
 });
 
