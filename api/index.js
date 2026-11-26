@@ -119,7 +119,7 @@ app.get('/mathongo', (req, res) => {
 });
 
 // Mentorship route - Redirects to Telegram channel
-app.get('/mentorship', (req, res) => res.redirect(301, 'https://t.me/+fmOGYoVG7kQyMGM1'));
+app.get('/mentorship', (req, res) => res.redirect(301, 'https://t.me/+ShMYj0xeYvE2NTY1'));
 
 // Redirects for legacy/incorrect paths
 app.get(['/donate.html', '/Donate'], (req, res) => res.redirect(301, '/donate'));
